@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Models;
 
-namespace Infrastructure.EntityConfigurations;;
+namespace Infrastructure.EntityConfigurations;
 
 public class SubscriptionFileConfig : IEntityTypeConfiguration<SubscriptionFile>
 {

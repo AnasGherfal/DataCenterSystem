@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.EntityConfigurations;;
+namespace Infrastructure.EntityConfigurations;
 
 public class AdditionalPowerConfig : IEntityTypeConfiguration<AdditionalPower>
 {

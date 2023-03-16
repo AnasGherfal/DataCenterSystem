@@ -1,7 +1,9 @@
 ﻿using Infrastructure.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+//using Infrastructure.Models;
 
 namespace Infrastructure.EntityConfigurations;
-
 
 public class InvoiceConfig : IEntityTypeConfiguration<Invoice>
 {

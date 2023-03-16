@@ -1,14 +1,22 @@
-﻿namespace Infrastructure.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Infrastructure.Models; 
 
 public class User : BaseModel
 {
     public int Id { get; set; }
-    public string UserName { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
-    public int EmpId { get; set; }
+    public string UserName { get; set; } = string.Empty;
     public short Status { get; set; }
+    public int EmpId { get; set; }
 
-    //---------realations
-    public ICollection<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();
-    //public ICollection<TransactionHistory> TransactionHistories { get; set; } = new List<TransactionHistory>();
+    //Realation
+    public ICollection<Permission> Permissions { get; set; } = new List<Permission>();
+
+    public ICollection<User> UsersCreatedBy { get; set; } = new List<User>();
+
 }

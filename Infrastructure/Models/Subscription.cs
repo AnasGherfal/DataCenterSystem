@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Infrastructure.Models
 {
     public class Subscription : BaseModel
     {
@@ -15,10 +17,11 @@
 
         public Service Service { get; set; } = new Service();
         public Customer Customer { get; set; } = new Customer();
+        [NotMapped]
         public SubscriptionFile SubscriptionFile { get; set; } = new SubscriptionFile();
         public ICollection<Visit> Visits { get; set; } = new List<Visit>();
         public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();   
-        public ICollection<SubscriptionAdditionalPower> SubscriptionAdditionalPowers { get; set; } = new List<SubscriptionAdditionalPower>();
+        public ICollection<AdditionalPower> AdditionalPowers { get; set; } = new List<AdditionalPower>();
 
     }
 }

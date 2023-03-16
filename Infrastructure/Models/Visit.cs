@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Infrastructure.Models;
 
 public class Visit : BaseModel
 {
@@ -22,8 +24,9 @@ public class Visit : BaseModel
     public VisitType VisitType { get; set; } = new VisitType();
     public ICollection<Companion> Companions { get; set; }=new List<Companion>();
     public Invoice? Invoice { get; set; }
-    //public Representive Representive { get; set; } = new Representive();
-    public ICollection<RepresentiveVisit> RepresentiveVisits { get; set; } = new List<RepresentiveVisit>();
+    public ICollection<Representive> Representives { get; set; } = new List<Representive>();
+    
+   // public ICollection<RepresentiveVisit> RepresentiveVisits { get; set; } = new List<RepresentiveVisit>();
     public VisitTimeShift TimeShift { get; set; } = new VisitTimeShift();
 
 }

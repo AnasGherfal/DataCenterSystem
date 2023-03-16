@@ -1,13 +1,17 @@
-﻿namespace Infrastructure.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-public class Permission : BaseModel
+namespace Infrastructure.Models;
+
+public class Permission 
 {
     public int Id { get; set; }
     public string Name { get; set; }=string.Empty;
     public int EntityId { get; set; }
 
     //--------Relations
-
-    public ICollection<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();
+    //note changes
+    //--
+    
+    public ICollection<User> Users { get; set; } = new List<User>();
     public Entity Entity { get; set; } = new();
 }

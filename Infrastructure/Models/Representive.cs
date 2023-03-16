@@ -16,7 +16,7 @@
         //--------relation
         public ICollection<RepresentiveFile> Files { get; set; } = new List<RepresentiveFile>();
         public Customer Customer { get; set; }=new Customer();
-        public ICollection<RepresentiveVisit> RepresentiveVisits { get; set; } = new List<RepresentiveVisit>();
+        public ICollection<Visit> Visits { get; set; } = new List<Visit>();
 
 
 

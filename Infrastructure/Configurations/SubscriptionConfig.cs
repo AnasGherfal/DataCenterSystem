@@ -15,6 +15,7 @@ public class SubscriptionConfig : IEntityTypeConfiguration<Subscription>
                .WithMany(u => u.SubscriptionsCreatedBy)
                .HasForeignKey(a => a.CreatedById)
                .OnDelete(DeleteBehavior.ClientSetNull);
+       
 
     }
 }

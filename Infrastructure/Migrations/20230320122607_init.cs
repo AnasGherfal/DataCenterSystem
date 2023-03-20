@@ -33,7 +33,7 @@ namespace Infrastructure.Migrations
                     UserName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Status = table.Column<short>(type: "smallint", nullable: false),
                     EmpId = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -86,7 +86,7 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false),
                     Power = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -110,7 +110,7 @@ namespace Infrastructure.Migrations
                     SecondaryPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
                     Status = table.Column<short>(type: "smallint", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -136,7 +136,7 @@ namespace Infrastructure.Migrations
                     MonthlyVisits = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(8,2)", precision: 8, scale: 2, nullable: false),
                     Status = table.Column<short>(type: "smallint", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -159,7 +159,7 @@ namespace Infrastructure.Migrations
                     EntityId = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     EntityType = table.Column<short>(type: "smallint", nullable: false),
                     EntityData = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -184,7 +184,7 @@ namespace Infrastructure.Migrations
                     StartTime = table.Column<TimeSpan>(type: "time", nullable: false),
                     EndTime = table.Column<TimeSpan>(type: "time", nullable: false),
                     Status = table.Column<short>(type: "smallint", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -228,9 +228,10 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Filename = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DocType = table.Column<short>(type: "smallint", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -264,7 +265,7 @@ namespace Infrastructure.Migrations
                     PhoneNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Status = table.Column<short>(type: "smallint", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -291,12 +292,12 @@ namespace Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ServiceId = table.Column<int>(type: "int", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     Status = table.Column<short>(type: "smallint", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
                     SubscriptionFileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -325,14 +326,14 @@ namespace Infrastructure.Migrations
                 name: "RepresentiveFiles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Filename = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Data = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DocType = table.Column<short>(type: "smallint", nullable: false),
                     RepresintiveId = table.Column<int>(type: "int", nullable: false),
                     RepresentiveId = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -381,16 +382,16 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(14,2)", precision: 14, scale: 2, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
                     InvoiceNo = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     Status = table.Column<short>(type: "smallint", nullable: false),
                     IsPaid = table.Column<bool>(type: "bit", nullable: false),
                     SubscriptionId = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -413,24 +414,22 @@ namespace Infrastructure.Migrations
                 name: "SubscriptionFiles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Data = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     SubscriptionId = table.Column<int>(type: "int", nullable: false),
-                    SubscriptionId1 = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SubscriptionFiles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SubscriptionFiles_Subscriptions_SubscriptionId1",
-                        column: x => x.SubscriptionId1,
+                        name: "FK_SubscriptionFiles_Subscriptions_SubscriptionId",
+                        column: x => x.SubscriptionId,
                         principalTable: "Subscriptions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_SubscriptionFiles_Users_CreatedById",
                         column: x => x.CreatedById,
@@ -444,10 +443,10 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ExpectedStartTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ExpectedEndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ExpectedStartTime = table.Column<DateTime>(type: "datetime", nullable: true),
+                    ExpectedEndTime = table.Column<DateTime>(type: "datetime", nullable: true),
+                    StartTime = table.Column<DateTime>(type: "datetime", nullable: true),
+                    EndTime = table.Column<DateTime>(type: "datetime", nullable: true),
                     TotalMin = table.Column<TimeSpan>(type: "time", nullable: true),
                     Price = table.Column<decimal>(type: "decimal(6,2)", precision: 6, scale: 2, nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
@@ -456,7 +455,7 @@ namespace Infrastructure.Migrations
                     InvoiceId = table.Column<int>(type: "int", nullable: true),
                     TimeShiftId = table.Column<int>(type: "int", nullable: false),
                     SubscriptionId = table.Column<int>(type: "int", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -504,7 +503,7 @@ namespace Infrastructure.Migrations
                     IdentityType = table.Column<short>(type: "smallint", nullable: false),
                     JobTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     VisitId = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -638,9 +637,10 @@ namespace Infrastructure.Migrations
                 column: "CreatedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SubscriptionFiles_SubscriptionId1",
+                name: "IX_SubscriptionFiles_SubscriptionId",
                 table: "SubscriptionFiles",
-                column: "SubscriptionId1");
+                column: "SubscriptionId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subscriptions_CreatedById",

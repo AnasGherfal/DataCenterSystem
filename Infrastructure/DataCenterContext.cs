@@ -24,6 +24,12 @@ public class DataCenterContext : DbContext
     public DbSet<VisitTimeShift> VisitTimeShifts => Set<VisitTimeShift>();
     public DbSet<VisitType> VisitTypes => Set<VisitType>();
 
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
+        configurationBuilder.Properties<TimeSpan>().HaveColumnType("time");
+        base.ConfigureConventions(configurationBuilder);
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 

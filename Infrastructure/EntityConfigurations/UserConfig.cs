@@ -12,8 +12,10 @@ public class UserConfig : IEntityTypeConfiguration<User>
         builder.Property(p => p.FullName).HasMaxLength(100).IsRequired();
         builder.Property(p => p.EmpId).IsRequired();
         builder.Property(p => p.Status).IsRequired();
-        builder.HasMany<Permission>().WithMany(p => p.Users);
-        
+      //  builder.HasMany<Permission>().WithMany(p => p.Users);
+        //builder.HasOne(u => u.CreatedBy)
+            //  .WithMany(u => u.UsersCreatedBy)
+              //.OnDelete(DeleteBehavior.SetNull);
     }
 }
 

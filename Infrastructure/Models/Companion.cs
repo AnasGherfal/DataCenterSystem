@@ -1,6 +1,7 @@
 ﻿namespace Infrastructure.Models;
 
-public class Companion : BaseModel
+public class Companion 
+    //: BaseModel
 {
     public int Id { get; set; }
     public string FirstName { get; set; } = String.Empty;

@@ -8,7 +8,9 @@ public class SubscriptionFileConfig : IEntityTypeConfiguration<SubscriptionFile>
 {
     public void Configure(EntityTypeBuilder<SubscriptionFile> builder)
     {
-       
+        builder.HasOne(a => a.Subscription)
+            .WithOne(a => a.SubscriptionFile)
+            .HasForeignKey<SubscriptionFile>(c => c.SubscriptionId);
     }
 }
 

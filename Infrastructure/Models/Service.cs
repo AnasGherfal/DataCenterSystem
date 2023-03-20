@@ -1,6 +1,7 @@
 ﻿namespace Infrastructure.Models
 {
-    public class Service : BaseModel
+    public class Service 
+        //: BaseModel
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;

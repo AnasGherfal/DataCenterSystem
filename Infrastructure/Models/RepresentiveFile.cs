@@ -1,6 +1,7 @@
 ﻿namespace Infrastructure.Models;
 
-public class RepresentiveFile : BaseModel
+public class RepresentiveFile 
+    //: BaseModel
 {
     public Guid Id { get; set; }
     public string Filename { get; set; } = string.Empty;

@@ -1,6 +1,7 @@
 ﻿namespace Infrastructure.Models;
 
-public class TransactionHistory : BaseModel
+public class TransactionHistory 
+    //: BaseModel
 {
     public int Id { get; set; }
     public short Action { get; set; }

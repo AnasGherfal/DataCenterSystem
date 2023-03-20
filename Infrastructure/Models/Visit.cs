@@ -2,7 +2,8 @@
 
 namespace Infrastructure.Models;
 
-public class Visit : BaseModel
+public class Visit 
+    //: BaseModel
 {
     public int Id { get; set; }
     public DateTime? ExpectedStartTime { get; set; }

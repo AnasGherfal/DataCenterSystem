@@ -8,8 +8,11 @@ public class CustomerFileConfig : IEntityTypeConfiguration<CustomerFile>
 {
     public void Configure(EntityTypeBuilder<CustomerFile> builder)
     {
-        builder.HasKey(a => a.Id);
-        throw new NotImplementedException();
+        //  builder.HasKey(a => a.Id);
+        builder.HasOne(a => a.Customer)
+            .WithMany(a => a.Files)
+            .OnDelete(DeleteBehavior.NoAction);
+           
        
     }
 }

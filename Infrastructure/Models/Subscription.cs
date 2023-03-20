@@ -2,7 +2,8 @@
 
 namespace Infrastructure.Models
 {
-    public class Subscription : BaseModel
+    public class Subscription
+        //: BaseModel
     {
         public int Id { get; set; }
         public int ServiceId { get; set; }
@@ -17,7 +18,7 @@ namespace Infrastructure.Models
 
         public Service Service { get; set; } = new Service();
         public Customer Customer { get; set; } = new Customer();
-        [NotMapped]
+        
         public SubscriptionFile SubscriptionFile { get; set; } = new SubscriptionFile();
         public ICollection<Visit> Visits { get; set; } = new List<Visit>();
         public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();   

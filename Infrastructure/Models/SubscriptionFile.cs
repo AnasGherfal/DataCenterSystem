@@ -1,6 +1,7 @@
 ﻿namespace Infrastructure.Models;
 
-public class SubscriptionFile : BaseModel
+public class SubscriptionFile 
+    //: BaseModel
 {
     public Guid Id { get; set; }
     //public short Type { get; set; }

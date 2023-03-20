@@ -12,6 +12,6 @@ public class Permission
     //note changes
     //--
     
-    public ICollection<User> Users { get; set; } = new List<User>();
+    public ICollection<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();
     public Entity Entity { get; set; } = new();
 }

@@ -8,8 +8,8 @@ public class RepresentiveFileConfig : IEntityTypeConfiguration<RepresentiveFile>
 {
     public void Configure(EntityTypeBuilder<RepresentiveFile> builder)
     {
-        builder.HasKey(a => a.Id);
+         builder.HasKey(a => a.Id);
+         builder.Property(p=>p.Id).ValueGeneratedNever();    
 
-        throw new NotImplementedException();
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace Infrastructure.Models
 {
-    public class Representive : BaseModel
+    public class Representive
+        //: BaseModel
     {
         public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;

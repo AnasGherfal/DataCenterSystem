@@ -1,6 +1,7 @@
 ﻿namespace Infrastructure.Models;
 
-public class Invoice : BaseModel
+public class Invoice 
+    //: BaseModel
 {
 
     public int Id { get; set; }

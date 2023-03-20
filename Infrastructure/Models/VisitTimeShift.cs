@@ -1,6 +1,7 @@
 ﻿namespace Infrastructure.Models;
 
-public class VisitTimeShift : BaseModel
+public class VisitTimeShift
+    //: BaseModel
 {
     public int Id{ get; set; }
     public string Name { get; set; } = string.Empty;

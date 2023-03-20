@@ -1,7 +1,4 @@
-﻿using Infrastructure.Models;
-using Microsoft.EntityFrameworkCore;
-
-namespace Infrastructure.EntityConfigurations;
+﻿namespace Infrastructure.Configurations;
 
 public class VisitTypeConfig : IEntityTypeConfiguration<VisitType>
 {

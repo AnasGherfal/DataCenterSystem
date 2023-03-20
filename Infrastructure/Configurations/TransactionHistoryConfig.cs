@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-using Infrastructure.Models;
-
-namespace Infrastructure.EntityConfigurations;
+﻿namespace Infrastructure.Configurations;
 
 public class TransactionHistoryConfig : IEntityTypeConfiguration<TransactionHistory>
 {
@@ -12,6 +8,10 @@ public class TransactionHistoryConfig : IEntityTypeConfiguration<TransactionHist
         builder.Property(p => p.EntityId).HasMaxLength(150).IsRequired();
         builder.Property(p => p.EntityType).IsRequired();
         builder.Property(p => p.EntityData).IsRequired();
+        builder.HasOne(a => a.CreatedBy)
+               .WithMany(u => u.TransactionHistorysCreatedBy)
+               .HasForeignKey(a => a.CreatedById)
+               .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }
 

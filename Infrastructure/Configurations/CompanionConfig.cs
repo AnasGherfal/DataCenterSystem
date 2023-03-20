@@ -1,8 +1,4 @@
-﻿using Infrastructure.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace Infrastructure.EntityConfigurations;
+﻿namespace Infrastructure.Configurations;
 
 public class CompanionConfig : IEntityTypeConfiguration<Companion>
 {
@@ -15,7 +11,10 @@ public class CompanionConfig : IEntityTypeConfiguration<Companion>
         builder.Property(p => p.IdentityType).IsRequired();
         builder.Property(p => p.JobTitle).HasMaxLength(100);
         builder.Property(p => p.VisitId).IsRequired();
-
+        builder.HasOne(a => a.CreatedBy)
+               .WithMany(u => u.CompanionsCreatedBy)
+               .HasForeignKey(a => a.CreatedById)
+               .OnDelete(DeleteBehavior.ClientSetNull);
 
     }
 }

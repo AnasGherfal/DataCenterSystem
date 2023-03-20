@@ -1,7 +1,4 @@
-﻿using Infrastructure.Models;
-using Microsoft.EntityFrameworkCore;
-
-namespace Infrastructure.EntityConfigurations;
+﻿namespace Infrastructure.Configurations;
 
 public class VisitConfig : IEntityTypeConfiguration<Visit>
 {
@@ -11,8 +8,11 @@ public class VisitConfig : IEntityTypeConfiguration<Visit>
         builder.Property(p => p.Notes).HasMaxLength(300);
         builder.Property(p => p.VisitTypeId).IsRequired();
         builder.Property(p => p.VisitShiftId).IsRequired();
-        
 
+        builder.HasOne(a => a.CreatedBy)
+               .WithMany(u => u.VisitsCreatedBy)
+               .HasForeignKey(a => a.CreatedById)
+               .OnDelete(DeleteBehavior.ClientSetNull);
 
     }
 }

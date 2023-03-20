@@ -1,8 +1,4 @@
-﻿using Infrastructure.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-
-namespace Infrastructure.EntityConfigurations;
+﻿namespace Infrastructure.Configurations;
 
 public class SubscriptionConfig : IEntityTypeConfiguration<Subscription>
 {
@@ -15,7 +11,10 @@ public class SubscriptionConfig : IEntityTypeConfiguration<Subscription>
         builder.Property(p => p.Status).IsRequired();
         builder.Property(p => p.CustomerId).IsRequired();
         builder.Property(p => p.ServiceId).IsRequired();
-
+        builder.HasOne(a => a.CreatedBy)
+               .WithMany(u => u.SubscriptionsCreatedBy)
+               .HasForeignKey(a => a.CreatedById)
+               .OnDelete(DeleteBehavior.ClientSetNull);
 
     }
 }

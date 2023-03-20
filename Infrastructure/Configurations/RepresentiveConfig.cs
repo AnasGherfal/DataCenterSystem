@@ -1,8 +1,4 @@
-﻿using Infrastructure.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-
-namespace Infrastructure.EntityConfigurations;
+﻿namespace Infrastructure.Configurations;
 
 public class RepresentiveConfig : IEntityTypeConfiguration<Representive>
 {
@@ -17,5 +13,10 @@ public class RepresentiveConfig : IEntityTypeConfiguration<Representive>
         builder.Property(p => p.PhoneNo).HasMaxLength(20).IsRequired();
         builder.Property(p => p.Status).IsRequired();
         builder.Property(p => p.CustomerId).IsRequired();
+
+        builder.HasOne(a => a.CreatedBy)
+               .WithMany(u => u.RepresentivesCreatedBy)
+               .HasForeignKey(a => a.CreatedById)
+               .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

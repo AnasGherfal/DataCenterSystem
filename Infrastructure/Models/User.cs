@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Infrastructure.Models; 
+﻿namespace Infrastructure.Models; 
 
 public class User : BaseModel
 {
@@ -17,6 +11,19 @@ public class User : BaseModel
     //Realation
     public ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 
-    public ICollection<User> UsersCreatedBy { get; set; } = new List<User>();
+    public ICollection<User> UsersCreatedBy { get; set; } = default!;
+    public ICollection<AdditionalPower> AdditionalPowersCreatedBy { get; set; } = default!;
+    public ICollection<Customer> CustomersCreatedBy { get; set; } = default!;
+    public ICollection<Companion> CompanionsCreatedBy { get; set; } = default!;
+    public ICollection<CustomerFile> CustomerFilesCreatedBy { get; set; } = default!;
+    public ICollection<Invoice> InvoicesCreatedBy { get; set; } = default!;
+    public ICollection<Representive> RepresentivesCreatedBy { get; set; } = default!;
+    public ICollection<RepresentiveFile> RepresentiveFilesCreatedBy { get; set; } = default!;
+    public ICollection<Service> ServicesCreatedBy { get; set; } = default!;
+    public ICollection<Subscription> SubscriptionsCreatedBy { get; set; } = default!;
+    public ICollection<SubscriptionFile> SubscriptionFilesCreatedBy { get; set; } = default!;
+    public ICollection<TransactionHistory> TransactionHistorysCreatedBy { get; set; } = default!;
+    public ICollection<Visit> VisitsCreatedBy { get; set; } = default!;
+    public ICollection<VisitTimeShift> VisitTimeShiftsCreatedBy { get; set; } = default!;
 
 }

@@ -8,8 +8,8 @@ namespace ManagementAPI.Services
 {
     public class CustomerService
     {
-        private readonly ServiceDbContext _dbContext;
-        public CustomerService(ServiceDbContext dbContext)
+        private readonly DataCenterContext _dbContext;
+        public CustomerService(DataCenterContext dbContext)
         {
             _dbContext = dbContext;
         }

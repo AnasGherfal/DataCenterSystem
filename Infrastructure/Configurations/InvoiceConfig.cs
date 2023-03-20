@@ -1,9 +1,4 @@
-﻿using Infrastructure.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-//using Infrastructure.Models;
-
-namespace Infrastructure.EntityConfigurations;
+﻿namespace Infrastructure.Configurations;
 
 public class InvoiceConfig : IEntityTypeConfiguration<Invoice>
 {
@@ -16,7 +11,10 @@ public class InvoiceConfig : IEntityTypeConfiguration<Invoice>
         builder.Property(p => p.StartDate).IsRequired();
         builder.Property(p => p.EndDate).IsRequired();
         builder.Property(p => p.Status).IsRequired();
-         builder.Property(p => p.SubscriptionId).IsRequired();
-
+        builder.Property(p => p.SubscriptionId).IsRequired();
+        builder.HasOne(a => a.CreatedBy)
+               .WithMany(u => u.InvoicesCreatedBy)
+               .HasForeignKey(a => a.CreatedById)
+               .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

@@ -1,8 +1,4 @@
-﻿using Infrastructure.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-
-namespace Infrastructure.EntityConfigurations;
+﻿namespace Infrastructure.Configurations;
 
 public class ServiceConfig : IEntityTypeConfiguration<Service>
 {
@@ -15,5 +11,10 @@ public class ServiceConfig : IEntityTypeConfiguration<Service>
         builder.Property(p => p.MonthlyVisits).IsRequired();
         builder.Property(p => p.Price).HasPrecision(8,2).IsRequired();
         builder.Property(p => p.Status).IsRequired();
+
+        builder.HasOne(a => a.CreatedBy)
+               .WithMany(u => u.ServicesCreatedBy)
+               .HasForeignKey(a => a.CreatedById)
+               .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

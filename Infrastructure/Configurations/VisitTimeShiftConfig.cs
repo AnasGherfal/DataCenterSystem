@@ -1,7 +1,4 @@
-﻿using Infrastructure.Models;
-using Microsoft.EntityFrameworkCore;
-
-namespace Infrastructure.EntityConfigurations;
+﻿namespace Infrastructure.Configurations;
 
 public class VisitTimeShiftConfig : IEntityTypeConfiguration<VisitTimeShift>
 {
@@ -13,6 +10,9 @@ public class VisitTimeShiftConfig : IEntityTypeConfiguration<VisitTimeShift>
         builder.Property(p => p.StartTime).IsRequired();
         builder.Property(p => p.EndTime).IsRequired();
         builder.Property(p => p.Status).IsRequired();
-
+        builder.HasOne(a => a.CreatedBy)
+               .WithMany(u => u.VisitTimeShiftsCreatedBy)
+               .HasForeignKey(a => a.CreatedById)
+               .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

@@ -4,19 +4,16 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace Infrastructure.Migrations
 {
-    [DbContext(typeof(ServiceDbContext))]
-    [Migration("20230316135755_Init")]
-    partial class Init
+    [DbContext(typeof(DataCenterContext))]
+    partial class DataCenterContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,10 +40,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.AdditionalPower", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CreatedById")
                         .HasColumnType("int");
@@ -56,10 +50,12 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Power")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
 
@@ -84,25 +80,31 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("nvarchar(max)")
+                        .HasComputedColumnSql("[FirstName] + ' ' + [LastName]");
 
                     b.Property<string>("IdentityNo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<short>("IdentityType")
                         .HasColumnType("smallint");
 
                     b.Property<string>("JobTitle")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("VisitId")
                         .HasColumnType("int");
@@ -113,7 +115,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("VisitId");
 
-                    b.ToTable("Companion");
+                    b.ToTable("Companions");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Customer", b =>
@@ -132,18 +134,22 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("PrimaryPhone")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("SecondaryPhone")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<short>("Status")
                         .HasColumnType("smallint");
@@ -185,24 +191,22 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("CustomerFile");
+                    b.ToTable("CustomerFiles");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Entity", b =>
                 {
                     b.Property<short>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("smallint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Entity");
+                    b.ToTable("Entities");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Invoice", b =>
@@ -223,13 +227,15 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("InvoiceNo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
@@ -244,7 +250,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(14, 2)
+                        .HasColumnType("decimal(14,2)");
 
                     b.HasKey("Id");
 
@@ -252,7 +259,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("SubscriptionId");
 
-                    b.ToTable("Invoice");
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Permission", b =>
@@ -271,13 +278,14 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EntityId1");
 
-                    b.ToTable("Permission");
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Representive", b =>
@@ -299,30 +307,37 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("nvarchar(max)")
+                        .HasComputedColumnSql("[FirstName] + ' ' + [LastName]");
 
                     b.Property<string>("IdentityNo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<short>("IdentityType")
                         .HasColumnType("smallint");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PhoneNo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<short>("Status")
                         .HasColumnType("smallint");
@@ -333,7 +348,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Representive");
+                    b.ToTable("Representives");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.RepresentiveFile", b =>
@@ -375,7 +390,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("RepresentiveId");
 
-                    b.ToTable("RepresentiveFile");
+                    b.ToTable("RepresentiveFiles");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Service", b =>
@@ -388,11 +403,13 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("AcpPort")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("AmountOfPower")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("CreatedById")
                         .HasColumnType("int");
@@ -402,17 +419,20 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Dns")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("MonthlyVisits")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(8, 2)
+                        .HasColumnType("decimal(8,2)");
 
                     b.Property<short>("Status")
                         .HasColumnType("smallint");
@@ -421,7 +441,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.ToTable("Service");
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Subscription", b =>
@@ -457,7 +477,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
 
@@ -467,7 +488,82 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("Subscription");
+                    b.ToTable("Subscriptions");
+                });
+
+            modelBuilder.Entity("Infrastructure.Models.SubscriptionFile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubscriptionId1")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("SubscriptionId1");
+
+                    b.ToTable("SubscriptionFiles");
+                });
+
+            modelBuilder.Entity("Infrastructure.Models.TransactionHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<short>("Action")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EntityData")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EntityId")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<short>("EntityType")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.ToTable("TransactionHistories");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.User", b =>
@@ -489,20 +585,22 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<short>("Status")
                         .HasColumnType("smallint");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Visit", b =>
@@ -532,10 +630,12 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
 
                     b.Property<DateTime?>("StartTime")
                         .HasColumnType("datetime2");
@@ -567,7 +667,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("VisitTypeId");
 
-                    b.ToTable("Visit");
+                    b.ToTable("Visits");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.VisitTimeShift", b =>
@@ -589,13 +689,16 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("PriceForFirstHour")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<decimal>("PriceForRemainingHour")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<TimeSpan>("StartTime")
                         .HasColumnType("time");
@@ -607,16 +710,13 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.ToTable("VisitTimeShift");
+                    b.ToTable("VisitTimeShifts");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.VisitType", b =>
                 {
                     b.Property<short>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("smallint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -624,7 +724,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VisitType");
+                    b.ToTable("VisitTypes");
                 });
 
             modelBuilder.Entity("PermissionUser", b =>
@@ -675,9 +775,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.AdditionalPower", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
-                        .WithMany()
+                        .WithMany("AdditionalPowersCreatedBy")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
@@ -686,9 +785,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.Companion", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
-                        .WithMany()
+                        .WithMany("CompanionsCreatedBy")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Infrastructure.Models.Visit", "Visit")
@@ -705,9 +803,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.Customer", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
-                        .WithMany()
+                        .WithMany("CustomersCreatedBy")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
@@ -716,9 +813,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.CustomerFile", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
-                        .WithMany()
+                        .WithMany("CustomerFilesCreatedBy")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Infrastructure.Models.Customer", "Customer")
@@ -735,9 +831,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.Invoice", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
-                        .WithMany()
+                        .WithMany("InvoicesCreatedBy")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Infrastructure.Models.Subscription", "Subscription")
@@ -765,9 +860,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.Representive", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
-                        .WithMany()
+                        .WithMany("RepresentivesCreatedBy")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Infrastructure.Models.Customer", "Customer")
@@ -784,9 +878,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.RepresentiveFile", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
-                        .WithMany()
+                        .WithMany("RepresentiveFilesCreatedBy")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Infrastructure.Models.Representive", "Representive")
@@ -803,9 +896,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.Service", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
-                        .WithMany()
+                        .WithMany("ServicesCreatedBy")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
@@ -814,9 +906,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.Subscription", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
-                        .WithMany()
+                        .WithMany("SubscriptionsCreatedBy")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Infrastructure.Models.Customer", "Customer")
@@ -838,12 +929,39 @@ namespace Infrastructure.Migrations
                     b.Navigation("Service");
                 });
 
+            modelBuilder.Entity("Infrastructure.Models.SubscriptionFile", b =>
+                {
+                    b.HasOne("Infrastructure.Models.User", "CreatedBy")
+                        .WithMany("SubscriptionFilesCreatedBy")
+                        .HasForeignKey("CreatedById")
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Models.Subscription", "Subscription")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Subscription");
+                });
+
+            modelBuilder.Entity("Infrastructure.Models.TransactionHistory", b =>
+                {
+                    b.HasOne("Infrastructure.Models.User", "CreatedBy")
+                        .WithMany("TransactionHistorysCreatedBy")
+                        .HasForeignKey("CreatedById")
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+                });
+
             modelBuilder.Entity("Infrastructure.Models.User", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
                         .WithMany("UsersCreatedBy")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
@@ -852,9 +970,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.Visit", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
-                        .WithMany()
+                        .WithMany("VisitsCreatedBy")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Infrastructure.Models.Invoice", "Invoice")
@@ -889,9 +1006,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.VisitTimeShift", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
-                        .WithMany()
+                        .WithMany("VisitTimeShiftsCreatedBy")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
@@ -965,7 +1081,33 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Infrastructure.Models.User", b =>
                 {
+                    b.Navigation("AdditionalPowersCreatedBy");
+
+                    b.Navigation("CompanionsCreatedBy");
+
+                    b.Navigation("CustomerFilesCreatedBy");
+
+                    b.Navigation("CustomersCreatedBy");
+
+                    b.Navigation("InvoicesCreatedBy");
+
+                    b.Navigation("RepresentiveFilesCreatedBy");
+
+                    b.Navigation("RepresentivesCreatedBy");
+
+                    b.Navigation("ServicesCreatedBy");
+
+                    b.Navigation("SubscriptionFilesCreatedBy");
+
+                    b.Navigation("SubscriptionsCreatedBy");
+
+                    b.Navigation("TransactionHistorysCreatedBy");
+
                     b.Navigation("UsersCreatedBy");
+
+                    b.Navigation("VisitTimeShiftsCreatedBy");
+
+                    b.Navigation("VisitsCreatedBy");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Visit", b =>

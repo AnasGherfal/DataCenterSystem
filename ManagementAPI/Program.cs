@@ -1,6 +1,8 @@
 using Infrastructure;
 using ManagementAPI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<CustomerService>();
-builder.Services.AddDbContext<ServiceDbContext>
-    (options => options.UseSqlServer(builder.Configuration.GetConnectionString("LTTDataCenterDBConnectionString")));
+builder.Services.AddDbContext<DataCenterContext>(c => c.UseSqlServer(builder.Configuration.GetConnectionString("DataCenter")));
 
 var app = builder.Build();
 

@@ -9,7 +9,6 @@ public class Permission
     //--------Relations
     //note changes
     //--
-    
-    public ICollection<User> Users { get; set; } = new List<User>();
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
     public Entity Entity { get; set; } = new();
 }

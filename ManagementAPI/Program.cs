@@ -1,8 +1,6 @@
 using Infrastructure;
 using ManagementAPI.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +12,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<CustomerService>();
 builder.Services.AddDbContext<DataCenterContext>(c => c.UseSqlServer(builder.Configuration.GetConnectionString("DataCenter")));
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -23,11 +20,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
+using var scope = app.Services.CreateScope();
+await using var dbContext = scope.ServiceProvider.GetRequiredService<DataCenterContext>();
+await dbContext.Database.MigrateAsync();
 app.Run();

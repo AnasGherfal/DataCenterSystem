@@ -1,4 +1,5 @@
 using Infrastructure;
+using Infrastructure.Models;
 using ManagementAPI.DI;
 using ManagementAPI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,9 @@ builder.Services.AddCustomControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSwagger();
 builder.Services.AddScoped<CustomerService>();
-builder.Services.AddDbContext<DataCenterContext>(c => c.UseSqlServer(builder.Configuration.GetConnectionString("DataCenter")));
+builder.Services.AddScoped<ServiceServices>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddDbContext<DataCenterContext>(c => c.UseSqlServer(builder.Configuration.GetConnectionString("LTTDC")));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

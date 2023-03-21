@@ -14,7 +14,7 @@
 
         //------------Ralation
 
-        public ICollection<Subscription> Subscriptions { get; set; }=new List<Subscription>();
+        public ICollection<Subscription> Subscriptions { get; set; }
 
 
     }

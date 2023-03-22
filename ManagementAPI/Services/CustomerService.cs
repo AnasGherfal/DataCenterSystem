@@ -1,11 +1,10 @@
-﻿using Infrastructure;
+﻿using AutoMapper;
+using Infrastructure;
 using Infrastructure.Models;
 using ManagementAPI.Dtos.Customer;
-<<<<<<< Updated upstream
-=======
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
->>>>>>> Stashed changes
 using Shared.Dtos;
 using System.Net;
 
@@ -14,26 +13,15 @@ namespace ManagementAPI.Services
     public class CustomerService
     {
         private readonly DataCenterContext _dbContext;
-        public CustomerService(DataCenterContext dbContext)
+        private readonly IMapper _mapper;
+        public CustomerService(DataCenterContext dbContext,IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
         public  async Task<OperationResponse> CreateCustomer(CreateCustomerDto request)
         {
-<<<<<<< Updated upstream
-            //todo: check if exist
-            
-            await _dbContext.Customers.AddAsync(new Customer() {
-                Name = request.Name,
-                Email = request.Email,
-                PrimaryPhone = request.PrimaryPhone,
-                SecondaryPhone = request.SecondaryPhone,
 
-            });
-            await _dbContext.SaveChangesAsync();
-            return new OperationResponse() { Msg = "ok" ,StatusCode=HttpStatusCode.OK};
-        }
-=======
             var NewCustomer=_mapper.Map<Customer>(request);
             if(NewCustomer == null)
                 return new OperationResponse()
@@ -63,7 +51,7 @@ namespace ManagementAPI.Services
             return new FetchCustomersResponseDto() { Content = result, CurrentPage = pgNum, TotalPages = totalpages };
         }
         
-        public async Task<CustomerResponseDto> GetCustomer(int id)
+      /*  public async Task<CustomerResponseDto> GetCustomer(int id)
         {
             throw new NotImplementedException();
         }
@@ -73,11 +61,11 @@ namespace ManagementAPI.Services
         {
             throw new NotImplementedException();
         }
->>>>>>> Stashed changes
+
     }
         public async Task<OperationResponse> DeleteCustomer(int id)
         {
             throw new NotImplementedException();
-        }
+        }*/
 
 }

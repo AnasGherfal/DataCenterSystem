@@ -10,5 +10,5 @@ public class RepresentiveFile : BaseModel
 
     //-----------Realations
 
-    public Representive Representive { get; set; } = new Representive();
+    public Representive Representive { get; set; }
 }

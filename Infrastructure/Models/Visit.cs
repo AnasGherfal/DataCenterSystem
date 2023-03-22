@@ -19,12 +19,12 @@ public class Visit : BaseModel
 
     //---------------Relations
 
-    public VisitType VisitType { get; set; } = new VisitType();
+    public VisitType VisitType { get; set; } 
     public ICollection<Companion> Companions { get; set; }=new List<Companion>();
     public Invoice? Invoice { get; set; }
     public ICollection<Representive> Representives { get; set; } = new List<Representive>();
     
    // public ICollection<RepresentiveVisit> RepresentiveVisits { get; set; } = new List<RepresentiveVisit>();
-    public VisitTimeShift TimeShift { get; set; } = new VisitTimeShift();
+    public VisitTimeShift TimeShift { get; set; } 
 
 }

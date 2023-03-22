@@ -15,10 +15,10 @@ namespace Infrastructure.Models
 
         //----------relations
 
-        public Service Service { get; set; } = new Service();
-        public Customer Customer { get; set; } = new Customer();
+        public Service Service { get; set; }  
+        public Customer Customer { get; set; } 
         
-        public SubscriptionFile SubscriptionFile { get; set; } = new SubscriptionFile();
+        public SubscriptionFile SubscriptionFile { get; set; } 
         public ICollection<Visit> Visits { get; set; } = new List<Visit>();
         public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();   
         public ICollection<AdditionalPower> AdditionalPowers { get; set; } = new List<AdditionalPower>();

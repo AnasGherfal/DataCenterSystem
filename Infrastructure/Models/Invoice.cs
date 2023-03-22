@@ -23,7 +23,7 @@ public class Invoice : BaseModel
     public int SubscriptionId { get; set; }
 
     //----Realation----------
-    public Subscription Subscription { get; set; } = new Subscription();
+    public Subscription Subscription { get; set; }
     public ICollection<Visit> Visits { get; set; }= new List<Visit>();
 
 

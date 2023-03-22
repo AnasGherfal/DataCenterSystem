@@ -8,6 +8,6 @@ public abstract class BaseModel
 
     //------Relation
   //  [NotMapped]
-   public User CreatedBy { get; set; } = new User();
+   public User CreatedBy { get; set; }
 
 }

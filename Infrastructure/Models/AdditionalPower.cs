@@ -7,5 +7,5 @@ public class AdditionalPower : BaseModel
     public decimal Price { get; set; }
 
     //-------Realations
-   public ICollection<Subscription> Subscriptions { get; set; }=new List<Subscription>();
+   public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 }

@@ -12,7 +12,7 @@ public class Customer: BaseModel
     public short Status { get; set; }
 
     //----------Relations
-    public ICollection<Representive> Representives { get; set; }=new List<Representive>();
+    public ICollection<Representive> Representives { get; set; } =new List<Representive>();
     public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     public ICollection<CustomerFile> Files { get; set; } = new List<CustomerFile>();
 

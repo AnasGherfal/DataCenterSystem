@@ -16,5 +16,6 @@ public class CustomerProfileMapper : Profile
             .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1));
 
         CreateMap<Customer, CustomerResponseDto>();
+        CreateMap<EditCustomerRequestDto, Customer>();
     }
 }

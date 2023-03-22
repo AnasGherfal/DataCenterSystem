@@ -10,7 +10,7 @@ using System.Net;
 
 namespace ManagementAPI.Services;
 
-public class CustomerService
+public class CustomerService:ICustomerService
 {
     private readonly DataCenterContext _dbContext;
     private readonly IMapper _mapper;
@@ -19,7 +19,7 @@ public class CustomerService
         _dbContext = dbContext;
         _mapper = mapper;
     }
-    public async Task<OperationResponse> CreateCustomer(CreateCustomerDto request)
+    public async Task<OperationResponse> CreateCustomer(CreateCustomerRequestDto request)
     {
 
         var NewCustomer = _mapper.Map<Customer>(request);
@@ -33,13 +33,12 @@ public class CustomerService
     }
 
 
-
     public async Task<FetchCustomersResponseDto> GetAllCustomer(int pgSize, int pgNum)
     {
 
         var CustQuery = await (from Cust in _dbContext.Customers
                                .OrderBy(x => x.Id)
-                               select Cust)
+                                select Cust)
                                .Skip(pgSize * (pgNum - 1))
                                .Take(pgSize)
                                .ToListAsync();
@@ -51,21 +50,44 @@ public class CustomerService
         return new FetchCustomersResponseDto() { Content = result, CurrentPage = pgNum, TotalPages = totalpages };
     }
 
-    /*  public async Task<CustomerResponseDto> GetCustomer(int id)
+
+    public async Task<OperationResponse> UpdateCustomer(int id, EditCustomerRequestDto request)
       {
-          throw new NotImplementedException();
-      }
+         if (id < 1)
+         return new OperationResponse() 
+         { Msg = " يرجى ادخال رقم العميل", StatusCode = HttpStatusCode.BadRequest };
 
+        if (request == null) 
+            return new OperationResponse() 
+            {Msg="يرجى إدخال بيانات العميل المطلوبة" ,StatusCode=HttpStatusCode.BadRequest};
 
-      public async Task<OperationResponse> UpdateCustomer(int id, UpdateCustomerRequestDto request)
-      {
-          throw new NotImplementedException();
-      }
+        var OldCustomer = await (from Cust in _dbContext.Customers
+                                 where Cust.Id == id 
+                                 && Cust.Name != request.Name
+                                 select Cust)
+                                 .SingleOrDefaultAsync();
+        var NameValidet = await (from Cust in _dbContext.Customers
+                                 where Cust.Name == request.Name
+                                 select Cust)
+                                 .SingleOrDefaultAsync();
 
-  }
-      public async Task<OperationResponse> DeleteCustomer(int id)
-      {
-          throw new NotImplementedException();
-      }*/
+        if (NameValidet != null)
+            return new OperationResponse()
+            { Msg = "الاسم موجود مسبقًا", StatusCode = HttpStatusCode.BadRequest };
 
+        _mapper.Map(request, OldCustomer);
+      await  _dbContext.SaveChangesAsync();
+        
+        return new OperationResponse() { Msg ="Edited ",StatusCode = HttpStatusCode.OK};
+        }
+    public Task<CustomerResponseDto> GetCustomer(int id)
+    {
+        throw new NotImplementedException();
+    }
+    public Task<OperationResponse> DeleteCustomer(int id)
+    {
+        throw new NotImplementedException();
+    }
+   
 }
+

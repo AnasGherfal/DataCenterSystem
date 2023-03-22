@@ -7,6 +7,7 @@ public static class Validation
     private static readonly Regex ArabicRegex = new Regex(@"^[\u0621-\u064A ]+$");
     private static readonly Regex EnglishRegex = new Regex(@"^[a-zA-Z ]+$");
     private static readonly Regex PhoneRegex = new Regex(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$");
+    private static readonly Regex CustomerPhoneRegex = new Regex(@"^\+(218\-?(0?)9[2?1?5?0?4?])\d{7}$");
     private static readonly Regex UserNameRegex = new Regex(@"^[a-zA-Z]{1}[a-zA-Z0-9\._\-]{0,23}[^.-]$", RegexOptions.Compiled);
 
     public static bool IsValidArabic(string? value)
@@ -25,6 +26,11 @@ public static class Validation
     {
         if (value is null) return true;
         return PhoneRegex.IsMatch(value.Trim());
+    }
+    public static bool IsValidCustomerPhoneNo(string? value)
+    {
+        if (value is null) return true;
+        return CustomerPhoneRegex.IsMatch(value.Trim());
     }
 
     public static bool IsValidLibyaMobile(string? value)

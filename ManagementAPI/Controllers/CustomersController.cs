@@ -11,13 +11,13 @@ namespace ManagementAPI.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        private readonly CustomerService _service;
-        public CustomersController(CustomerService service)
+        private readonly ICustomerService _service;
+        public CustomersController(ICustomerService service)
         {
             _service = service;
         }
         [HttpPost]
-        public async Task<OperationResponse> CreateCustomer([FromBody]CreateCustomerDto request)
+        public async Task<OperationResponse> CreateCustomer([FromBody]CreateCustomerRequestDto request)
         {
             return await _service.CreateCustomer(request);
             
@@ -30,6 +30,13 @@ namespace ManagementAPI.Controllers
             var result=await _service.GetAllCustomer(filter.PageSize,filter.PageNumber);
             return Ok(result);
              
+        }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditCustomer(int id, [FromBody] EditCustomerRequestDto request)
+        {
+          
+            return Ok(await _service.UpdateCustomer(id, request));
+            
         }
     }
 }

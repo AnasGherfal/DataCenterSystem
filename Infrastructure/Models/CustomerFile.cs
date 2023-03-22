@@ -17,6 +17,6 @@ public class CustomerFile : BaseModel
 
     //----------------Relations
 
-    public Customer Customer { get; set; }= new Customer();
+    public Customer Customer { get; set; }
 
 }

@@ -10,5 +10,5 @@ public class Permission
     //note changes
     //--
     public virtual ICollection<User> Users { get; set; } = new List<User>();
-    public Entity Entity { get; set; } = new();
+    public Entity Entity { get; set; } 
 }

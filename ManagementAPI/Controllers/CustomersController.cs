@@ -23,5 +23,13 @@ namespace ManagementAPI.Controllers
             
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCustomers([FromQuery] FetchCustomersRequestDto filter) 
+        {
+            var result=await _service.GetAllCustomer(filter.PageSize,filter.PageNumber);
+            return Ok(result);
+             
+        }
     }
 }

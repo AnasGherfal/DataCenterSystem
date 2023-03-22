@@ -9,7 +9,7 @@ public class SubscriptionFile : BaseModel
 
     //--------------Relations
 
-    public Subscription Subscription { get; set; } = new Subscription();
+    public Subscription Subscription { get; set; }
 
 
 }

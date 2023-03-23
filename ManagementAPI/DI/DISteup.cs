@@ -12,7 +12,7 @@ public static class DISetup
     {
         services.AddCustomControllers();
         services.AddSwagger();
-        services.AddDbContext<DataCenterContext>(c => c.UseSqlServer(configuration.GetConnectionString("DataCenter")));
+        services.AddDbContext<DataCenterContext>(c => c.UseInMemoryDatabase(databaseName:"DataCenter"));
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddScoped<ICustomerService, CustomerService>();
         return services;

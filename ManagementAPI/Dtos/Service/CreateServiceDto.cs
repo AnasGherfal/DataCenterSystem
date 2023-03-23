@@ -15,13 +15,13 @@ namespace ManagementAPI.Dtos.Service
        
     }
 
-     public class CreateServiceDtoValidator : AbstractValidator<CreateServiceDto>
+    public class CreateServiceDtoValidator : AbstractValidator<CreateServiceDto>
     {
-        private readonly DataCenterContext _dbContext;
-
         public CreateServiceDtoValidator()
         {
             CascadeMode = CascadeMode.Stop;
+
+
 
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("يرجى اختيار خدمة");
@@ -46,7 +46,7 @@ namespace ManagementAPI.Dtos.Service
 
             RuleFor(x => x.Price)
                 .NotEmpty().WithMessage("price must be not null")
-                .GreaterThan(0);
+                .GreaterThan(0).WithMessage(" price must be digit");
 
                 
 
@@ -54,15 +54,7 @@ namespace ManagementAPI.Dtos.Service
 
         
        
-        private bool UniqueName(string name)
-        {
-            // ProjecteDataContext _db = new ProjecteDataContext();
-            DataCenterContext dbContext = _dbContext;
-            var category = dbContext.Services.Where(x => x.Name.ToLower() == name.ToLower()).SingleOrDefault();
-
-            if (category == null) return true;
-            return false;
-        }
+       
 
 
     }

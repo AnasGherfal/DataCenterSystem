@@ -14,7 +14,9 @@ builder.Services.AddSwagger();
 builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<ServiceServices>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddDbContext<DataCenterContext>(c => c.UseSqlServer(builder.Configuration.GetConnectionString("LTTDC")));
+//builder.Services.AddDbContext<DataCenterContext>(c => c.UseSqlServer(builder.Configuration.GetConnectionString("LTTDC")));
+builder.Services.AddDbContext<DataCenterContext>(c => c.UseInMemoryDatabase("ltt_inmemory_database"));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

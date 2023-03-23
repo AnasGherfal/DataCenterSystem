@@ -34,7 +34,7 @@ namespace Infrastructure.Migrations
                     Status = table.Column<short>(type: "smallint", nullable: false),
                     EmpId = table.Column<int>(type: "int", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
-                    CreatedById = table.Column<int>(type: "int", nullable: false)
+                    CreatedById = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

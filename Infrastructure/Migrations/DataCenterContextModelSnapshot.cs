@@ -572,7 +572,7 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CreatedById")
+                    b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
@@ -958,8 +958,7 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
                         .WithMany("UsersCreatedBy")
-                        .HasForeignKey("CreatedById")
-                        .IsRequired();
+                        .HasForeignKey("CreatedById");
 
                     b.Navigation("CreatedBy");
                 });

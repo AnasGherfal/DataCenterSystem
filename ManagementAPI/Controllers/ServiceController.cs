@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Dtos;
 using ManagementAPI.Dtos.Service;
+using Azure;
 
 namespace ManagementAPI.Controllers;
 
@@ -25,6 +26,12 @@ public class ServiceController : ControllerBase
 
 
     }
+    
+    [HttpGet]
+    public async Task<ActionResult> GetService([FromQuery]FetchServicesRequestDto fetchServicesRequestDto)
+    {
+        var get = await _service.GetAllService(fetchServicesRequestDto.PageNumber, fetchServicesRequestDto.PageSize);
+        return Ok(get);
 
-
+    }
 }

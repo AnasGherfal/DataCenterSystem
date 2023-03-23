@@ -1,4 +1,5 @@
 using Infrastructure;
+using Infrastructure.Models;
 using ManagementAPI.DI;
 using ManagementAPI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseSwagger(app.Environment.IsDevelopment());
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
 /*

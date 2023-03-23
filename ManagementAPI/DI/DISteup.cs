@@ -13,6 +13,14 @@ public static class DISetup
         services.AddCustomControllers();
         services.AddSwagger();
         services.AddDbContext<DataCenterContext>(c => c.UseInMemoryDatabase(databaseName:"DataCenter"));
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:5173");
+                });
+        });
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddScoped<ICustomerService, CustomerService>();
         return services;

@@ -42,4 +42,12 @@ public class ServiceController : ControllerBase
         return Ok(await _service.EditService(id,updateServiceDto));
 
     }
+
+    [HttpDelete]
+    public async Task<ActionResult> RemoveService(int id)
+    {
+
+        return Ok(await _service.RemoveService(id));
+
+    }
 }

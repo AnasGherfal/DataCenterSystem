@@ -5,6 +5,7 @@ using Shared.Dtos;
 using System.Net;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Common.Constants;
 using Azure.Core;
 using System;
 
@@ -35,6 +36,7 @@ public class ServiceServices
         newservice.CreatedOn = DateTime.Now;
         newservice.CreatedById = 3;
         newservice.Status = 1;
+
         await _dbContext.Services.AddAsync(newservice);
 
         await _dbContext.SaveChangesAsync();
@@ -48,9 +50,10 @@ public class ServiceServices
                                    .OrderBy(x => x.Id)
                                     select serv)
 */
-
-        var Service_Query = await _dbContext.Services
-.OrderBy(p => p.Id)
+        // Queryable.Status=  (short)GeneralStatus.Deleted
+        var Service_Query = await _dbContext.Services.Where(p => p.Status != 3)
+  
+        .OrderBy(p => p.Id)
         .Skip(pagesize * (pagenum - 1))
         .Take(pagesize)
         .ToListAsync();
@@ -64,7 +67,7 @@ public class ServiceServices
 
     }
 
-    public async Task<OperationResponse> EditService(int id,UpdateServiceDto updateServiceDto)
+    public async Task<OperationResponse> EditService(int id, UpdateServiceDto updateServiceDto)
     {
         if (updateServiceDto == null) return new OperationResponse()
         {
@@ -91,9 +94,31 @@ public class ServiceServices
         _mapper.Map(updateServiceDto, update_query);
         await _dbContext.SaveChangesAsync();
 
-        return new OperationResponse() { Msg = "ok edit" , StatusCode = HttpStatusCode.OK};
+        return new OperationResponse() { Msg = "ok edit", StatusCode = HttpStatusCode.OK };
 
-    } }
+    }
 
+    public async Task<OperationResponse> RemoveService(int id)
+    {
+        if (id<0)
+        {
+            return new OperationResponse() { StatusCode = HttpStatusCode.BadRequest, Msg = "erorr in enter id " };
+
+        }
+
+        var remove_serv = await _dbContext.Services.FirstOrDefaultAsync(a=>a.Id==id);
+
+        if (remove_serv == null) return new OperationResponse()
+        { StatusCode = HttpStatusCode.BadRequest, Msg = "thear is no service with this id " };
+
+        remove_serv.Status =(short)GeneralStatus.Deleted;
+        await _dbContext.SaveChangesAsync();
+
+        return new OperationResponse() {StatusCode=HttpStatusCode.OK,Msg="service is removed"};
+
+    }
+
+  
+}
 
 

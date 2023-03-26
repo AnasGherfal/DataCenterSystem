@@ -5,7 +5,7 @@ using ManagementAPI.Dtos.Customer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Shared.Constants;
+using Common.Constants;
 using Shared.Dtos;
 using System.Net;
 using System.Reflection.Metadata;
@@ -39,7 +39,7 @@ public class CustomerService:ICustomerService
     {
 
         var CustQuery = await (from Cust in _dbContext.Customers
-                               .OrderBy(x => x.Id) where Cust.Status != (short)Status.Deleted
+                               .OrderBy(x => x.Id) where Cust.Status != (short)GeneralStatus.Deleted
                                 select Cust)
                                .Skip(pgSize * (pgNum - 1))
                                .Take(pgSize)
@@ -90,7 +90,7 @@ public class CustomerService:ICustomerService
             StatusCode = HttpStatusCode.BadRequest };
         var Cust = await (from customer in _dbContext.Customers
                           where customer.Id == id
-                          && customer.Status == ((short)Status.Active)
+                          && customer.Status == ((short)GeneralStatus.Active)
                           select customer).FirstOrDefaultAsync();
 
         if (Cust == null)
@@ -99,18 +99,60 @@ public class CustomerService:ICustomerService
                 Msg = "عفوًا لا وجود لعميل بهذا الرقم",
                 StatusCode = HttpStatusCode.NotFound
             };
-        Cust.Status = (int)Status.Deleted;
+        Cust.Status = (short)GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new OperationResponse()
         {
-            Msg = "لقد تم حذف العميل:"+Cust.Name+"بنجاح!",
+            Msg = Cust.Name +" لقد تم حذف العميل: "+" بنجاح! ",
             StatusCode = HttpStatusCode.NotFound
         };
 
     }
-    public Task<CustomerResponseDto> GetCustomer(int id)
+    public async Task<OperationResponse> LockCustomer(int id)
     {
-        throw new NotImplementedException();
+        if (id is <= 0)
+            return new OperationResponse()
+            {
+                Msg = "الرجاء ادخال رقم عميل صحيح وموجود فعلًا",
+                StatusCode = HttpStatusCode.BadRequest
+            };
+
+        var Cust = await(from customer in _dbContext.Customers
+                         where customer.Id == id
+                         && customer.Status == ((short)GeneralStatus.Active)
+                         select customer).FirstOrDefaultAsync();
+
+        if (Cust == null)
+        {
+            var LockedCustomer = await (from customer in _dbContext.Customers
+                              where customer.Id == id
+                              && customer.Status == (short)GeneralStatus.LockedByUser
+                              select customer).FirstOrDefaultAsync();
+            if (LockedCustomer == null) 
+            {
+                return new OperationResponse()
+                {
+                    Msg = "عفوًا لا وجود لعميل بهذا الرقم",
+                    StatusCode = HttpStatusCode.NotFound
+                };
+            }
+
+            return new OperationResponse()
+            {
+                Msg = "عفوًا العميل مقفل مسبقًا !",
+                StatusCode = HttpStatusCode.NotFound
+            };
+
+        }
+        
+
+        Cust.Status = (short)GeneralStatus.LockedByUser;
+        await _dbContext.SaveChangesAsync();
+        return new OperationResponse()
+        {
+            Msg = Cust.Name + " لقد تم قفل العميل: " + " بنجاح! ",
+            StatusCode = HttpStatusCode.NotFound
+        };
     }
    
 }

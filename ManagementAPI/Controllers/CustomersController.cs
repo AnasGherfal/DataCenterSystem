@@ -43,5 +43,12 @@ namespace ManagementAPI.Controllers
         {
             return Ok(await _service.DeleteCustomer(id));
         }
+
+        [HttpPut("{id}/lock")]
+        public async Task<IActionResult> LockCustomer(int id)
+        {
+            return Ok( await _service.LockCustomer(id));
+
+        }
     }
 }

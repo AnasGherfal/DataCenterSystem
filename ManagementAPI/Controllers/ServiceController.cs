@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Shared.Dtos;
 using ManagementAPI.Dtos.Service;
 using Azure;
+using Azure.Core;
+using System.Net;
 
 namespace ManagementAPI.Controllers;
 
@@ -32,6 +34,12 @@ public class ServiceController : ControllerBase
     {
         var get = await _service.GetAllService(fetchServicesRequestDto.PageNumber, fetchServicesRequestDto.PageSize);
         return Ok(get);
+
+    }
+    [HttpPut]
+    public async Task<ActionResult> EditService(int id, UpdateServiceDto updateServiceDto)
+    {
+        return Ok(await _service.EditService(id,updateServiceDto));
 
     }
 }

@@ -36,12 +36,12 @@ public class ServiceServices
         newservice.CreatedById = 3;
         newservice.Status = 1;
         await _dbContext.Services.AddAsync(newservice);
-       
+
         await _dbContext.SaveChangesAsync();
         return new OperationResponse() { Msg = "ok", StatusCode = HttpStatusCode.OK };
     }
 
-    public async Task<FetchServicesResponseDto> GetAllService(int pagenum , int pagesize)
+    public async Task<FetchServicesResponseDto> GetAllService(int pagenum, int pagesize)
     {
         /*
         var Service_Query = await (from serv in _dbContext.Customers
@@ -58,11 +58,42 @@ public class ServiceServices
         var getservices = _mapper.Map<List<ServiceResponseDto>>(Service_Query);
         var totalCount = (from serv in Service_Query select serv).Count();
         var totalpages = (int)Math.Ceiling(totalCount / 25.00);
-        return new FetchServicesResponseDto() {Content = getservices,CurrentPage = pagenum,TotalPages = pagesize };
-        
-   
+        return new FetchServicesResponseDto() { Content = getservices, CurrentPage = pagenum, TotalPages = pagesize };
 
-    } 
 
-}
+
+    }
+
+    public async Task<OperationResponse> EditService(int id,UpdateServiceDto updateServiceDto)
+    {
+        if (updateServiceDto == null) return new OperationResponse()
+        {
+            Msg = "enter data",
+            StatusCode = HttpStatusCode.BadRequest,
+
+
+
+        };
+
+        var update_query = await (from s in _dbContext.Services
+                                  where s.Id == id
+                                  select s).SingleOrDefaultAsync();
+
+        if (update_query == null) return
+               new OperationResponse()
+               {
+                   Msg = "no service with this id stored in database",
+                   StatusCode = HttpStatusCode.BadRequest,
+
+
+               };
+
+        _mapper.Map(updateServiceDto, update_query);
+        await _dbContext.SaveChangesAsync();
+
+        return new OperationResponse() { Msg = "ok edit" , StatusCode = HttpStatusCode.OK};
+
+    } }
+
+
 

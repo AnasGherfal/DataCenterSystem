@@ -50,5 +50,10 @@ namespace ManagementAPI.Controllers
             return Ok( await _service.LockCustomer(id));
 
         }
+        [HttpPut("{id}/unlock")]
+        public async Task<IActionResult> UnlockCustomer(int id) 
+        {
+            return Ok(await _service.UnlockCustomer(id));
+        }
     }
 }

@@ -104,7 +104,7 @@ public class CustomerService:ICustomerService
         return new OperationResponse()
         {
             Msg = Cust.Name +" لقد تم حذف العميل: "+" بنجاح! ",
-            StatusCode = HttpStatusCode.NotFound
+            StatusCode = HttpStatusCode.OK
         };
 
     }
@@ -151,7 +151,50 @@ public class CustomerService:ICustomerService
         return new OperationResponse()
         {
             Msg = Cust.Name + " لقد تم قفل العميل: " + " بنجاح! ",
-            StatusCode = HttpStatusCode.NotFound
+            StatusCode = HttpStatusCode.OK
+        };
+    }
+
+    public async Task<OperationResponse> UnlockCustomer(int id)
+    {
+
+        if (id is <= 0)
+            return new OperationResponse()
+            {
+                Msg = "الرجاء ادخال رقم عميل صحيح وموجود فعلًا",
+                StatusCode = HttpStatusCode.BadRequest
+            };
+
+        var Cust = await (from customer in _dbContext.Customers
+                          where customer.Id == id
+                          && customer.Status == ((short)GeneralStatus.LockedByUser)
+                          select customer).FirstOrDefaultAsync();
+
+        if (Cust == null)
+        {
+            var ActiveCustomer = await (from customer in _dbContext.Customers
+                                        where customer.Id == id
+                                        && customer.Status == ((short)GeneralStatus.Active)
+                                        select customer).FirstOrDefaultAsync();
+            if (ActiveCustomer == null)
+                return new OperationResponse()
+                {
+                    Msg = "عفوًا لا وجود لعميل بهذا الرقم",
+                    StatusCode = HttpStatusCode.NotFound
+                };
+            return new OperationResponse()
+            {
+                Msg = "العميل ليس مقفلا يرجى التأكد من الرقم !",
+                StatusCode = HttpStatusCode.NotFound
+            };
+        }
+          Cust.Status = (short)GeneralStatus.Active;
+          await _dbContext.SaveChangesAsync();
+
+        return new OperationResponse()
+        {
+            Msg = "تم فتح القفل عن العميل  بنجاح !",
+            StatusCode = HttpStatusCode.OK
         };
     }
    

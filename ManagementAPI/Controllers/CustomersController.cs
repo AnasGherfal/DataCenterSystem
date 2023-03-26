@@ -38,5 +38,10 @@ namespace ManagementAPI.Controllers
             return Ok(await _service.UpdateCustomer(id, request));
             
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCustomer(int id)
+        {
+            return Ok(await _service.DeleteCustomer(id));
+        }
     }
 }

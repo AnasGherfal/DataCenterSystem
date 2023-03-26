@@ -12,7 +12,7 @@ public static class DISetup
     {
         services.AddCustomControllers();
         services.AddSwagger();
-        services.AddDbContext<DataCenterContext>(c => c.UseInMemoryDatabase(databaseName:"DataCenter"));
+        services.AddDbContext<DataCenterContext>(c => c.UseSqlServer(configuration.GetConnectionString("DataCenter")));
         services.AddCors(options =>
         {
             options.AddDefaultPolicy(

@@ -5,8 +5,10 @@ using ManagementAPI.Dtos.Customer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Shared.Constants;
 using Shared.Dtos;
 using System.Net;
+using System.Reflection.Metadata;
 
 namespace ManagementAPI.Services;
 
@@ -37,7 +39,7 @@ public class CustomerService:ICustomerService
     {
 
         var CustQuery = await (from Cust in _dbContext.Customers
-                               .OrderBy(x => x.Id)
+                               .OrderBy(x => x.Id) where Cust.Status != (short)Status.Deleted
                                 select Cust)
                                .Skip(pgSize * (pgNum - 1))
                                .Take(pgSize)
@@ -80,11 +82,33 @@ public class CustomerService:ICustomerService
         
         return new OperationResponse() { Msg ="Edited ",StatusCode = HttpStatusCode.OK};
         }
-    public Task<CustomerResponseDto> GetCustomer(int id)
+    public async Task<OperationResponse> DeleteCustomer(int id)
     {
-        throw new NotImplementedException();
+        if (id is <= 0 )
+            return new OperationResponse()
+        { Msg = "الرجاء ادخال رقم عميل صحيح وموجود فعلًا",
+            StatusCode = HttpStatusCode.BadRequest };
+        var Cust = await (from customer in _dbContext.Customers
+                          where customer.Id == id
+                          && customer.Status == ((short)Status.Active)
+                          select customer).FirstOrDefaultAsync();
+
+        if (Cust == null)
+            return new OperationResponse()
+            {
+                Msg = "عفوًا لا وجود لعميل بهذا الرقم",
+                StatusCode = HttpStatusCode.NotFound
+            };
+        Cust.Status = (int)Status.Deleted;
+        await _dbContext.SaveChangesAsync();
+        return new OperationResponse()
+        {
+            Msg = "لقد تم حذف العميل:"+Cust.Name+"بنجاح!",
+            StatusCode = HttpStatusCode.NotFound
+        };
+
     }
-    public Task<OperationResponse> DeleteCustomer(int id)
+    public Task<CustomerResponseDto> GetCustomer(int id)
     {
         throw new NotImplementedException();
     }

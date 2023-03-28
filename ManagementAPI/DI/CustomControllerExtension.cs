@@ -19,6 +19,7 @@ public static class CustomControllerExtension
             ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
             options.DisableDataAnnotationsValidation = true;
         });
+        serviceCollection.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         return serviceCollection;
     }
 }

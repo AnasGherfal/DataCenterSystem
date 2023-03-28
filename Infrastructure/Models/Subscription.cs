@@ -14,10 +14,8 @@ namespace Infrastructure.Models
         public Guid SubscriptionFileId { get; set; }
 
         //----------relations
-
-        public Service Service { get; set; } 
-        public Customer Customer { get; set; } 
-        
+        public Service Service { get; set; }
+        public Customer Customer { get; set; }
         public SubscriptionFile SubscriptionFile { get; set; } 
         public ICollection<Visit> Visits { get; set; } = new List<Visit>();
         public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();   

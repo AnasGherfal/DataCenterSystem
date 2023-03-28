@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DataCenterContext))]
-    [Migration("20230320122607_init")]
+    [Migration("20230322082355_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -575,7 +575,7 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CreatedById")
+                    b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
@@ -961,8 +961,7 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
                         .WithMany("UsersCreatedBy")
-                        .HasForeignKey("CreatedById")
-                        .IsRequired();
+                        .HasForeignKey("CreatedById");
 
                     b.Navigation("CreatedBy");
                 });

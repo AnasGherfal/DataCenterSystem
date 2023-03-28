@@ -1,26 +1,21 @@
-using Infrastructure;
-using Infrastructure.Models;
 using ManagementAPI.DI;
-using ManagementAPI.Services;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var useInMemoryDb = true;
 // Add services to the container.
+builder.Services.AddCustomControllers();
+builder.Services.AddSwagger();
+builder.Services.AddCustomCors();
+builder.Services.AddServices();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddPersistence(useInMemoryDb, builder.Configuration.GetConnectionString("Persistence")!);
 
-
-builder.Services.RegisterServices(builder.Configuration);
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
 app.UseSwagger(app.Environment.IsDevelopment());
 app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
-/*
-using var scope = app.Services.CreateScope();
-await using var dbContext = scope.ServiceProvider.GetRequiredService<DataCenterContext>();
-await dbContext.Database.MigrateAsync();*/
+app.UsePersistence(useInMemoryDb);
 app.Run();

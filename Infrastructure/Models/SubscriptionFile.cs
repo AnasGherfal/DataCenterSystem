@@ -6,10 +6,5 @@ public class SubscriptionFile : BaseModel
     public string FileName { get; set; } = string.Empty;
     public string FileType { get; set; } = string.Empty;
     public int SubscriptionId { get; set; }
-
-    //--------------Relations
-
     public Subscription Subscription { get; set; }
-
-
 }

@@ -10,11 +10,12 @@
         public int MonthlyVisits { get; set; }
         public decimal Price { get; set; }
         public short Status { get; set; }
-
+        
+        
 
         //------------Ralation
 
-        public ICollection<Subscription> Subscriptions { get; set; }=new List<Subscription>();
+        public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
 
     }

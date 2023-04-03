@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Common.Constants;
 using Azure.Core;
 using System;
+using ManagementAPI.Dtos.Subscriptions;
 
 namespace ManagementAPI.Services;
 
@@ -58,10 +59,10 @@ public class ServiceServices
         .Take(pagesize)
         .ToListAsync();
 
-        var getservices = _mapper.Map<List<ServiceResponseDto>>(Service_Query);
+        var result = _mapper.Map<List<ServiceResponseDto>>(Service_Query);
         var totalCount = (from serv in Service_Query select serv).Count();
         var totalpages = (int)Math.Ceiling(totalCount / 25.00);
-        return new FetchServicesResponseDto() { Content = getservices, CurrentPage = pagenum, TotalPages = pagesize };
+        return new FetchServicesResponseDto() { Content = result, CurrentPage = pagenum, TotalPages = pagesize };
 
 
 
@@ -90,6 +91,17 @@ public class ServiceServices
 
 
                };
+
+        if (update_query.Name != updateServiceDto.Name)
+        {
+            var NameValidet = await (from Cust in _dbContext.Services
+                                     where Cust.Name == updateServiceDto.Name
+                                     select Cust)
+                                             .SingleOrDefaultAsync();
+            if (NameValidet != null)
+                return new OperationResponse()
+                { Msg = "الاسم موجود مسبقًا", StatusCode = HttpStatusCode.BadRequest };
+        }
 
         _mapper.Map(updateServiceDto, update_query);
         await _dbContext.SaveChangesAsync();

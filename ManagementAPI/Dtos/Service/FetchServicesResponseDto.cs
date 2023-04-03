@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using ManagementAPI.Dtos.Subscriptions;
 
 namespace ManagementAPI.Dtos.Service;
 

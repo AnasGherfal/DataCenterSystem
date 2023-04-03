@@ -8,5 +8,7 @@ public static class ServicesExtension
     {
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<ServiceServices>();
+        services.AddScoped<SubscriptionService>();
+
     }
 }

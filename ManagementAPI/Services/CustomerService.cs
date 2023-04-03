@@ -23,6 +23,14 @@ public class CustomerService:ICustomerService
     
     public async Task<OperationResponse> CreateCustomer(CreateCustomerRequestDto request)
     {
+        if (await _dbContext.Customers.AnyAsync(p => p.Name.ToLower() == request.Name.ToLower()))
+        {
+            return new OperationResponse()
+            {
+                Msg = "thier is simellar name stored in database",
+                StatusCode = HttpStatusCode.BadRequest,
+            };
+        }
 
         var NewCustomer = _mapper.Map<Customer>(request);
         if (NewCustomer == null)
@@ -65,17 +73,27 @@ public class CustomerService:ICustomerService
 
         var OldCustomer = await (from Cust in _dbContext.Customers
                                  where Cust.Id == id 
-                                 && Cust.Name != request.Name
+                                 
                                  select Cust)
                                  .SingleOrDefaultAsync();
-        var NameValidet = await (from Cust in _dbContext.Customers
-                                 where Cust.Name == request.Name
-                                 select Cust)
-                                 .SingleOrDefaultAsync();
-
-        if (NameValidet != null)
+        if (OldCustomer == null)
             return new OperationResponse()
-            { Msg = "الاسم موجود مسبقًا", StatusCode = HttpStatusCode.BadRequest };
+            { Msg = " thears no customer with this id", StatusCode = HttpStatusCode.BadRequest };
+
+
+        if (OldCustomer.Name != request.Name)
+        {
+            var NameValidet = await (from Cust in _dbContext.Customers
+                                     where Cust.Name == request.Name
+                                     select Cust)
+                                             .SingleOrDefaultAsync();
+            if (NameValidet != null)
+                return new OperationResponse()
+                { Msg = "الاسم موجود مسبقًا", StatusCode = HttpStatusCode.BadRequest };
+        } 
+        
+
+       
 
         _mapper.Map(request, OldCustomer);
       await  _dbContext.SaveChangesAsync();

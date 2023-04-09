@@ -2,7 +2,7 @@
 using FluentValidation;
 
 namespace ManagementAPI.Dtos.Representive;
-public class UpdateRepresentiveRequestDto
+public class UpdateVisitRequestDto
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
@@ -10,7 +10,7 @@ public class UpdateRepresentiveRequestDto
     public string PhoneNo { get; set; } = string.Empty;
     public int CustomerId { get; set; }
 }
-public class EditRepresentiveValidator : AbstractValidator<UpdateRepresentiveRequestDto>
+public class EditRepresentiveValidator : AbstractValidator<UpdateVisitRequestDto>
 {
     public EditRepresentiveValidator()
     {

@@ -24,7 +24,7 @@ public class RepresentiveService : IRepresentiveService
         _dbContext = dbcontext;
         _mapper = mapper;
     }
-    public async Task<OperationResponse> Create(CreateRepresentiveRequestDto request)
+    public async Task<OperationResponse> Create(CreateVisitRequestDto request)
     {
         var NewRepresentive = _mapper.Map<Representive>(request);
         _dbContext.Representives.Add(NewRepresentive);
@@ -35,17 +35,17 @@ public class RepresentiveService : IRepresentiveService
             StatusCode = HttpStatusCode.OK
         };
     }
-    public async Task<FetchRepresentivesResponseDto> GetAll(FetchRepresentivesRequestDto request)
+    public async Task<FetchVisitResponseDto> GetAll(FetchVisitRequestDto request)
     {
         var repQuery = _dbContext.Representives
-                       .ProjectTo<RepresentiveResponseDto>(_mapper.ConfigurationProvider)
+                       .ProjectTo<VisitResponseDto>(_mapper.ConfigurationProvider)
                        .Where(p => p.Status != GeneralStatus.Deleted);
         var result = await repQuery.Skip(request.PageSize * (request.PageNumber - 1))
                                    .Take(request.PageSize)
                                    .ToListAsync();
         var totalCount = repQuery.Count();
         var totalpages = Math.Ceiling(totalCount / (double)request.PageSize);
-        return new FetchRepresentivesResponseDto()
+        return new FetchVisitResponseDto()
         {
             Content = result,
             CurrentPage = request.PageNumber,
@@ -146,7 +146,7 @@ public class RepresentiveService : IRepresentiveService
             };
     }
 
-    public async Task<OperationResponse> Update(int id, UpdateRepresentiveRequestDto request)
+    public async Task<OperationResponse> Update(int id, UpdateVisitRequestDto request)
     {
         if (id <= 0)
             return new OperationResponse()

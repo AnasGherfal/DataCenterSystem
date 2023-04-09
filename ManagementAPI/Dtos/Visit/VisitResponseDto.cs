@@ -2,9 +2,9 @@
 using ManagementAPI.Dtos.Customer;
 using Shared.Constants;
 
-namespace ManagementAPI.Dtos.Representive;
+namespace ManagementAPI.Dtos.Visit;
 
-public class RepresentiveResponseDto
+public class VisitResponseDto
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
@@ -13,5 +13,5 @@ public class RepresentiveResponseDto
     public string Email { get; set; } = string.Empty;
     public string PhoneNo { get; set; } = string.Empty;
     public GeneralStatus Status { get; set; }
-    public string CustomerName { get; set;}   
+    public IList<string> RepresentivesNames { get; set;}   
 }

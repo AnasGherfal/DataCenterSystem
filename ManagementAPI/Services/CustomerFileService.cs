@@ -25,6 +25,7 @@ public class CustomerFileService:ICustomerFileService
     public async Task<OperationResponse> Upload(CustomerFileRequestDto request) 
     {
         var file = request.File;
+        
         var data =await _dbContext.Customers.Where(p => p.Id == request.CustomerId).FirstOrDefaultAsync();
         if (data== null)
             return new OperationResponse() 

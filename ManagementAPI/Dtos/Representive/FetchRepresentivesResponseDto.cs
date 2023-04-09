@@ -2,7 +2,7 @@
 
 namespace ManagementAPI.Dtos.Representive;
 
-public class FetchRepresentivesResponseDto
+public class FetchVisitResponseDto
 {
     public int CurrentPage { get; set; }
     public int TotalPages { get; set; }

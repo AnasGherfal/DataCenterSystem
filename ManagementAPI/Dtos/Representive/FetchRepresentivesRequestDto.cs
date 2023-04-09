@@ -3,14 +3,14 @@ using ManagementAPI.Dtos.Customer;
 
 namespace ManagementAPI.Dtos.Representive;
 
-public class FetchRepresentivesRequestDto
+public class FetchVisitRequestDto
 {
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 25;
 
 }
 
-public class FetchRepresentiveRequestDtoValidator : AbstractValidator<FetchRepresentivesRequestDto>
+public class FetchRepresentiveRequestDtoValidator : AbstractValidator<FetchVisitRequestDto>
 {
     public FetchRepresentiveRequestDtoValidator()
     {

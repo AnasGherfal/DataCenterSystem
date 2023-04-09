@@ -10,14 +10,14 @@ public class RepresentiveProfileMapper : Profile
 {
     public RepresentiveProfileMapper()
     {
-        CreateMap<CreateRepresentiveRequestDto, Representive>()
+        CreateMap<CreateVisitRequestDto, Representive>()
            .ForMember(dest => dest.Id, opt => opt.Ignore())
            .ForMember(dest => dest.Status, opt => opt.MapFrom(x => (short)Status.Active))
            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.Now))
            .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1));
 
 
-        CreateMap<Representive, RepresentiveResponseDto>();
-        CreateMap<UpdateRepresentiveRequestDto, Representive>().ReverseMap();
+        CreateMap<Representive, VisitResponseDto>();
+        CreateMap<UpdateVisitRequestDto, Representive>().ReverseMap();
     }
 }

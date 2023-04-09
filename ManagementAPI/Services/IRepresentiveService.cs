@@ -6,10 +6,10 @@ namespace ManagementAPI.Services;
 
 public interface IRepresentiveService
 {
-    public Task<OperationResponse> Create(CreateRepresentiveRequestDto request);
-    public Task<FetchRepresentivesResponseDto> GetAll(FetchRepresentivesRequestDto request);
+    public Task<OperationResponse> Create(CreateVisitRequestDto request);
+    public Task<FetchVisitResponseDto> GetAll(FetchVisitRequestDto request);
     public Task<OperationResponse> Lock(int id);
     public Task<OperationResponse> Unlock(int id);
-    public Task<OperationResponse> Update(int id, UpdateRepresentiveRequestDto request);
+    public Task<OperationResponse> Update(int id, UpdateVisitRequestDto request);
     public Task<OperationResponse> Delete(int id);
 }

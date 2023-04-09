@@ -2,11 +2,16 @@
 
 public class CreateVisitRequestDto
 {
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-    public string IdentityNo { get; set; } = string.Empty;
-    public short IdentityType { get; set; }
-    public string Email { get; set; } = string.Empty;
-    public string PhoneNo { get; set; } = string.Empty;
-    public int CustomerId { get; set; }
+    public DateTime? ExpectedStartTime { get; set; }
+    public DateTime? ExpectedEndTime { get; set; }
+    public DateTime? StartTime { get; set; }
+    public DateTime? EndTime { get; set; }
+    public TimeSpan? TotalMin { get; set; }
+    public decimal Price { get; set; }
+    public string? Notes { get; set; }
+    //public short Status { get; set; }
+    public short VisitTypeId { get; set; }
+    //public int RepresentiveId { get; set; }
+    public int VisitShiftId { get; set; }
+    public int? InvoiceId { get; set; }
 }

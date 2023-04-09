@@ -1,8 +1,8 @@
 ﻿using ManagementAPI.Dtos.Customer;
 
-namespace ManagementAPI.Dtos.Representive;
+namespace ManagementAPI.Dtos.Visit;
 
-public class FetchRepresentivesResponseDto
+public class FetchVisitResponseDto
 {
     public int CurrentPage { get; set; }
     public int TotalPages { get; set; }

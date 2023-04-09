@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using ManagementAPI.Dtos.Customer;
 
-namespace ManagementAPI.Dtos.Representive;
+namespace ManagementAPI.Dtos.Visit;
 
 public class FetchVisitRequestDto
 {

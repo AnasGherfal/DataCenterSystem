@@ -1,6 +1,6 @@
 ﻿namespace ManagementAPI.Dtos.Visit;
 
-public class CreateVisitRequestDto
+public class CreateRepresentiveRequestDto
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;

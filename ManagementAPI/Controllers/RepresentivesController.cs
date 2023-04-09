@@ -20,7 +20,7 @@ public class RepresentivesController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateVisitRequestDto request)
+    public async Task<IActionResult> Create([FromBody] CreateRepresentiveRequestDto request)
     {
         var result = await _service.Create(request);
         if (result.StatusCode == System.Net.HttpStatusCode.OK)
@@ -29,7 +29,7 @@ public class RepresentivesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] FetchVisitRequestDto filter)
+    public async Task<IActionResult> GetAll([FromQuery] FetchRepresentiveRequestDto filter)
     {
      var result= await _service.GetAll(filter);
             return Ok(result);
@@ -63,7 +63,7 @@ public class RepresentivesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateVisitRequestDto request)
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateRepresentiveRequestDto request)
     {
         var result = await _service.Update(id, request);
         if (result.StatusCode == System.Net.HttpStatusCode.OK)

@@ -17,7 +17,7 @@ public class RepresentiveProfileMapper : Profile
            .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1));
 
 
-        CreateMap<Representive, VisitResponseDto>();
-        CreateMap<UpdateVisitRequestDto, Representive>().ReverseMap();
+        CreateMap<Representive, RepresentiveResponseDto>();
+        CreateMap<UpdateRepresentiveRequestDto, Representive>().ReverseMap();
     }
 }

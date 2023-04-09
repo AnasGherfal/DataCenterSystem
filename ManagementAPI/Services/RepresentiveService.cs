@@ -3,7 +3,7 @@ using AutoMapper.QueryableExtensions;
 using Common.Constants;
 using Infrastructure;
 using Infrastructure.Models;
-using ManagementAPI.Dtos.Customer;
+
 using ManagementAPI.Dtos.Representive;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +24,7 @@ public class RepresentiveService : IRepresentiveService
         _dbContext = dbcontext;
         _mapper = mapper;
     }
-    public async Task<OperationResponse> Create(CreateVisitRequestDto request)
+    public async Task<OperationResponse> Create(CreateRepresentiveRequestDto request)
     {
         var NewRepresentive = _mapper.Map<Representive>(request);
         _dbContext.Representives.Add(NewRepresentive);
@@ -35,17 +35,17 @@ public class RepresentiveService : IRepresentiveService
             StatusCode = HttpStatusCode.OK
         };
     }
-    public async Task<FetchVisitResponseDto> GetAll(FetchVisitRequestDto request)
+    public async Task<FetchRepresentiveResponseDto> GetAll(FetchRepresentiveRequestDto request)
     {
         var repQuery = _dbContext.Representives
-                       .ProjectTo<VisitResponseDto>(_mapper.ConfigurationProvider)
+                       .ProjectTo<RepresentiveResponseDto>(_mapper.ConfigurationProvider)
                        .Where(p => p.Status != GeneralStatus.Deleted);
         var result = await repQuery.Skip(request.PageSize * (request.PageNumber - 1))
                                    .Take(request.PageSize)
                                    .ToListAsync();
         var totalCount = repQuery.Count();
         var totalpages = Math.Ceiling(totalCount / (double)request.PageSize);
-        return new FetchVisitResponseDto()
+        return new FetchRepresentiveResponseDto()
         {
             Content = result,
             CurrentPage = request.PageNumber,
@@ -146,7 +146,7 @@ public class RepresentiveService : IRepresentiveService
             };
     }
 
-    public async Task<OperationResponse> Update(int id, UpdateVisitRequestDto request)
+    public async Task<OperationResponse> Update(int id, UpdateRepresentiveRequestDto request)
     {
         if (id <= 0)
             return new OperationResponse()

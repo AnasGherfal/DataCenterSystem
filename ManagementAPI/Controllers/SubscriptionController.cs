@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ManagementAPI.Dtos.Subscriptions;
+using Shared.Dtos;
 
 namespace ManagementAPI.Controllers
 {
@@ -28,6 +29,11 @@ namespace ManagementAPI.Controllers
 
             return Ok(await _subscriptionService.GetAllSubscription( pagenum, pagesize ));
 
+        }
+        [HttpPut]
+        public async Task<OperationResponse> Renew(int id)
+        {
+            return await _subscriptionService.Renew(id);
         }
     }
 }

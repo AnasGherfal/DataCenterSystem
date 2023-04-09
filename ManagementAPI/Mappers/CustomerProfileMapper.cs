@@ -9,11 +9,11 @@ public class CustomerProfileMapper : Profile
 {
     public CustomerProfileMapper() 
     {
-        CreateMap<CreateCustomerRequestDto, Customer>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore())
+        CreateMap<CreateCustomerRequestDto, Customer>();
+            /*.ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.Status, opt => opt.MapFrom(x => 1))
             .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.Now))
-            .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1));
+            .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1));*/
 
         CreateMap<Customer, CustomerResponseDto>();
         CreateMap<EditCustomerRequestDto, Customer>();

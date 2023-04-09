@@ -23,7 +23,8 @@ namespace ManagementAPI.Dtos.Subscriptions
 
             RuleFor(a => a.StartDate).NotEmpty().WithMessage("startdate must be not empty");
 
-            RuleFor(a => a.EndDate).NotEmpty().WithMessage("end date must be not empty");
+            RuleFor(a => a.EndDate).NotEmpty().WithMessage("end date must be not empty")
+                .GreaterThan(a=>a.StartDate).WithMessage("End date must be grater than start date");
 
             RuleFor(a => a.SubscriptionFileId).NotEmpty().WithMessage("file id must be not empty");
 

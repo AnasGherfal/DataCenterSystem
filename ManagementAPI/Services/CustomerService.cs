@@ -9,6 +9,7 @@ using Common.Constants;
 using Shared.Dtos;
 using System.Net;
 using System.Reflection.Metadata;
+using Infrastructure.Constants;
 
 namespace ManagementAPI.Services;
 public class CustomerService:ICustomerService
@@ -33,6 +34,9 @@ public class CustomerService:ICustomerService
         }
 
         var NewCustomer = _mapper.Map<Customer>(request);
+        NewCustomer.Status = GeneralStatus.Active;
+        NewCustomer.CreatedOn = DateTime.UtcNow;
+        NewCustomer.CreatedById = 3;
         if (NewCustomer == null)
             return new OperationResponse()
             { Msg = "طلبك غير صالح يرجى إدخال بيانات العميل", StatusCode = HttpStatusCode.BadRequest };
@@ -47,7 +51,7 @@ public class CustomerService:ICustomerService
     {
 
         var CustQuery = await (from Cust in _dbContext.Customers
-                               .OrderBy(x => x.Id) where Cust.Status != (short)GeneralStatus.Deleted
+                               .OrderBy(x => x.Id) where Cust.Status != GeneralStatus.Deleted
                                 select Cust)
                                .Skip(pgSize * (pgNum - 1))
                                .Take(pgSize)
@@ -108,7 +112,7 @@ public class CustomerService:ICustomerService
             StatusCode = HttpStatusCode.BadRequest };
         var Cust = await (from customer in _dbContext.Customers
                           where customer.Id == id
-                          && customer.Status == ((short)GeneralStatus.Active)
+                          && customer.Status == GeneralStatus.Active
                           select customer).FirstOrDefaultAsync();
 
         if (Cust == null)
@@ -117,7 +121,7 @@ public class CustomerService:ICustomerService
                 Msg = "عفوًا لا وجود لعميل بهذا الرقم",
                 StatusCode = HttpStatusCode.NotFound
             };
-        Cust.Status = (short)GeneralStatus.Deleted;
+        Cust.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new OperationResponse()
         {
@@ -137,14 +141,14 @@ public class CustomerService:ICustomerService
 
         var Cust = await(from customer in _dbContext.Customers
                          where customer.Id == id
-                         && customer.Status == ((short)GeneralStatus.Active)
+                         && customer.Status == GeneralStatus.Active
                          select customer).FirstOrDefaultAsync();
 
         if (Cust == null)
         {
             var LockedCustomer = await (from customer in _dbContext.Customers
                               where customer.Id == id
-                              && customer.Status == (short)GeneralStatus.LockedByUser
+                              && customer.Status == GeneralStatus.LockedByUser
                               select customer).FirstOrDefaultAsync();
             if (LockedCustomer == null) 
             {
@@ -164,7 +168,7 @@ public class CustomerService:ICustomerService
         }
         
 
-        Cust.Status = (short)GeneralStatus.LockedByUser;
+        Cust.Status = GeneralStatus.LockedByUser;
         await _dbContext.SaveChangesAsync();
         return new OperationResponse()
         {
@@ -185,14 +189,14 @@ public class CustomerService:ICustomerService
 
         var Cust = await (from customer in _dbContext.Customers
                           where customer.Id == id
-                          && customer.Status == ((short)GeneralStatus.LockedByUser)
+                          && customer.Status == GeneralStatus.LockedByUser
                           select customer).FirstOrDefaultAsync();
 
         if (Cust == null)
         {
             var ActiveCustomer = await (from customer in _dbContext.Customers
                                         where customer.Id == id
-                                        && customer.Status == ((short)GeneralStatus.Active)
+                                        && customer.Status == GeneralStatus.Active
                                         select customer).FirstOrDefaultAsync();
             if (ActiveCustomer == null)
                 return new OperationResponse()
@@ -206,7 +210,7 @@ public class CustomerService:ICustomerService
                 StatusCode = HttpStatusCode.NotFound
             };
         }
-          Cust.Status = (short)GeneralStatus.Active;
+          Cust.Status = GeneralStatus.Active;
           await _dbContext.SaveChangesAsync();
 
         return new OperationResponse()

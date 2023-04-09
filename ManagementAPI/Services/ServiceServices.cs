@@ -9,6 +9,7 @@ using Common.Constants;
 using Azure.Core;
 using System;
 using ManagementAPI.Dtos.Subscriptions;
+using Infrastructure.Constants;
 
 namespace ManagementAPI.Services;
 
@@ -22,10 +23,9 @@ public class ServiceServices
         _dbContext = dbContext;
         _mapper = mapper;
     }
-    public async Task<OperationResponse> CreateService(CreateServiceDto request)
+    public async Task<OperationResponse> Create(CreateServiceDto request)
     {
-        //todo: check if exist
-        if (await _dbContext.Services.AnyAsync(p => p.Name.ToLower() == request.Name.ToLower()))
+        if (await _dbContext.Services.AnyAsync(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted))
         {
             return new OperationResponse()
             {
@@ -33,104 +33,170 @@ public class ServiceServices
                 StatusCode = HttpStatusCode.BadRequest,
             };
         }
-        var newservice = _mapper.Map<Service>(request);
-        newservice.CreatedOn = DateTime.Now;
-        newservice.CreatedById = 3;
-        newservice.Status = 1;
-
-        await _dbContext.Services.AddAsync(newservice);
-
+        var data = _mapper.Map<Service>(request);
+        data.CreatedOn = DateTime.UtcNow;
+        //todo: replace with user id when added
+        data.CreatedById = 3;
+        data.Status =  GeneralStatus.Active;
+        await _dbContext.Services.AddAsync(data);
         await _dbContext.SaveChangesAsync();
         return new OperationResponse() { Msg = "ok", StatusCode = HttpStatusCode.OK };
     }
 
-    public async Task<FetchServicesResponseDto> GetAllService(int pagenum, int pagesize)
+    public async Task<FetchServicesResponseDto> GetAll(FetchServicesRequestDto request)
     {
-        /*
-        var Service_Query = await (from serv in _dbContext.Customers
-                                   .OrderBy(x => x.Id)
-                                    select serv)
-*/
-        // Queryable.Status=  (short)GeneralStatus.Deleted
-        var Service_Query = await _dbContext.Services.Where(p => p.Status != 3)
-  
-        .OrderBy(p => p.Id)
-        .Skip(pagesize * (pagenum - 1))
-        .Take(pagesize)
-        .ToListAsync();
-
-        var result = _mapper.Map<List<ServiceResponseDto>>(Service_Query);
-        var totalCount = (from serv in Service_Query select serv).Count();
-        var totalpages = (int)Math.Ceiling(totalCount / 25.00);
-        return new FetchServicesResponseDto() { Content = result, CurrentPage = pagenum, TotalPages = pagesize };
-
-
-
+        var query =  _dbContext.Services
+            .Where(p => p.Status != GeneralStatus.Deleted);
+        var queryResult = await query.OrderBy(p => p.Id)
+            .Skip(request.PageSize * (request.PageNumber - 1))
+            .Take(request.PageSize)
+            .ToListAsync();
+        var result = _mapper.Map<List<ServiceResponseDto>>(queryResult);
+        var totalCount = await query.CountAsync();
+        var totalpages = (int) Math.Ceiling(totalCount / (decimal) request.PageSize);
+        return new FetchServicesResponseDto() {
+            Content = result,
+            CurrentPage = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalPages = totalpages,
+        };
     }
 
-    public async Task<OperationResponse> EditService(int id, UpdateServiceDto updateServiceDto)
+    public async Task<OperationResponse> Update(int id, UpdateServiceDto request)
     {
-        if (updateServiceDto == null) return new OperationResponse()
+        var data = await _dbContext.Services.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted );
+        if (data == null) return
+                new OperationResponse()
+                {
+                    Msg = "no service with this number",
+                    StatusCode = HttpStatusCode.BadRequest
+                };
+        if (data.Status == GeneralStatus.LockedByUser) return
+                new OperationResponse()
+                {
+                    Msg = "this service is locked by user you cannot updated",
+                    StatusCode = HttpStatusCode.BadRequest
+                };
+        if (data.Name != request.Name)
         {
-            Msg = "enter data",
-            StatusCode = HttpStatusCode.BadRequest,
-
-
-
+            var isNotUnique = await _dbContext.Services.Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted).AnyAsync();
+            if (isNotUnique) return new OperationResponse()
+            { 
+                Msg = "الاسم موجود مسبقًا",
+                StatusCode = HttpStatusCode.BadRequest
+            };
+        }
+        _mapper.Map(request, data);
+        await _dbContext.SaveChangesAsync();
+        return new OperationResponse() 
+        {
+            Msg = "ok edit", 
+            StatusCode = HttpStatusCode.OK
         };
+    }
 
-        var update_query = await (from s in _dbContext.Services
-                                  where s.Id == id
-                                  select s).SingleOrDefaultAsync();
-
-        if (update_query == null) return
+    public async Task<OperationResponse> Remove(int id)
+    {
+        var data = await _dbContext.Services.FirstOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted);
+        if (data == null) return
+                new OperationResponse()
+        { StatusCode = HttpStatusCode.BadRequest,
+            Msg = "thear is no service with this id "
+        };
+        if (data.Status == GeneralStatus.LockedByUser) return
                new OperationResponse()
                {
-                   Msg = "no service with this id stored in database",
-                   StatusCode = HttpStatusCode.BadRequest,
-
-
+                   Msg = "this service is locked by user you cannot Removed",
+                   StatusCode = HttpStatusCode.BadRequest
                };
-
-        if (update_query.Name != updateServiceDto.Name)
-        {
-            var NameValidet = await (from Cust in _dbContext.Services
-                                     where Cust.Name == updateServiceDto.Name
-                                     select Cust)
-                                             .SingleOrDefaultAsync();
-            if (NameValidet != null)
-                return new OperationResponse()
-                { Msg = "الاسم موجود مسبقًا", StatusCode = HttpStatusCode.BadRequest };
-        }
-
-        _mapper.Map(updateServiceDto, update_query);
+        data.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
-
-        return new OperationResponse() { Msg = "ok edit", StatusCode = HttpStatusCode.OK };
+        return new OperationResponse() 
+        {
+            StatusCode=HttpStatusCode.OK,
+            Msg="service is removed"
+        };
 
     }
 
-    public async Task<OperationResponse> RemoveService(int id)
+  public async Task<OperationResponse> Lock(int id)
     {
-        if (id<0)
+        if (id < 0)
+            return new OperationResponse()
+            {
+                StatusCode = HttpStatusCode.BadRequest,
+                Msg = "incorrect service id"
+            };
+        var data = await _dbContext.Services.FirstOrDefaultAsync(b => b.Id == id && b.Status == GeneralStatus.Active);
+        if(data == null)
         {
-            return new OperationResponse() { StatusCode = HttpStatusCode.BadRequest, Msg = "erorr in enter id " };
+            var isLocked = await _dbContext.Services.Where(b => b.Id == id && b.Status == GeneralStatus.LockedByUser).AnyAsync();
+            if (!isLocked)
+            {
+                return new OperationResponse()
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Msg = "thear is no service with this number"
+                };
+
+            }
+            return new OperationResponse()
+            {
+                Msg = "عفوًا الخدمة مقفله مسبقًا !",
+                StatusCode = HttpStatusCode.NotFound
+            };
 
         }
-
-        var remove_serv = await _dbContext.Services.FirstOrDefaultAsync(a=>a.Id==id);
-
-        if (remove_serv == null) return new OperationResponse()
-        { StatusCode = HttpStatusCode.BadRequest, Msg = "thear is no service with this id " };
-
-        remove_serv.Status =(short)GeneralStatus.Deleted;
+        data.Status = GeneralStatus.LockedByUser;
         await _dbContext.SaveChangesAsync();
+        return new OperationResponse()
+        {
+            Msg = data.Name + " لقد تم قفل الخدمة: " + " بنجاح! ",
+            StatusCode = HttpStatusCode.OK
+        };
 
-        return new OperationResponse() {StatusCode=HttpStatusCode.OK,Msg="service is removed"};
+
 
     }
 
-  
+    public async Task<OperationResponse> Unlock(int id)
+    {
+        if (id < 0) return new OperationResponse()
+        {
+            StatusCode = HttpStatusCode.BadRequest,
+            Msg = "thear is no service with this number"
+        };
+        var data = await _dbContext.Services.FirstOrDefaultAsync(b => b.Id == id && b.Status == GeneralStatus.LockedByUser);
+        if (data == null)
+        {
+            var isUnLocked = await _dbContext.Services.Where(b => b.Id == id && b.Status == GeneralStatus.Active).AnyAsync();
+            if (!isUnLocked)
+            {
+                return new OperationResponse()
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Msg = "thear is no service with this number"
+                };
+
+            }
+            return new OperationResponse()
+            {
+                Msg = "عفوًا الخدمة غير مقفله مسبقًا !",
+                StatusCode = HttpStatusCode.NotFound
+            };
+
+        }
+        data.Status = GeneralStatus.Active;
+        await _dbContext.SaveChangesAsync();
+        return new OperationResponse()
+        {
+            Msg = data.Name + " تم فتح القفل عن الخدمة: " + " بنجاح! ",
+            StatusCode = HttpStatusCode.OK
+        };
+
+
+
+    }
 }
 
 

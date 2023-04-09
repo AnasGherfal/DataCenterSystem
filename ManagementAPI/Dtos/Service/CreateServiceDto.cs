@@ -24,7 +24,9 @@ namespace ManagementAPI.Dtos.Service
 
 
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("يرجى اختيار خدمة");
+                .NotEmpty().WithMessage("يرجى اختيار خدمة")
+                .MinimumLength(3).WithMessage("name must be minimum lenght is 3 letters")
+                .MaximumLength(100);
 
 
             RuleFor(x=>x.AmountOfPower)    
@@ -42,7 +44,7 @@ namespace ManagementAPI.Dtos.Service
 
             RuleFor(x => x.MonthlyVisits)
                 .NotEmpty().WithMessage("monthly visit must be not null")
-                .GreaterThan(0);
+                .GreaterThan(0).WithMessage(" monthly visitis must be digit"); ;
 
             RuleFor(x => x.Price)
                 .NotEmpty().WithMessage("price must be not null")

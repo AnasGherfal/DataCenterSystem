@@ -11,12 +11,6 @@ public class CustomerFile : BaseModel
     public short DocType  { get; set; }
     public int CustomerId { get; set; }
 
-    //[NotMapped]
-    //public IFormFile CustmoerFile { get; set; } = default!; 
-  
-
-    //----------------Relations
-
     public Customer Customer { get; set; }
 
 }

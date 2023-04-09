@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ManagementAPI.Dtos.Customer;
 
-public class EditCustomerRequestDto
+public class UpdateCustomerRequestDto
 {
     public string Name { get; set; } = string.Empty;
     public string? Address { get; set; }
@@ -11,7 +11,7 @@ public class EditCustomerRequestDto
     public string? SecondaryPhone { get; set; }
     public string Email { get; set; } = string.Empty;
 }
-public class EditCustomerDtoValidator : AbstractValidator<EditCustomerRequestDto>
+public class EditCustomerDtoValidator : AbstractValidator<UpdateCustomerRequestDto>
 {
     public EditCustomerDtoValidator()
     {

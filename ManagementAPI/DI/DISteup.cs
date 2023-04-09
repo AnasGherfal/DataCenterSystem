@@ -23,6 +23,8 @@ public static class DISetup
         });
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddScoped<ICustomerService, CustomerService>();
+        services.AddScoped<IRepresentiveService, RepresentiveService>();
+        services.AddScoped<ICustomerFileService, CustomerFileService>();
         return services;
     }
 

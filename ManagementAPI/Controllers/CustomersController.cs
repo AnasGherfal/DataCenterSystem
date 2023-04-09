@@ -17,43 +17,54 @@ namespace ManagementAPI.Controllers
             _service = service;
         }
         [HttpPost]
-        public async Task<OperationResponse> CreateCustomer([FromBody]CreateCustomerRequestDto request)
+        public async Task<IActionResult> Create([FromBody]CreateCustomerRequestDto request)
         {
-            return await _service.CreateCustomer(request);
-            
+            var result = await _service.Create(request);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+                return Ok(result.Msg);
+            return BadRequest(result.Msg);
 
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCustomers([FromQuery] FetchCustomersRequestDto filter) 
+        public async Task<IActionResult> GetAll([FromQuery] FetchCustomersRequestDto filter) 
         {
-            var result=await _service.GetAllCustomer(filter.PageSize,filter.PageNumber);
+            var result=await _service.GetAll(filter);
             return Ok(result);
              
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditCustomer(int id, [FromBody] EditCustomerRequestDto request)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateCustomerRequestDto request)
         {
-          
-            return Ok(await _service.UpdateCustomer(id, request));
-            
+            var result = await _service.Update(id, request);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)  
+                  return Ok(result.Msg); 
+            return BadRequest(result.Msg);
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCustomer(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            return Ok(await _service.DeleteCustomer(id));
+            var result = await _service.Delete(id);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+                return Ok(result.Msg);
+            return BadRequest(result.Msg);
         }
 
         [HttpPut("{id}/lock")]
-        public async Task<IActionResult> LockCustomer(int id)
+        public async Task<IActionResult> Lock(int id)
         {
-            return Ok( await _service.LockCustomer(id));
-
+            var result = await _service.Lock(id);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+                return Ok(result.Msg);
+            return BadRequest(result.Msg);
         }
         [HttpPut("{id}/unlock")]
-        public async Task<IActionResult> UnlockCustomer(int id) 
+        public async Task<IActionResult> Unlock(int id) 
         {
-            return Ok(await _service.UnlockCustomer(id));
+            var result = await _service.Unlock(id);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+                return Ok(result.Msg);
+            return BadRequest(result.Msg);
         }
     }
 }

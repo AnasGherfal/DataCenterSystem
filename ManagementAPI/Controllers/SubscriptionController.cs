@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ManagementAPI.Dtos.Subscriptions;
+using ManagementAPI.Dtos.File;
 using Shared.Dtos;
 
 namespace ManagementAPI.Controllers
@@ -14,26 +15,31 @@ namespace ManagementAPI.Controllers
         public SubscriptionController(SubscriptionService subscriptionService)
         {
             _subscriptionService = subscriptionService;
-            
+
         }
         [HttpPost]
-        public async Task<ActionResult> CreateSubscription([FromBody]CreateSubscriptionDto request)
+        public async Task<ActionResult> CreateSubscription([FromBody] CreateSubscriptionDto request)
         {
             return Ok(await _subscriptionService.CreateSubscription(request));
 
 
         }
         [HttpGet]
-        public async Task<ActionResult> GetAllSubscription([FromQuery]int pagenum,int pagesize )
+        public async Task<ActionResult> GetAllSubscription([FromQuery] int pagenum, int pagesize)
         {
 
-            return Ok(await _subscriptionService.GetAllSubscription( pagenum, pagesize ));
+            return Ok(await _subscriptionService.GetAllSubscription(pagenum, pagesize));
 
         }
         [HttpPut]
         public async Task<OperationResponse> Renew(int id)
         {
             return await _subscriptionService.Renew(id);
+        }
+        [HttpPost("file")]
+        public async Task<OperationResponse> UploaddFile([FromForm]FileDto file,CancellationToken cancellationToken)
+        {
+            return await _subscriptionService.UploadFile(file);
         }
     }
 }

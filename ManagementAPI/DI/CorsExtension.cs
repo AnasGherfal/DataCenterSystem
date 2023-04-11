@@ -9,7 +9,9 @@ public static class CorsExtension
             options.AddDefaultPolicy(
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:5173");
+                    builder.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
                 });
         });
     }

@@ -11,6 +11,4 @@ public interface ICustomerService
     public Task<OperationResponse> Unlock(int id);
     public Task<OperationResponse> Update(int id , UpdateCustomerRequestDto request);
     public Task<OperationResponse> Delete(int id);
-
-    
 }

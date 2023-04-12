@@ -1,12 +1,12 @@
-﻿namespace Infrastructure.Models;
+﻿namespace ManagementAPI.Dtos.VisitTimeShift;
 
-public class VisitTimeShift : BaseModel
+public class VisitTimeShiftResponseDto
 {
-    public int Id{ get; set; }
+    public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public decimal PriceForFirstHour { get; set; }
     public decimal PriceForRemainingHour { get; set; }
     public TimeSpan StartTime { get; set; }
     public TimeSpan EndTime { get; set; }
-    public GeneralStatus Status { get; set; }
+    public short Status { get; set; }
 }

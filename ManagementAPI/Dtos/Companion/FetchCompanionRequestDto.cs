@@ -1,22 +1,23 @@
-﻿using FluentValidation;
-using ManagementAPI.Dtos.Customer;
+﻿
+using FluentValidation;
 
-namespace ManagementAPI.Dtos.Representive;
+namespace ManagementAPI.Dtos.Companion;
 
-public class FetchRepresentiveRequestDto
+public class FetchCompanionRequestDto
 {
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 25;
+    public int VisitId { get; set; }
 
 }
 
-public class FetchRepresentiveRequestDtoValidator : AbstractValidator<FetchRepresentiveRequestDto>
+public class FetchCompanionRequestDtoValidator : AbstractValidator<FetchCompanionRequestDto>
 {
-    public FetchRepresentiveRequestDtoValidator()
+    public FetchCompanionRequestDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;
 
-        
+        RuleFor(x => x.VisitId).NotEmpty().WithMessage("عذرًا رقم الزيارة الذي قمت بإدخاله غير صالح");
         // PageNumber: Must be number, not less than 1.
 
         RuleFor(x => x.PageNumber).GreaterThanOrEqualTo(1);
@@ -27,5 +28,5 @@ public class FetchRepresentiveRequestDtoValidator : AbstractValidator<FetchRepre
                                 .LessThanOrEqualTo(50);
 
     }
-
 }
+

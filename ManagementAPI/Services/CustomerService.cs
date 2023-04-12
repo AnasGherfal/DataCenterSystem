@@ -68,21 +68,21 @@ public class CustomerService:ICustomerService
         };
     }
     public async Task<OperationResponse> Update(int id, UpdateCustomerRequestDto request)
-      {
-         if (id < 1)
-         return new OperationResponse() 
-         {
-           Msg = "! يرجى ادخال رقم عميل صحيح", 
-           StatusCode = HttpStatusCode.BadRequest 
-         };
+    {
+        if (id < 1)
+            return new OperationResponse()
+            {
+                Msg = "! يرجى ادخال رقم عميل صحيح",
+                StatusCode = HttpStatusCode.BadRequest
+            };
         var data = await _dbContext.Customers
                          .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
                          .FirstOrDefaultAsync();
-        if(data == null)
+        if (data == null)
             return new OperationResponse()
-            { 
+            {
                 Msg = " يرجى التأكد من صحة رقم العميل",
-                StatusCode = HttpStatusCode.BadRequest 
+                StatusCode = HttpStatusCode.BadRequest
             };
         if (data.Name != request.Name)
         {
@@ -96,14 +96,14 @@ public class CustomerService:ICustomerService
                     StatusCode = HttpStatusCode.BadRequest
                 };
         }
-       _mapper.Map(request, data);
-       await  _dbContext.SaveChangesAsync();
-        return new OperationResponse() 
-        { 
-          Msg ="! تم تعديل العميل بنجاح",
-          StatusCode = HttpStatusCode.OK
+        _mapper.Map(request, data);
+        await _dbContext.SaveChangesAsync();
+        return new OperationResponse()
+        {
+            Msg = "! تم تعديل العميل بنجاح",
+            StatusCode = HttpStatusCode.OK
         };
-        }
+    }
     public async Task<OperationResponse> Delete(int id)
     {
         if (id < 1)

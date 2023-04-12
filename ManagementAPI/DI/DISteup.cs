@@ -12,7 +12,7 @@ public static class DISetup
     {
         services.AddCustomControllers();
         services.AddSwagger();
-        services.AddDbContext<DataCenterContext>(c => c.UseSqlServer(configuration.GetConnectionString("DataCenter")));
+        services.AddDbContext<DataCenterContext>(c => c.UseInMemoryDatabase(databaseName:"DataCenter"));
         services.AddCors(options =>
         {
             options.AddDefaultPolicy(
@@ -25,6 +25,9 @@ public static class DISetup
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IRepresentiveService, RepresentiveService>();
         services.AddScoped<ICustomerFileService, CustomerFileService>();
+        services.AddScoped<IVisitService, VisitService>();
+        services.AddScoped<IVisitTimeShiftService, VisitTimeShiftService>();
+        services.AddScoped<ICompanionService, CompanionService>();
         return services;
     }
 

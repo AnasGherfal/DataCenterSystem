@@ -1,11 +1,18 @@
-﻿namespace ManagementAPI.DI;
+﻿using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi.Models;
+
+namespace ManagementAPI.DI;
 
 public static class SwaggerExtension
 {
     public static void AddSwagger(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddEndpointsApiExplorer();
-        serviceCollection.AddSwaggerGen();
+        serviceCollection.AddSwaggerGen(c => c.MapType<TimeSpan>(() => new OpenApiSchema
+        {
+            Type = "string",
+            Example = new OpenApiString("00:00:00")
+        }));
     }
     
     

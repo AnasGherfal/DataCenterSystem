@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using ManagementAPI.Dtos.Customer;
 
 namespace ManagementAPI.Dtos.Visit;
 
@@ -7,7 +6,6 @@ public class FetchVisitRequestDto
 {
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 25;
-
 }
 
 public class FetchRepresentiveRequestDtoValidator : AbstractValidator<FetchVisitRequestDto>

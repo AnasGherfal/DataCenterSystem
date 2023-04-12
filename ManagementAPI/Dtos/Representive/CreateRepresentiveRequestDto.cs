@@ -1,4 +1,4 @@
-﻿namespace ManagementAPI.Dtos.Visit;
+﻿namespace ManagementAPI.Dtos.Representive;
 
 public class CreateRepresentiveRequestDto
 {

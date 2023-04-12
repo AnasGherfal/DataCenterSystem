@@ -8,7 +8,6 @@ public class SubscriptionFile : BaseModel
     public int SubscriptionId { get; set; }
 
     //--------------Relations
-
     public Subscription Subscription { get; set; }
 
 

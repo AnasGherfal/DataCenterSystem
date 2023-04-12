@@ -1,17 +1,19 @@
-﻿using Infrastructure.Models;
-using ManagementAPI.Dtos.Customer;
-using Shared.Constants;
+﻿using Shared.Constants;
 
 namespace ManagementAPI.Dtos.Visit;
 
 public class VisitResponseDto
 {
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-    public string IdentityNo { get; set; } = string.Empty;
-    public short IdentityType { get; set; }
-    public string Email { get; set; } = string.Empty;
-    public string PhoneNo { get; set; } = string.Empty;
-    public GeneralStatus Status { get; set; }
-    public IList<string> RepresentivesNames { get; set;}   
+    public DateTime? StartTime { get; set; }
+    public DateTime? EndTime { get; set; }
+    public TimeSpan? TotalMin { get; set; }
+    public decimal Price { get; set; }
+    public string? Notes { get; set; }
+    public string VisitShift { get; set; }
+    public string  CustomerName { get; set; }
+    public IList<string> RepresentivesNames { get; set; }
+    public IList<string> CompanionsNames { get; set; }
+    public string VisitType { get; set; }
+    public int? InvoiceId { get; set; }
+    
 }

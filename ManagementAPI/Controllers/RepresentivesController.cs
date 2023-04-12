@@ -20,54 +20,39 @@ public class RepresentivesController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateRepresentiveRequestDto request)
+    public async Task<OperationResponse> Create([FromBody] CreateRepresentiveRequestDto request)
     {
-        var result = await _service.Create(request);
-        if (result.StatusCode == System.Net.HttpStatusCode.OK)
-            return Ok(result.Msg);
-        return BadRequest(result.Msg);
+        return await _service.Create(request);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] FetchRepresentiveRequestDto filter)
+    public async Task<FetchRepresentiveResponseDto> GetAll([FromQuery] FetchRepresentiveRequestDto filter)
     {
-     var result= await _service.GetAll(filter);
-            return Ok(result);
-       
+        return await _service.GetAll(filter);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<OperationResponse> Delete(int id)
     {
-        var result = await _service.Delete(id);
-        if(result.StatusCode == System.Net.HttpStatusCode.OK)
-            return Ok(result.Msg);
-        return BadRequest(result.Msg);
+       return await _service.Delete(id);
     }
 
     [HttpPut("{id}/lock")]
-    public async Task<IActionResult> Lock(int id)
+    public async Task<OperationResponse> Lock(int id)
     {
-        var result = await _service.Lock(id);
-        if (result.StatusCode == System.Net.HttpStatusCode.OK)
-            return Ok(result.Msg);
-        return BadRequest(result.Msg);
+        return await _service.Lock(id);
     }
     [HttpPut("{id}/Unlock")]
-    public async Task<IActionResult> Unlock(int id)
+    public async Task<OperationResponse> Unlock(int id)
     {
-        var result = await _service.Unlock(id);
-        if (result.StatusCode == System.Net.HttpStatusCode.OK)
-            return Ok(result.Msg);
-        return BadRequest(result.Msg);
+        return await _service.Unlock(id);
+       
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateRepresentiveRequestDto request)
+    public async Task<OperationResponse> Update(int id, [FromBody] UpdateRepresentiveRequestDto request)
     {
-        var result = await _service.Update(id, request);
-        if (result.StatusCode == System.Net.HttpStatusCode.OK)
-            return Ok(result.Msg);
-        return BadRequest(result.Msg);
+        return await _service.Update(id, request);
+        
     }
 }

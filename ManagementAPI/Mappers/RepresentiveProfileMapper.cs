@@ -10,7 +10,7 @@ public class RepresentiveProfileMapper : Profile
 {
     public RepresentiveProfileMapper()
     {
-        CreateMap<CreateVisitRequestDto, Representive>()
+        CreateMap<CreateRepresentiveRequestDto, Representive>()
            .ForMember(dest => dest.Id, opt => opt.Ignore())
            .ForMember(dest => dest.Status, opt => opt.MapFrom(x => (short)Status.Active))
            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.Now))

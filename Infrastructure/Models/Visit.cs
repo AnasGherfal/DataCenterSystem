@@ -10,10 +10,9 @@ public class Visit : BaseModel
     public TimeSpan? TotalMin { get; set; }
     public decimal Price { get; set; }
     public string? Notes { get; set; } 
-    //public short Status { get; set; }
     public short VisitTypeId { get; set; }
-    //public int RepresentiveId { get; set; }
-    public int VisitShiftId { get; set; }
+    public int SubscriptionId { get; set; }
+    public int TimeShiftId { get; set; }
     public int? InvoiceId { get; set; }
 
 
@@ -23,8 +22,6 @@ public class Visit : BaseModel
     public ICollection<Companion> Companions { get; set; }=new List<Companion>();
     public Invoice? Invoice { get; set; }
     public ICollection<Representive> Representives { get; set; } = new List<Representive>();
-    
-   // public ICollection<RepresentiveVisit> RepresentiveVisits { get; set; } = new List<RepresentiveVisit>();
     public VisitTimeShift TimeShift { get; set; } 
 
 }

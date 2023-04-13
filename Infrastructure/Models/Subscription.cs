@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Infrastructure.Constants;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Infrastructure.Models
 {
@@ -9,9 +10,9 @@ namespace Infrastructure.Models
         public int CustomerId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public short Status { get; set; }
+        public GeneralStatus Status { get; set; }
         public decimal TotalPrice { get; set; }
-        public Guid SubscriptionFileId { get; set; }
+        public Guid? SubscriptionFileId { get; set; }
 
         //----------relations
         public Service Service { get; set; }

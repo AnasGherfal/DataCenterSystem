@@ -26,7 +26,8 @@ public class CreateSubscriptionDtoValidator : AbstractValidator<CreateSubscripti
         RuleFor(a => a.EndDate).NotEmpty().WithMessage("end date must be not empty")
             .GreaterThan(a=>a.StartDate).WithMessage("End date must be grater than start date");
 
-        RuleFor(a => a.SubscriptionFileId).NotEmpty().WithMessage("file id must be not empty");
+        RuleFor(a => a.SubscriptionFileId);
+            //.NotEmpty().WithMessage("file id must be not empty");
 
 
 

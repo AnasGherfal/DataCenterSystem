@@ -24,7 +24,12 @@ public class ServiceController : ControllerBase
     [HttpPost]
     public async Task<OperationResponse> Create([FromBody]CreateServiceDto request)
     {
-        return await _service.Create(request);
+        var result = await _service.Create(request);
+        switch(result.StatusCode) {
+            case HttpStatusCode.OK: return result;
+            case HttpStatusCode.BadRequest: return new OperationResponse() { StatusCode = HttpStatusCode.BadRequest};
+            default: return result;
+        }
     }
     
     [HttpGet]

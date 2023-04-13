@@ -37,9 +37,19 @@ namespace ManagementAPI.Controllers
             return await _subscriptionService.Renew(id);
         }
         [HttpPost("file")]
-        public async Task<OperationResponse> UploaddFile([FromForm]FileDto file,CancellationToken cancellationToken)
+        public async Task<OperationResponse> UploaddFile([FromForm]FileDto file,int id)
         {
-            return await _subscriptionService.UploadFile(file);
+            return await _subscriptionService.UploadFile(id,file);
+        }
+        [HttpGet("Subscription File")]
+        public async Task<ActionResult> GetAllFile([FromQuery]FetchSubscriptionRequestDto request)
+        {
+            return Ok(await _subscriptionService.GetFile(request));
+        }
+        [HttpGet("id")]
+        public async Task<SubscriptionFileResponsDto> GetFileById([FromQuery]int subsId)
+        {
+            return await _subscriptionService.GetFileById(subsId);
         }
     }
 }

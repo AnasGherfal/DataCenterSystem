@@ -6,6 +6,6 @@ namespace ManagementAPI.Dtos.Subscriptions
     {
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
-        public IList<SubscriptionResponseDto> Content { get; set; }
+        public IList<SubscriptionRsponseDto> Content { get; set; }
     }
 }

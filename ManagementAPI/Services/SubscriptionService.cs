@@ -81,6 +81,15 @@ public class SubscriptionService
             StatusCode = HttpStatusCode.BadRequest,
             Msg = "no subscription with this number "
         };
+        if(data.Status == GeneralStatus.LockedByUser)
+        {
+            return new OperationResponse()
+            {
+                StatusCode = HttpStatusCode.BadRequest,
+                Msg = "subsciption is locked by user you cannot renew "
+
+            };
+        }
         var datetimenow = DateTime.UtcNow;
         var isExpired = datetimenow.CompareTo(data.EndDate);
         if (datetimenow > data.EndDate)
@@ -267,6 +276,34 @@ public class SubscriptionService
 
 
     }
+    public async Task<OperationResponse> Remove(int id)
+    {
+        if (id < 0) return new OperationResponse()
+        {
+            StatusCode = HttpStatusCode.BadRequest,
+            Msg = "incorrect Subscription id"
+        };
+        var data = await _dbContext.Subscriptions.FirstOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted);
+        if (data == null) return
+                new OperationResponse()
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Msg = "thear is no subscription with this id "
+                };
+        if (data.Status == GeneralStatus.LockedByUser) return
+               new OperationResponse()
+               {
+                   Msg = "this subscription is locked by user you cannot Removed",
+                   StatusCode = HttpStatusCode.BadRequest
+               };
+        data.Status = GeneralStatus.Deleted;
+        await _dbContext.SaveChangesAsync();
+        return new OperationResponse()
+        {
+            StatusCode = HttpStatusCode.OK,
+            Msg = "subscription is removed"
+        };
 
+    }
 }
  

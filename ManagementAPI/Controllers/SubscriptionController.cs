@@ -31,7 +31,7 @@ namespace ManagementAPI.Controllers
             return Ok(await _subscriptionService.GetAllSubscription(pagenum, pagesize));
 
         }
-        [HttpPut]
+        [HttpPut("Renew")]
         public async Task<OperationResponse> Renew(int id)
         {
             return await _subscriptionService.Renew(id);
@@ -50,6 +50,21 @@ namespace ManagementAPI.Controllers
         public async Task<SubscriptionFileResponsDto> GetFileById([FromQuery]int subsId)
         {
             return await _subscriptionService.GetFileById(subsId);
+        }
+        [HttpPut("lock")]
+        public async Task<OperationResponse> Lock(int id)
+        {
+            return await _subscriptionService.Lock(id);
+        }
+        [HttpPut("unlock")]
+        public async Task<OperationResponse> Unlock(int id)
+        {
+            return await _subscriptionService.Unlock(id);
+        }
+        [HttpDelete]
+        public async Task<OperationResponse> Remove(int id)
+        {
+            return await _subscriptionService.Remove(id);
         }
     }
 }

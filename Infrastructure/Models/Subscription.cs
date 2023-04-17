@@ -11,7 +11,7 @@ namespace Infrastructure.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public GeneralStatus Status { get; set; }
-        public decimal TotalPrice { get; set; }
+        public decimal? TotalPrice { get; set; }
         public Guid? SubscriptionFileId { get; set; }
 
         //----------relations

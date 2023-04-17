@@ -188,10 +188,10 @@ public class SubscriptionService
                 TotalPages = totalpages,
             };
         }
-    public async Task<SubscriptionFileResponsDto> GetFileById(int subsId)
+    public async Task<SubscriptionFileResponsDto> GetFileBySubscriptionId(int id)
     {
         
-        var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(a => a.Id == subsId);
+        var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(a => a.Id == id);
        
         var fileId = data.SubscriptionFileId;
         var fileData = await _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.Id == fileId);

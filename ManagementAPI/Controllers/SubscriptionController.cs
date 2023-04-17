@@ -46,17 +46,17 @@ namespace ManagementAPI.Controllers
         {
             return Ok(await _subscriptionService.GetFile(request));
         }
-        [HttpGet("id")]
-        public async Task<SubscriptionFileResponsDto> GetFileById([FromQuery]int subsId)
+        [HttpGet("{id}")]
+        public async Task<SubscriptionFileResponsDto> GetFileBySubscriptionId([FromQuery]int id)
         {
-            return await _subscriptionService.GetFileById(subsId);
+            return await _subscriptionService.GetFileBySubscriptionId(id);
         }
-        [HttpPut("lock")]
+        [HttpPut("{id}/lock")]
         public async Task<OperationResponse> Lock(int id)
         {
             return await _subscriptionService.Lock(id);
         }
-        [HttpPut("unlock")]
+        [HttpPut("{id}/unlock")]
         public async Task<OperationResponse> Unlock(int id)
         {
             return await _subscriptionService.Unlock(id);

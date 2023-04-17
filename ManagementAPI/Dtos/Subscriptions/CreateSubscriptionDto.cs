@@ -8,7 +8,9 @@ public class CreateSubscriptionDto
     public int CustomerId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public Guid SubscriptionFileId { get; set; }
+    public Guid?  SubscriptionFileId { get; set; }
+
+    public decimal? TotalPrice { get; set; }
 }
 public class CreateSubscriptionDtoValidator : AbstractValidator<CreateSubscriptionDto>
 {
@@ -26,8 +28,6 @@ public class CreateSubscriptionDtoValidator : AbstractValidator<CreateSubscripti
         RuleFor(a => a.EndDate).NotEmpty().WithMessage("end date must be not empty")
             .GreaterThan(a=>a.StartDate).WithMessage("End date must be grater than start date");
 
-        RuleFor(a => a.SubscriptionFileId);
-            //.NotEmpty().WithMessage("file id must be not empty");
 
 
 

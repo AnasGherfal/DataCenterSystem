@@ -11,10 +11,10 @@ namespace Infrastructure.Models
         public DateTime EndDate { get; set; }
         public short Status { get; set; }
         public decimal TotalPrice { get; set; }
-        public Guid SubscriptionFileId { get; set; }
+        public int SubscriptionFileId { get; set; }
 
         //----------relations
-        public Service Service { get; set; }
+        public Service Service { get; set; } 
         public Customer Customer { get; set; }
         public SubscriptionFile SubscriptionFile { get; set; } 
         public ICollection<Visit> Visits { get; set; } = new List<Visit>();

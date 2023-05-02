@@ -10,7 +10,7 @@
         public short IdentityType { get; set; }
         public string Email { get; set; } = string.Empty;
         public string PhoneNo { get; set; } = string.Empty;
-        public short Status { get; set; }
+        public GeneralStatus Status { get; set; }
         public int CustomerId { get; set; }
 
         //--------relation

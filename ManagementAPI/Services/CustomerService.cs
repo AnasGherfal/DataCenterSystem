@@ -9,6 +9,11 @@ using Common.Constants;
 using Shared.Dtos;
 using System.Net;
 using System.Reflection.Metadata;
+using Azure.Core;
+using System.Linq;
+using AutoMapper.QueryableExtensions;
+using Newtonsoft.Json.Linq;
+using Shared.Constants;
 
 namespace ManagementAPI.Services;
 public class CustomerService:ICustomerService
@@ -20,95 +25,112 @@ public class CustomerService:ICustomerService
         _dbContext = dbContext;
         _mapper = mapper;
     }
-    
-    public async Task<OperationResponse> CreateCustomer(CreateCustomerRequestDto request)
+
+    public async Task<OperationResponse> Create(CreateCustomerRequestDto request)
+
     {
-
-        var NewCustomer = _mapper.Map<Customer>(request);
-        if (NewCustomer == null)
+        var data = _mapper.Map<Customer>(request);
+        if (data == null)
             return new OperationResponse()
-            { Msg = "طلبك غير صالح يرجى إدخال بيانات العميل", StatusCode = HttpStatusCode.BadRequest };
-
-        await _dbContext.Customers.AddAsync(NewCustomer);
+            { Msg = "! طلبك غير صالح يرجى إعادة المحاولة", StatusCode = HttpStatusCode.BadRequest };
+        var isNotUnique = await _dbContext.Customers
+                            .Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted)
+                            .AnyAsync();
+        if(isNotUnique)
+        return new OperationResponse()
+        { 
+            Msg = "الاسم موجود مسبقًا",
+            StatusCode = HttpStatusCode.BadRequest 
+        };
+        await _dbContext.Customers.AddAsync(data);
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse() { Msg = "ok", StatusCode = HttpStatusCode.OK };
+        return new OperationResponse() 
+        { 
+            Msg = "تمت إضافة العميل بنجاح!",
+            StatusCode = HttpStatusCode.OK
+        };
     }
-
-
-    public async Task<FetchCustomersResponseDto> GetAllCustomer(int pgSize, int pgNum)
+    public async Task<FetchCustomersResponseDto> GetAll(FetchCustomersRequestDto request)
     {
-
-        var CustQuery = await (from Cust in _dbContext.Customers
-                               .OrderBy(x => x.Id) where Cust.Status != (short)GeneralStatus.Deleted
-                                select Cust)
-                               .Skip(pgSize * (pgNum - 1))
-                               .Take(pgSize)
-                               .ToListAsync();
-
-        var result = _mapper.Map<List<CustomerResponseDto>>(CustQuery);
-        var totalCount = (from Cst in CustQuery select Cst).Count();
-        var totalpages = (int)Math.Ceiling(totalCount / 25.00);
-
-        return new FetchCustomersResponseDto() { Content = result, CurrentPage = pgNum, TotalPages = totalpages };
+        var query =_dbContext.Customers
+                       .ProjectTo<CustomerResponseDto>(_mapper.ConfigurationProvider)
+                        .Where(p => p.Status != GeneralStatus.Deleted);
+        var queryResult = await query.OrderBy(p => p.Id)
+                              .Skip(request.PageSize * (request.PageNumber - 1))
+                              .Take(request.PageSize)
+                              .ToListAsync();
+        var totalCount = query.Count(); 
+        var totalpages = Math.Ceiling(totalCount / (double)request.PageSize);
+        return new FetchCustomersResponseDto() 
+        {
+            Content = queryResult,
+            CurrentPage = request.PageNumber,
+            TotalPages = (int)totalpages 
+        };
     }
-
-
-    public async Task<OperationResponse> UpdateCustomer(int id, EditCustomerRequestDto request)
-      {
-         if (id < 1)
-         return new OperationResponse() 
-         { Msg = " يرجى ادخال رقم العميل", StatusCode = HttpStatusCode.BadRequest };
-
-        if (request == null) 
-            return new OperationResponse() 
-            {Msg="يرجى إدخال بيانات العميل المطلوبة" ,StatusCode=HttpStatusCode.BadRequest};
-
-        var OldCustomer = await (from Cust in _dbContext.Customers
-                                 where Cust.Id == id 
-                                 && Cust.Name != request.Name
-                                 select Cust)
-                                 .SingleOrDefaultAsync();
-        var NameValidet = await (from Cust in _dbContext.Customers
-                                 where Cust.Name == request.Name
-                                 select Cust)
-                                 .SingleOrDefaultAsync();
-
-        if (NameValidet != null)
+    public async Task<OperationResponse> Update(int id, UpdateCustomerRequestDto request)
+    {
+        if (id < 1)
             return new OperationResponse()
-            { Msg = "الاسم موجود مسبقًا", StatusCode = HttpStatusCode.BadRequest };
-
-        _mapper.Map(request, OldCustomer);
-      await  _dbContext.SaveChangesAsync();
-        
-        return new OperationResponse() { Msg ="Edited ",StatusCode = HttpStatusCode.OK};
+            {
+                Msg = "! يرجى ادخال رقم عميل صحيح",
+                StatusCode = HttpStatusCode.BadRequest
+            };
+        var data = await _dbContext.Customers
+                         .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+                         .FirstOrDefaultAsync();
+        if (data == null)
+            return new OperationResponse()
+            {
+                Msg = " يرجى التأكد من صحة رقم العميل",
+                StatusCode = HttpStatusCode.BadRequest
+            };
+        if (data.Name != request.Name)
+        {
+            var isNotUnique = await _dbContext.Customers
+                                    .Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted)
+                                    .AnyAsync();
+            if (isNotUnique)
+                return new OperationResponse()
+                {
+                    Msg = "الاسم موجود مسبقًا",
+                    StatusCode = HttpStatusCode.BadRequest
+                };
         }
-    public async Task<OperationResponse> DeleteCustomer(int id)
+        _mapper.Map(request, data);
+        await _dbContext.SaveChangesAsync();
+        return new OperationResponse()
+        {
+            Msg = "! تم تعديل العميل بنجاح",
+            StatusCode = HttpStatusCode.OK
+        };
+    }
+    public async Task<OperationResponse> Delete(int id)
     {
-        if (id is <= 0 )
+        if (id < 1)
             return new OperationResponse()
-        { Msg = "الرجاء ادخال رقم عميل صحيح وموجود فعلًا",
-            StatusCode = HttpStatusCode.BadRequest };
-        var Cust = await (from customer in _dbContext.Customers
-                          where customer.Id == id
-                          && customer.Status == ((short)GeneralStatus.Active)
-                          select customer).FirstOrDefaultAsync();
-
-        if (Cust == null)
+            {
+                Msg = " يرجى ادخال رقم عميل صحيح",
+                StatusCode = HttpStatusCode.BadRequest
+            };
+        var data = await _dbContext.Customers
+                       .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
+                       .FirstOrDefaultAsync();
+        if (data == null)
             return new OperationResponse()
             {
                 Msg = "عفوًا لا وجود لعميل بهذا الرقم",
                 StatusCode = HttpStatusCode.NotFound
             };
-        Cust.Status = (short)GeneralStatus.Deleted;
+        data.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new OperationResponse()
         {
-            Msg = Cust.Name +" لقد تم حذف العميل: "+" بنجاح! ",
+            Msg = "! بنجاح " + data.Name + " : لقد تم حذف العميل",
             StatusCode = HttpStatusCode.OK
         };
-
     }
-    public async Task<OperationResponse> LockCustomer(int id)
+    public async Task<OperationResponse> Lock(int id)
     {
         if (id is <= 0)
             return new OperationResponse()
@@ -117,86 +139,84 @@ public class CustomerService:ICustomerService
                 StatusCode = HttpStatusCode.BadRequest
             };
 
-        var Cust = await(from customer in _dbContext.Customers
-                         where customer.Id == id
-                         && customer.Status == ((short)GeneralStatus.Active)
-                         select customer).FirstOrDefaultAsync();
-
-        if (Cust == null)
-        {
-            var LockedCustomer = await (from customer in _dbContext.Customers
-                              where customer.Id == id
-                              && customer.Status == (short)GeneralStatus.LockedByUser
-                              select customer).FirstOrDefaultAsync();
-            if (LockedCustomer == null) 
+        var data = await _dbContext.Customers.Where(p => p.Id == id && p.Status == GeneralStatus.Active)
+                                                 .FirstOrDefaultAsync();
+        if(data == null)
+            return new OperationResponse()
             {
-                return new OperationResponse()
-                {
-                    Msg = "عفوًا لا وجود لعميل بهذا الرقم",
-                    StatusCode = HttpStatusCode.NotFound
-                };
-            }
+                Msg = "! عذرًا..لا وجود لعميل بهذا الرقم",
+                StatusCode = HttpStatusCode.BadRequest
+            };
+
+        if (!IsLocked(data.Status))
+        {
+            data.Status =GeneralStatus.LockedByUser;
+            await _dbContext.SaveChangesAsync();
 
             return new OperationResponse()
             {
-                Msg = "عفوًا العميل مقفل مسبقًا !",
-                StatusCode = HttpStatusCode.NotFound
+                Msg = "! بنجاح " + data.Name + " : لقد تم تقييد العميل",
+                StatusCode = HttpStatusCode.OK
             };
-
         }
-        
-
-        Cust.Status = (short)GeneralStatus.LockedByUser;
-        await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
-        {
-            Msg = Cust.Name + " لقد تم قفل العميل: " + " بنجاح! ",
-            StatusCode = HttpStatusCode.OK
-        };
+        else
+            return new OperationResponse()
+            {
+                Msg = " ! عذرًا .. هذا العميل مقيد مسبقًا",
+                StatusCode = HttpStatusCode.BadRequest
+            };
     }
 
-    public async Task<OperationResponse> UnlockCustomer(int id)
+    public async Task<OperationResponse> Unlock(int id)
     {
 
-        if (id is <= 0)
+        if (id <= 0)
             return new OperationResponse()
             {
                 Msg = "الرجاء ادخال رقم عميل صحيح وموجود فعلًا",
                 StatusCode = HttpStatusCode.BadRequest
             };
 
-        var Cust = await (from customer in _dbContext.Customers
-                          where customer.Id == id
-                          && customer.Status == ((short)GeneralStatus.LockedByUser)
-                          select customer).FirstOrDefaultAsync();
-
-        if (Cust == null)
-        {
-            var ActiveCustomer = await (from customer in _dbContext.Customers
-                                        where customer.Id == id
-                                        && customer.Status == ((short)GeneralStatus.Active)
-                                        select customer).FirstOrDefaultAsync();
-            if (ActiveCustomer == null)
-                return new OperationResponse()
-                {
-                    Msg = "عفوًا لا وجود لعميل بهذا الرقم",
-                    StatusCode = HttpStatusCode.NotFound
-                };
+        var data = await _dbContext.Customers
+                         .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+                         .FirstOrDefaultAsync();
+        if (data == null)
             return new OperationResponse()
             {
-                Msg = "العميل ليس مقفلا يرجى التأكد من الرقم !",
-                StatusCode = HttpStatusCode.NotFound
+                Msg = "! عذرًا..لا وجود لعميل بهذا الرقم",
+                StatusCode = HttpStatusCode.BadRequest
+            };
+
+        if (IsLocked(data.Status))
+        {
+            data.Status = GeneralStatus.Active;
+            await _dbContext.SaveChangesAsync();
+            return new OperationResponse()
+            {
+                Msg = "بنجاح " + data.Name + " :  تم إلغاء التقييد عن العميل",
+                StatusCode = HttpStatusCode.OK
             };
         }
-          Cust.Status = (short)GeneralStatus.Active;
-          await _dbContext.SaveChangesAsync();
-
-        return new OperationResponse()
+        else
         {
-            Msg = "تم فتح القفل عن العميل  بنجاح !",
-            StatusCode = HttpStatusCode.OK
-        };
+            return new OperationResponse()
+            {
+                Msg = " ! عذرًا .. هذا العميل غير مقيد",
+                StatusCode = HttpStatusCode.BadRequest
+            };
+        }
     }
-   
+    private bool IsLocked(GeneralStatus status) 
+    {
+        switch (status)
+        {
+            case GeneralStatus.Active:
+                return false;
+            case GeneralStatus.LockedByUser:
+                return true;
+            default:
+                return false;   
+        }
+    }
 }
 

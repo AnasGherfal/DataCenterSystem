@@ -1,6 +1,6 @@
-﻿namespace Common.Constants;
+﻿namespace Shared.Constants;
 
-public enum GeneralStatus
+public enum GeneralStatus : short
 {
     Entry = 0,
     Active = 1,

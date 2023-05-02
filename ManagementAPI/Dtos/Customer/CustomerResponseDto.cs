@@ -1,4 +1,7 @@
-﻿namespace ManagementAPI.Dtos.Customer;
+﻿using Infrastructure.Models;
+using Shared.Constants;
+
+namespace ManagementAPI.Dtos.Customer;
 
 public class CustomerResponseDto
 {
@@ -8,5 +11,6 @@ public class CustomerResponseDto
     public string PrimaryPhone { get; set; } = string.Empty;
     public string? SecondaryPhone { get; set; }
     public string Email { get; set; } = string.Empty;
-    public short Status { get; set; }
+    public GeneralStatus Status { get; set; }
+    public IList<CustomerFile> Files { get; set; }
 }

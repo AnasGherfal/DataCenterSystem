@@ -1,4 +1,5 @@
-﻿namespace Infrastructure.Models;
+﻿
+namespace Infrastructure.Models;
 
 public class Customer: BaseModel
 
@@ -9,7 +10,7 @@ public class Customer: BaseModel
     public string PrimaryPhone { get; set; } = string.Empty;
     public string? SecondaryPhone { get; set; } 
     public string Email { get; set; } = string.Empty;
-    public short Status { get; set; }
+    public GeneralStatus Status { get; set; }
 
     //----------Relations
     public ICollection<Representive> Representives { get; set; } =new List<Representive>();

@@ -8,5 +8,5 @@ public class VisitTimeShift : BaseModel
     public decimal PriceForRemainingHour { get; set; }
     public TimeSpan StartTime { get; set; }
     public TimeSpan EndTime { get; set; }
-    public short Status { get; set; }
+    public GeneralStatus Status { get; set; }
 }

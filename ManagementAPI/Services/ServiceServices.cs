@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Common.Constants;
 using Azure.Core;
 using System;
+using Shared.Constants;
 
 namespace ManagementAPI.Services;
 
@@ -111,14 +112,12 @@ public class ServiceServices
         if (remove_serv == null) return new OperationResponse()
         { StatusCode = HttpStatusCode.BadRequest, Msg = "thear is no service with this id " };
 
-        remove_serv.Status =(short)GeneralStatus.Deleted;
+        remove_serv.Status = (short) GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
 
         return new OperationResponse() {StatusCode=HttpStatusCode.OK,Msg="service is removed"};
 
     }
-
-  
 }
 
 

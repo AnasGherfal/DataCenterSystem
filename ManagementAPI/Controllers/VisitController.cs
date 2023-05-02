@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Models;
+using ManagementAPI.Dtos.Customer;
 using ManagementAPI.Dtos.Visit;
 using ManagementAPI.Services;
 using Microsoft.AspNetCore.Http;
@@ -17,12 +18,17 @@ public class VisitController : ControllerBase
         _service = service;
     }
 
- /********* 
+
     [HttpPost]
     public async Task<OperationResponse> Create([FromBody] CreateVisitRequestDto request)
     {
-        var result = await _service.Create(request);
-        return Ok(result);
+        return await _service.Create(request);
     }
- */
+
+    [HttpGet]
+    public async Task<FetchVisitResponseDto> GetAll([FromQuery] FetchVisitRequestDto filter)
+    {
+        return await _service.GetAll(filter);
+    }
+
 }

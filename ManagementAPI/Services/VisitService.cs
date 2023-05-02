@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Infrastructure;
 using Infrastructure.Models;
+using ManagementAPI.Dtos.Customer;
 using ManagementAPI.Dtos.Visit;
 using Microsoft.EntityFrameworkCore;
 using Shared.Constants;
@@ -40,9 +42,23 @@ public class VisitService : IVisitService
         throw new NotImplementedException();
     }
 
-    public Task<FetchVisitResponseDto> GetAll(FetchVisitRequestDto request)
+    public async Task<FetchVisitResponseDto> GetAll(FetchVisitRequestDto request)
     {
-        throw new NotImplementedException();
+        var query = _dbContext.Visits
+                .Where(p => p.InvoiceId == 0);
+
+        var queryResult = await query
+                              .Skip(request.PageSize * (request.PageNumber - 1))
+                              .Take(request.PageSize)
+                              .ToListAsync();
+        var totalCount = query.Count();
+        var totalpages = Math.Ceiling(totalCount / (double)request.PageSize);
+        return new FetchVisitResponseDto()
+        {
+            Content =_mapper.Map<IList<VisitResponseDto>>(queryResult),
+            CurrentPage = request.PageNumber,
+            TotalPages = (int)totalpages
+        };
     }
 
     public Task<OperationResponse> Lock(int id)

@@ -17,7 +17,7 @@ public class VisitTimeShiftController : ControllerBase
         _service = service;
     }
     [HttpPost]
-    public async Task<OperationResponse> Create([FromForm] CreateVisitTimeShiftRequestDto request)
+    public async Task<OperationResponse> Create([FromBody] CreateVisitTimeShiftRequestDto request)
     {
         return await _service.Create(request);
     }

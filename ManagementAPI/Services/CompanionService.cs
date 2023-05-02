@@ -82,12 +82,12 @@ public class CompanionService : ICompanionService
                               .Take(request.PageSize)
                               .ToListAsync();
         var totalCount = query.Count();
-        var totalpages = Math.Ceiling(totalCount / (double)request.PageSize);
+        var totalPages = Math.Ceiling(totalCount / (double)request.PageSize);
         return new FetchCompanionResponseDto()
         {
             Content = queryResult,
             CurrentPage = request.PageNumber,
-            TotalPages = (int)totalpages
+            TotalPages = (int)totalPages
         };
     }
     public async Task<OperationResponse> Update(int id, UpdateCompanionRequestDto request)

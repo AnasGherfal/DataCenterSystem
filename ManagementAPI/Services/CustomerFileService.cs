@@ -49,7 +49,7 @@ public class CustomerFileService:ICustomerFileService
                 Msg="! عذرًا ولكن هذا الملف موجود مسبقًا",
                 StatusCode=HttpStatusCode.BadRequest
             };
-        using (FileStream stream = System.IO .File.Create(fullPath))
+        using (FileStream stream = System.IO.File.Create(fullPath))
         {
             await file.CopyToAsync(stream);
             var dataFile = _mapper.Map<CustomerFile>(request); 
@@ -57,7 +57,7 @@ public class CustomerFileService:ICustomerFileService
             _dbContext.CustomerFiles.Add(dataFile);
             await _dbContext.SaveChangesAsync();
             return new OperationResponse() {
-               Msg= "FullPath:: " + fullPath + " Ex::::  " + fileExt + "  Path::: " + path + " TrustedFileName::   " + trustedFileName + "  NotTrustedFileName::  " + notTrustedFileName ,
+               Msg= "تمت إضافة الملف بنجاح",
                StatusCode=HttpStatusCode.OK
             };
         }

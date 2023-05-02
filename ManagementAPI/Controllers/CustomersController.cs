@@ -12,9 +12,11 @@ namespace ManagementAPI.Controllers;
 public class CustomersController : ControllerBase
 {
     private readonly ICustomerService _service;
-    public CustomersController(ICustomerService service)
+    private readonly ICustomerFileService _fileService;
+    public CustomersController(ICustomerService service, ICustomerFileService fileService)
     {
         _service = service;
+        _fileService = fileService;
     }
     [HttpPost]
     public async Task<IActionResult> Create([FromBody]CreateCustomerRequestDto request)

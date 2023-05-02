@@ -45,7 +45,7 @@ public class CustomerService:ICustomerService
         await _dbContext.SaveChangesAsync();
         return new OperationResponse() 
         { 
-            Msg = "ok",
+            Msg = "تمت إضافة العميل بنجاح!",
             StatusCode = HttpStatusCode.OK
         };
     }

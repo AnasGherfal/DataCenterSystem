@@ -7,6 +7,7 @@ using Shared.Dtos;
 using System.Net;
 using AutoMapper.QueryableExtensions;
 using Infrastructure.Constants;
+using Shared.Exceptions;
 
 namespace ManagementAPI.Services;
 
@@ -21,28 +22,19 @@ public class CustomerService : ICustomerService
         _mapper = mapper;
     }
 
-    public async Task<OperationResponse> Create(CreateCustomerRequestDto request)
-
+    public async Task<MessageResponse> Create(CreateCustomerRequestDto request)
     {
         var data = _mapper.Map<Customer>(request);
-        if (data == null)
-            return new OperationResponse()
-                { Msg = "! طلبك غير صالح يرجى إعادة المحاولة", StatusCode = HttpStatusCode.BadRequest };
+        if (data == null) throw new BadRequestException("! طلبك غير صالح يرجى إعادة المحاولة");
         var isNotUnique = await _dbContext.Customers
             .Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted)
             .AnyAsync();
-        if (isNotUnique)
-            return new OperationResponse()
-            {
-                Msg = "الاسم موجود مسبقًا",
-                StatusCode = HttpStatusCode.BadRequest
-            };
+        if (isNotUnique) throw new NotFoundException("الاسم موجود مسبقًا");
         await _dbContext.Customers.AddAsync(data);
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        return new MessageResponse()
         {
             Msg = "تمت إضافة العميل بنجاح!",
-            StatusCode = HttpStatusCode.OK
         };
     }
 
@@ -65,159 +57,68 @@ public class CustomerService : ICustomerService
         };
     }
 
-    public async Task<OperationResponse> Update(int id, UpdateCustomerRequestDto request)
+    public async Task<MessageResponse> Update(int id, UpdateCustomerRequestDto request)
     {
-        if (id < 1)
-            return new OperationResponse()
-            {
-                Msg = "! يرجى ادخال رقم عميل صحيح",
-                StatusCode = HttpStatusCode.BadRequest
-            };
         var data = await _dbContext.Customers
             .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
             .FirstOrDefaultAsync();
-        if (data == null)
-            return new OperationResponse()
-            {
-                Msg = " يرجى التأكد من صحة رقم العميل",
-                StatusCode = HttpStatusCode.BadRequest
-            };
+        if (data == null) throw new BadRequestException(" يرجى التأكد من صحة رقم العميل");
         if (data.Name != request.Name)
         {
             var isNotUnique = await _dbContext.Customers
                 .Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted)
                 .AnyAsync();
-            if (isNotUnique)
-                return new OperationResponse()
-                {
-                    Msg = "الاسم موجود مسبقًا",
-                    StatusCode = HttpStatusCode.BadRequest
-                };
+            if (isNotUnique) throw new BadRequestException("الاسم موجود مسبقًا");
         }
-
         _mapper.Map(request, data);
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        return new MessageResponse()
         {
-            Msg = "! تم تعديل العميل بنجاح",
-            StatusCode = HttpStatusCode.OK
+            Msg = "! تم تعديل العميل بنجاح"
         };
     }
 
-    public async Task<OperationResponse> Delete(int id)
+    public async Task<MessageResponse> Delete(int id)
     {
-        if (id < 1)
-            return new OperationResponse()
-            {
-                Msg = " يرجى ادخال رقم عميل صحيح",
-                StatusCode = HttpStatusCode.BadRequest
-            };
         var data = await _dbContext.Customers
             .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
             .FirstOrDefaultAsync();
-        if (data == null)
-            return new OperationResponse()
-            {
-                Msg = "عفوًا لا وجود لعميل بهذا الرقم",
-                StatusCode = HttpStatusCode.NotFound
-            };
+        if (data == null) throw new NotFoundException("عفوًا لا وجود لعميل بهذا الرقم");
         data.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        return new MessageResponse()
         {
             Msg = "! بنجاح " + data.Name + " : لقد تم حذف العميل",
-            StatusCode = HttpStatusCode.OK
         };
     }
 
-    public async Task<OperationResponse> Lock(int id)
+    public async Task<MessageResponse> Lock(int id)
     {
-        if (id is <= 0)
-            return new OperationResponse()
-            {
-                Msg = "الرجاء ادخال رقم عميل صحيح وموجود فعلًا",
-                StatusCode = HttpStatusCode.BadRequest
-            };
-
-        var data = await _dbContext.Customers.Where(p => p.Id == id && p.Status == GeneralStatus.Active)
-            .FirstOrDefaultAsync();
-        if (data == null)
-            return new OperationResponse()
-            {
-                Msg = "! عذرًا..لا وجود لعميل بهذا الرقم",
-                StatusCode = HttpStatusCode.BadRequest
-            };
-
-        if (!IsLocked(data.Status))
-        {
-            data.Status = GeneralStatus.LockedByUser;
-            await _dbContext.SaveChangesAsync();
-
-            return new OperationResponse()
-            {
-                Msg = "! بنجاح " + data.Name + " : لقد تم تقييد العميل",
-                StatusCode = HttpStatusCode.OK
-            };
-        }
-        else
-            return new OperationResponse()
-            {
-                Msg = " ! عذرًا .. هذا العميل مقيد مسبقًا",
-                StatusCode = HttpStatusCode.BadRequest
-            };
-    }
-
-    public async Task<OperationResponse> Unlock(int id)
-    {
-
-        if (id <= 0)
-            return new OperationResponse()
-            {
-                Msg = "الرجاء ادخال رقم عميل صحيح وموجود فعلًا",
-                StatusCode = HttpStatusCode.BadRequest
-            };
-
         var data = await _dbContext.Customers
-            .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+            .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
             .FirstOrDefaultAsync();
-        if (data == null)
-            return new OperationResponse()
-            {
-                Msg = "! عذرًا..لا وجود لعميل بهذا الرقم",
-                StatusCode = HttpStatusCode.BadRequest
-            };
-
-        if (IsLocked(data.Status))
+        if (data == null) throw new NotFoundException("! عذرًا..لا وجود لعميل بهذا الرقم او هذا العميل مقيد مسبقًا");
+        data.Status = GeneralStatus.LockedByUser;
+        await _dbContext.SaveChangesAsync();
+        return new MessageResponse()
         {
-            data.Status = GeneralStatus.Active;
-            await _dbContext.SaveChangesAsync();
-            return new OperationResponse()
-            {
-                Msg = "بنجاح " + data.Name + " :  تم إلغاء التقييد عن العميل",
-                StatusCode = HttpStatusCode.OK
-            };
-        }
-        else
-        {
-            return new OperationResponse()
-            {
-                Msg = " ! عذرًا .. هذا العميل غير مقيد",
-                StatusCode = HttpStatusCode.BadRequest
-            };
-        }
+            Msg = "! بنجاح " + data.Name + " : لقد تم تقييد العميل"
+        };
     }
 
-    private bool IsLocked(GeneralStatus status)
+    public async Task<MessageResponse> Unlock(int id)
     {
-        switch (status)
+        var data = await _dbContext.Customers
+            .Where(p => p.Id == id && p.Status != GeneralStatus.LockedByUser)
+            .FirstOrDefaultAsync();
+        if (data == null) throw new NotFoundException("! عذرًا..لا وجود لعميل بهذا الرقم او هذا العميل غير مقيد");
+        data.Status = GeneralStatus.Active;
+        await _dbContext.SaveChangesAsync();
+        return new OperationResponse()
         {
-            case GeneralStatus.Active:
-                return false;
-            case GeneralStatus.LockedByUser:
-                return true;
-            default:
-                return false;
-        }
+            Msg = "بنجاح " + data.Name + " :  تم إلغاء التقييد عن العميل",
+            StatusCode = HttpStatusCode.OK
+        };
     }
 }
 

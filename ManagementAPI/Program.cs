@@ -1,4 +1,5 @@
 using ManagementAPI.DI;
+using Shared.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 var useInMemoryDb = true;
@@ -12,6 +13,7 @@ builder.Services.AddPersistence(useInMemoryDb, builder.Configuration.GetConnecti
 
 
 var app = builder.Build();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseSwagger(app.Environment.IsDevelopment());
 app.UseHttpsRedirection();
 app.UseCors();

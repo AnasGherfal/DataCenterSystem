@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
 using Shared.Filters;
 
 namespace ManagementAPI.DI;
@@ -18,6 +19,10 @@ public static class CustomControllerExtension
             ValidatorOptions.Global.DefaultClassLevelCascadeMode = CascadeMode.Stop;
             ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
             options.DisableDataAnnotationsValidation = true;
+        });
+        serviceCollection.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.SuppressModelStateInvalidFilter = true;
         });
         serviceCollection.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         return serviceCollection;

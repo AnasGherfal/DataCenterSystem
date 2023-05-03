@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.Models
+﻿using Infrastructure.Constants;
+
+namespace Infrastructure.Models
 {
     public class Representive : BaseModel
     {

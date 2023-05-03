@@ -2,24 +2,19 @@
 using Infrastructure;
 using Infrastructure.Models;
 using ManagementAPI.Dtos.Customer;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Common.Constants;
 using Shared.Dtos;
 using System.Net;
-using System.Reflection.Metadata;
-using Azure.Core;
-using System.Linq;
 using AutoMapper.QueryableExtensions;
-using Newtonsoft.Json.Linq;
-using Shared.Constants;
+using Infrastructure.Constants;
 
 namespace ManagementAPI.Services;
-public class CustomerService:ICustomerService
+
+public class CustomerService : ICustomerService
 {
     private readonly DataCenterContext _dbContext;
     private readonly IMapper _mapper;
+
     public CustomerService(DataCenterContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
@@ -32,42 +27,44 @@ public class CustomerService:ICustomerService
         var data = _mapper.Map<Customer>(request);
         if (data == null)
             return new OperationResponse()
-            { Msg = "! طلبك غير صالح يرجى إعادة المحاولة", StatusCode = HttpStatusCode.BadRequest };
+                { Msg = "! طلبك غير صالح يرجى إعادة المحاولة", StatusCode = HttpStatusCode.BadRequest };
         var isNotUnique = await _dbContext.Customers
-                            .Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted)
-                            .AnyAsync();
-        if(isNotUnique)
-        return new OperationResponse()
-        { 
-            Msg = "الاسم موجود مسبقًا",
-            StatusCode = HttpStatusCode.BadRequest 
-        };
+            .Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted)
+            .AnyAsync();
+        if (isNotUnique)
+            return new OperationResponse()
+            {
+                Msg = "الاسم موجود مسبقًا",
+                StatusCode = HttpStatusCode.BadRequest
+            };
         await _dbContext.Customers.AddAsync(data);
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse() 
-        { 
+        return new OperationResponse()
+        {
             Msg = "تمت إضافة العميل بنجاح!",
             StatusCode = HttpStatusCode.OK
         };
     }
+
     public async Task<FetchCustomersResponseDto> GetAll(FetchCustomersRequestDto request)
     {
-        var query =_dbContext.Customers
-                       .ProjectTo<CustomerResponseDto>(_mapper.ConfigurationProvider)
-                        .Where(p => p.Status != GeneralStatus.Deleted);
+        var query = _dbContext.Customers
+            .ProjectTo<CustomerResponseDto>(_mapper.ConfigurationProvider)
+            .Where(p => p.Status != GeneralStatus.Deleted);
         var queryResult = await query.OrderBy(p => p.Id)
-                              .Skip(request.PageSize * (request.PageNumber - 1))
-                              .Take(request.PageSize)
-                              .ToListAsync();
-        var totalCount = query.Count(); 
+            .Skip(request.PageSize * (request.PageNumber - 1))
+            .Take(request.PageSize)
+            .ToListAsync();
+        var totalCount = query.Count();
         var totalpages = Math.Ceiling(totalCount / (double)request.PageSize);
-        return new FetchCustomersResponseDto() 
+        return new FetchCustomersResponseDto()
         {
             Content = queryResult,
             CurrentPage = request.PageNumber,
-            TotalPages = (int)totalpages 
+            TotalPages = (int)totalpages
         };
     }
+
     public async Task<OperationResponse> Update(int id, UpdateCustomerRequestDto request)
     {
         if (id < 1)
@@ -77,8 +74,8 @@ public class CustomerService:ICustomerService
                 StatusCode = HttpStatusCode.BadRequest
             };
         var data = await _dbContext.Customers
-                         .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
-                         .FirstOrDefaultAsync();
+            .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+            .FirstOrDefaultAsync();
         if (data == null)
             return new OperationResponse()
             {
@@ -88,8 +85,8 @@ public class CustomerService:ICustomerService
         if (data.Name != request.Name)
         {
             var isNotUnique = await _dbContext.Customers
-                                    .Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted)
-                                    .AnyAsync();
+                .Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted)
+                .AnyAsync();
             if (isNotUnique)
                 return new OperationResponse()
                 {
@@ -97,6 +94,7 @@ public class CustomerService:ICustomerService
                     StatusCode = HttpStatusCode.BadRequest
                 };
         }
+
         _mapper.Map(request, data);
         await _dbContext.SaveChangesAsync();
         return new OperationResponse()
@@ -105,6 +103,7 @@ public class CustomerService:ICustomerService
             StatusCode = HttpStatusCode.OK
         };
     }
+
     public async Task<OperationResponse> Delete(int id)
     {
         if (id < 1)
@@ -114,8 +113,8 @@ public class CustomerService:ICustomerService
                 StatusCode = HttpStatusCode.BadRequest
             };
         var data = await _dbContext.Customers
-                       .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
-                       .FirstOrDefaultAsync();
+            .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
+            .FirstOrDefaultAsync();
         if (data == null)
             return new OperationResponse()
             {
@@ -130,6 +129,7 @@ public class CustomerService:ICustomerService
             StatusCode = HttpStatusCode.OK
         };
     }
+
     public async Task<OperationResponse> Lock(int id)
     {
         if (id is <= 0)
@@ -140,8 +140,8 @@ public class CustomerService:ICustomerService
             };
 
         var data = await _dbContext.Customers.Where(p => p.Id == id && p.Status == GeneralStatus.Active)
-                                                 .FirstOrDefaultAsync();
-        if(data == null)
+            .FirstOrDefaultAsync();
+        if (data == null)
             return new OperationResponse()
             {
                 Msg = "! عذرًا..لا وجود لعميل بهذا الرقم",
@@ -150,7 +150,7 @@ public class CustomerService:ICustomerService
 
         if (!IsLocked(data.Status))
         {
-            data.Status =GeneralStatus.LockedByUser;
+            data.Status = GeneralStatus.LockedByUser;
             await _dbContext.SaveChangesAsync();
 
             return new OperationResponse()
@@ -178,8 +178,8 @@ public class CustomerService:ICustomerService
             };
 
         var data = await _dbContext.Customers
-                         .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
-                         .FirstOrDefaultAsync();
+            .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+            .FirstOrDefaultAsync();
         if (data == null)
             return new OperationResponse()
             {
@@ -206,7 +206,8 @@ public class CustomerService:ICustomerService
             };
         }
     }
-    private bool IsLocked(GeneralStatus status) 
+
+    private bool IsLocked(GeneralStatus status)
     {
         switch (status)
         {
@@ -215,7 +216,7 @@ public class CustomerService:ICustomerService
             case GeneralStatus.LockedByUser:
                 return true;
             default:
-                return false;   
+                return false;
         }
     }
 }

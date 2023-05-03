@@ -12,12 +12,6 @@ public class Service : BaseModel
     public int MonthlyVisits { get; set; }
     public decimal Price { get; set; }
     public GeneralStatus Status { get; set; }
-    
-    
-
     //------------Ralation
-
     public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
-
-
 }

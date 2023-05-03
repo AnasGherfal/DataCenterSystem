@@ -1,4 +1,5 @@
-﻿using Infrastructure.Models;
+﻿using Infrastructure.Constants;
+using Infrastructure.Models;
 using Shared.Constants;
 
 namespace ManagementAPI.Dtos.Customer;

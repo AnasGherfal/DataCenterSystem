@@ -6,23 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Entities",
-                columns: table => new
-                {
-                    Id = table.Column<short>(type: "smallint", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Entities", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -56,27 +44,6 @@ namespace Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_VisitTypes", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Permissions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    EntityId = table.Column<int>(type: "int", nullable: false),
-                    EntityId1 = table.Column<short>(type: "smallint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Permissions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Permissions_Entities_EntityId1",
-                        column: x => x.EntityId1,
-                        principalTable: "Entities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -156,7 +123,6 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Action = table.Column<short>(type: "smallint", nullable: false),
-                    EntityId = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     EntityType = table.Column<short>(type: "smallint", nullable: false),
                     EntityData = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -198,30 +164,6 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PermissionUser",
-                columns: table => new
-                {
-                    PermissionsId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PermissionUser", x => new { x.PermissionsId, x.UsersId });
-                    table.ForeignKey(
-                        name: "FK_PermissionUser_Permissions_PermissionsId",
-                        column: x => x.PermissionsId,
-                        principalTable: "Permissions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PermissionUser_Users_UsersId",
-                        column: x => x.UsersId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CustomerFiles",
                 columns: table => new
                 {
@@ -245,40 +187,6 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CustomerFiles_Users_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Representives",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false, computedColumnSql: "[FirstName] + ' ' + [LastName]"),
-                    IdentityNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    IdentityType = table.Column<short>(type: "smallint", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
-                    PhoneNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Status = table.Column<short>(type: "smallint", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
-                    CreatedById = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Representives", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Representives_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Representives_Users_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "Users",
                         principalColumn: "Id");
@@ -317,36 +225,6 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Subscriptions_Users_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RepresentiveFiles",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Filename = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DocType = table.Column<short>(type: "smallint", nullable: false),
-                    RepresintiveId = table.Column<int>(type: "int", nullable: false),
-                    RepresentiveId = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
-                    CreatedById = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RepresentiveFiles", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RepresentiveFiles_Representives_RepresentiveId",
-                        column: x => x.RepresentiveId,
-                        principalTable: "Representives",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RepresentiveFiles_Users_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "Users",
                         principalColumn: "Id");
@@ -414,8 +292,7 @@ namespace Infrastructure.Migrations
                 name: "SubscriptionFiles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SubscriptionId = table.Column<int>(type: "int", nullable: false),
@@ -451,10 +328,9 @@ namespace Infrastructure.Migrations
                     Price = table.Column<decimal>(type: "decimal(6,2)", precision: 6, scale: 2, nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
                     VisitTypeId = table.Column<short>(type: "smallint", nullable: false),
-                    VisitShiftId = table.Column<int>(type: "int", nullable: false),
-                    InvoiceId = table.Column<int>(type: "int", nullable: true),
+                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
                     TimeShiftId = table.Column<int>(type: "int", nullable: false),
-                    SubscriptionId = table.Column<int>(type: "int", nullable: true),
+                    InvoiceId = table.Column<int>(type: "int", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
@@ -470,7 +346,8 @@ namespace Infrastructure.Migrations
                         name: "FK_Visits_Subscriptions_SubscriptionId",
                         column: x => x.SubscriptionId,
                         principalTable: "Subscriptions",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Visits_Users_CreatedById",
                         column: x => x.CreatedById,
@@ -523,27 +400,73 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RepresentiveVisit",
+                name: "Representives",
                 columns: table => new
                 {
-                    RepresentivesId = table.Column<int>(type: "int", nullable: false),
-                    VisitsId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false, computedColumnSql: "[FirstName] + ' ' + [LastName]"),
+                    IdentityNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    IdentityType = table.Column<short>(type: "smallint", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
+                    PhoneNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Status = table.Column<short>(type: "smallint", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    VisitId = table.Column<int>(type: "int", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RepresentiveVisit", x => new { x.RepresentivesId, x.VisitsId });
+                    table.PrimaryKey("PK_Representives", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RepresentiveVisit_Representives_RepresentivesId",
-                        column: x => x.RepresentivesId,
+                        name: "FK_Representives_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Representives_Users_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Representives_Visits_VisitId",
+                        column: x => x.VisitId,
+                        principalTable: "Visits",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RepresentiveFiles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Filename = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DocType = table.Column<short>(type: "smallint", nullable: false),
+                    RepresintiveId = table.Column<int>(type: "int", nullable: false),
+                    RepresentiveId = table.Column<int>(type: "int", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CreatedById = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RepresentiveFiles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RepresentiveFiles_Representives_RepresentiveId",
+                        column: x => x.RepresentiveId,
                         principalTable: "Representives",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_RepresentiveVisit_Visits_VisitsId",
-                        column: x => x.VisitsId,
-                        principalTable: "Visits",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_RepresentiveFiles_Users_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -592,16 +515,6 @@ namespace Infrastructure.Migrations
                 column: "SubscriptionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Permissions_EntityId1",
-                table: "Permissions",
-                column: "EntityId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PermissionUser_UsersId",
-                table: "PermissionUser",
-                column: "UsersId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RepresentiveFiles_CreatedById",
                 table: "RepresentiveFiles",
                 column: "CreatedById");
@@ -622,9 +535,9 @@ namespace Infrastructure.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RepresentiveVisit_VisitsId",
-                table: "RepresentiveVisit",
-                column: "VisitsId");
+                name: "IX_Representives_VisitId",
+                table: "Representives",
+                column: "VisitId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Services_CreatedById",
@@ -711,13 +624,7 @@ namespace Infrastructure.Migrations
                 name: "CustomerFiles");
 
             migrationBuilder.DropTable(
-                name: "PermissionUser");
-
-            migrationBuilder.DropTable(
                 name: "RepresentiveFiles");
-
-            migrationBuilder.DropTable(
-                name: "RepresentiveVisit");
 
             migrationBuilder.DropTable(
                 name: "SubscriptionFiles");
@@ -729,16 +636,10 @@ namespace Infrastructure.Migrations
                 name: "AdditionalPowers");
 
             migrationBuilder.DropTable(
-                name: "Permissions");
-
-            migrationBuilder.DropTable(
                 name: "Representives");
 
             migrationBuilder.DropTable(
                 name: "Visits");
-
-            migrationBuilder.DropTable(
-                name: "Entities");
 
             migrationBuilder.DropTable(
                 name: "Invoices");

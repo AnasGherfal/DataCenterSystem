@@ -4,15 +4,15 @@ public class DataCenterContext : DbContext
 {
     public DataCenterContext(DbContextOptions<DataCenterContext> options) : base(options)
     {
-
     }
+    
     public DbSet<AdditionalPower> AdditionalPowers => Set<AdditionalPower>();
     public DbSet<Companion> Companions => Set<Companion>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<CustomerFile> CustomerFiles => Set<CustomerFile>();
-    public DbSet<Entity> Entities => Set<Entity>();
+    // public DbSet<Entity> Entities => Set<Entity>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
-    public DbSet<Permission> Permissions => Set<Permission>();
+    // public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<Representive> Representives => Set<Representive>();
     public DbSet<RepresentiveFile> RepresentiveFiles => Set<RepresentiveFile>();
     public DbSet<Service> Services => Set<Service>();

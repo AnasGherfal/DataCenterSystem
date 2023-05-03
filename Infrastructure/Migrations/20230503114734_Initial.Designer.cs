@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DataCenterContext))]
-    [Migration("20230322082355_init")]
-    partial class init
+    [Migration("20230503114734_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -201,21 +201,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("CustomerFiles");
                 });
 
-            modelBuilder.Entity("Infrastructure.Models.Entity", b =>
-                {
-                    b.Property<short>("Id")
-                        .HasColumnType("smallint");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Entities");
-                });
-
             modelBuilder.Entity("Infrastructure.Models.Invoice", b =>
                 {
                     b.Property<int>("Id")
@@ -267,32 +252,6 @@ namespace Infrastructure.Migrations
                     b.HasIndex("SubscriptionId");
 
                     b.ToTable("Invoices");
-                });
-
-            modelBuilder.Entity("Infrastructure.Models.Permission", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EntityId")
-                        .HasColumnType("int");
-
-                    b.Property<short>("EntityId1")
-                        .HasColumnType("smallint");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EntityId1");
-
-                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Representive", b =>
@@ -349,11 +308,16 @@ namespace Infrastructure.Migrations
                     b.Property<short>("Status")
                         .HasColumnType("smallint");
 
+                    b.Property<int?>("VisitId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("VisitId");
 
                     b.ToTable("Representives");
                 });
@@ -478,10 +442,12 @@ namespace Infrastructure.Migrations
                     b.Property<short>("Status")
                         .HasColumnType("smallint");
 
-                    b.Property<Guid>("SubscriptionFileId")
+                    b.Property<Guid?>("SubscriptionFileId")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("TotalPrice")
+                    b.Property<decimal?>("TotalPrice")
+                        .IsRequired()
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
@@ -498,11 +464,9 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Infrastructure.Models.SubscriptionFile", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("CreatedById")
                         .HasColumnType("int");
@@ -551,11 +515,6 @@ namespace Infrastructure.Migrations
                     b.Property<string>("EntityData")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EntityId")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
 
                     b.Property<short>("EntityType")
                         .HasColumnType("smallint");
@@ -641,7 +600,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("StartTime")
                         .HasColumnType("datetime");
 
-                    b.Property<int?>("SubscriptionId")
+                    b.Property<int>("SubscriptionId")
                         .HasColumnType("int");
 
                     b.Property<int>("TimeShiftId")
@@ -649,9 +608,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<TimeSpan?>("TotalMin")
                         .HasColumnType("time");
-
-                    b.Property<int>("VisitShiftId")
-                        .HasColumnType("int");
 
                     b.Property<short>("VisitTypeId")
                         .HasColumnType("smallint");
@@ -726,36 +682,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VisitTypes");
-                });
-
-            modelBuilder.Entity("PermissionUser", b =>
-                {
-                    b.Property<int>("PermissionsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsersId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PermissionsId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("PermissionUser");
-                });
-
-            modelBuilder.Entity("RepresentiveVisit", b =>
-                {
-                    b.Property<int>("RepresentivesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VisitsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("RepresentivesId", "VisitsId");
-
-                    b.HasIndex("VisitsId");
-
-                    b.ToTable("RepresentiveVisit");
                 });
 
             modelBuilder.Entity("AdditionalPowerSubscription", b =>
@@ -847,17 +773,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Subscription");
                 });
 
-            modelBuilder.Entity("Infrastructure.Models.Permission", b =>
-                {
-                    b.HasOne("Infrastructure.Models.Entity", "Entity")
-                        .WithMany("Permissions")
-                        .HasForeignKey("EntityId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Entity");
-                });
-
             modelBuilder.Entity("Infrastructure.Models.Representive", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
@@ -870,6 +785,10 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Infrastructure.Models.Visit", null)
+                        .WithMany("Representives")
+                        .HasForeignKey("VisitId");
 
                     b.Navigation("CreatedBy");
 
@@ -979,7 +898,9 @@ namespace Infrastructure.Migrations
 
                     b.HasOne("Infrastructure.Models.Subscription", null)
                         .WithMany("Visits")
-                        .HasForeignKey("SubscriptionId");
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Infrastructure.Models.VisitTimeShift", "TimeShift")
                         .WithMany()
@@ -1012,36 +933,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("CreatedBy");
                 });
 
-            modelBuilder.Entity("PermissionUser", b =>
-                {
-                    b.HasOne("Infrastructure.Models.Permission", null)
-                        .WithMany()
-                        .HasForeignKey("PermissionsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Infrastructure.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RepresentiveVisit", b =>
-                {
-                    b.HasOne("Infrastructure.Models.Representive", null)
-                        .WithMany()
-                        .HasForeignKey("RepresentivesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Infrastructure.Models.Visit", null)
-                        .WithMany()
-                        .HasForeignKey("VisitsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Infrastructure.Models.Customer", b =>
                 {
                     b.Navigation("Files");
@@ -1049,11 +940,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Representives");
 
                     b.Navigation("Subscriptions");
-                });
-
-            modelBuilder.Entity("Infrastructure.Models.Entity", b =>
-                {
-                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Invoice", b =>
@@ -1115,6 +1001,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.Visit", b =>
                 {
                     b.Navigation("Companions");
+
+                    b.Navigation("Representives");
                 });
 #pragma warning restore 612, 618
         }

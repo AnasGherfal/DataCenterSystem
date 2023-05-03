@@ -18,7 +18,7 @@ public class User
     public User? CreatedBy { get; set; }
 
     //Realation
-    public ICollection<Permission> Permissions { get; set; } = new List<Permission>();
+    // public ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 
     public ICollection<User> UsersCreatedBy { get; set; } = default!;
     public ICollection<AdditionalPower> AdditionalPowersCreatedBy { get; set; } = default!;

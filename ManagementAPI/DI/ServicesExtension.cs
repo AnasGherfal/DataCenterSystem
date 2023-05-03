@@ -13,5 +13,7 @@ public static class ServicesExtension
         services.AddScoped<IVisitTimeShiftService, VisitTimeShiftService>();
         services.AddScoped<ICompanionService, CompanionService>();
         services.AddScoped<ServiceServices>();
+        services.AddScoped<SubscriptionService>();
+
     }
 }

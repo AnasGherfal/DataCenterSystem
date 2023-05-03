@@ -22,32 +22,42 @@ public class ServiceController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<OperationResponse> CreateService([FromBody]CreateServiceDto request)
+    public async Task<OperationResponse> Create([FromBody]CreateServiceDto request)
     {
-        return await _service.CreateService(request);
-
-
+        var result = await _service.Create(request);
+        switch(result.StatusCode) {
+            case HttpStatusCode.OK: return result;
+            case HttpStatusCode.BadRequest: return new OperationResponse() { StatusCode = HttpStatusCode.BadRequest};
+            default: return result;
+        }
     }
     
     [HttpGet]
-    public async Task<ActionResult> GetService([FromQuery]FetchServicesRequestDto fetchServicesRequestDto)
+    public async Task<ActionResult<FetchServicesResponseDto>> GetAll([FromQuery]FetchServicesRequestDto fetchServicesRequestDto)
     {
-        var get = await _service.GetAllService(fetchServicesRequestDto.PageNumber, fetchServicesRequestDto.PageSize);
-        return Ok(get);
-
+        return Ok(await _service.GetAll(fetchServicesRequestDto));
     }
     [HttpPut]
-    public async Task<ActionResult> EditService(int id, UpdateServiceDto updateServiceDto)
+    public async Task<OperationResponse> Update(int id, UpdateServiceDto updateServiceDto)
     {
-        return Ok(await _service.EditService(id,updateServiceDto));
-
+        return await _service.Update(id,updateServiceDto);
     }
 
     [HttpDelete]
-    public async Task<ActionResult> RemoveService(int id)
+    public async Task<OperationResponse> Remove(int id)
     {
 
-        return Ok(await _service.RemoveService(id));
+        return await _service.Remove(id);
 
+    }
+    [HttpPut("{id}/lock")]
+    public async Task<OperationResponse> Lock(int id)
+    {
+        return await _service.Lock(id);
+    }
+    [HttpPut("{id}/unlock")]
+    public async Task<OperationResponse> UnLock(int id)
+    {
+        return await _service.Unlock(id);
     }
 }

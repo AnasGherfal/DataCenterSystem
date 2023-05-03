@@ -1,4 +1,4 @@
-﻿namespace Shared.Constants;
+﻿namespace Infrastructure.Constants;
 
 public enum GeneralStatus : short
 {

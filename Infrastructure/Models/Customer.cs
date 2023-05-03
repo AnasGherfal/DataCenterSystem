@@ -1,4 +1,5 @@
-﻿
+﻿using Infrastructure.Constants;
+
 namespace Infrastructure.Models;
 
 public class Customer: BaseModel

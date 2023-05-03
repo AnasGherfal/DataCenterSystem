@@ -16,7 +16,7 @@ public class FetchServicesRequestDtoValidator : AbstractValidator<FetchServicesR
 
 
         RuleFor(a => a.PageNumber).GreaterThan(0).WithMessage("enter number graeter 0");
-        RuleFor(a => a.PageSize).GreaterThan(0).LessThan(51).WithMessage("number of page size must be between 1 to 50");
+        RuleFor(a => a.PageSize).GreaterThan(0).LessThanOrEqualTo(50).WithMessage("number of page size must be between 1 to 50");
 
 
     }

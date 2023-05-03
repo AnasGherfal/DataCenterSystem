@@ -10,6 +10,9 @@ public class ServiceMapperProfile : Profile
     {
         CreateMap<Service, ServiceResponseDto>().ReverseMap();
         CreateMap<Service, CreateServiceDto>().ReverseMap();
+            /*.ForMember(dest => dest.Status, opt => opt.MapFrom(x => 1))
+            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.Now))
+            .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 3));*/ 
         CreateMap<Service, UpdateServiceDto>().ReverseMap();
     }
 }

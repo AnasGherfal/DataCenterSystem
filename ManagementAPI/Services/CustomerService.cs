@@ -29,7 +29,7 @@ public class CustomerService : ICustomerService
         var isNotUnique = await _dbContext.Customers
             .Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted)
             .AnyAsync();
-        if (isNotUnique) throw new NotFoundException("الاسم موجود مسبقًا");
+        if (isNotUnique) throw new BadRequestException("الاسم موجود مسبقًا");
         await _dbContext.Customers.AddAsync(data);
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()

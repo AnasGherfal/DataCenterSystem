@@ -9,6 +9,7 @@ namespace ManagementAPI.Controllers;
 public class CustomersController : ControllerBase
 {
     private readonly ICustomerService _service;
+    //TODO: REVIEW [Warning]: Remove unused variable
     private readonly ICustomerFileService _fileService;
     public CustomersController(ICustomerService service, ICustomerFileService fileService)
     {

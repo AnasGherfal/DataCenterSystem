@@ -15,11 +15,14 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Serilog;
 using Microsoft.VisualBasic;
 using Infrastructure.Constants;
+using Shared.Exceptions;
 
 namespace ManagementAPI.Services;
 
+//TODO: REVIEW [Consistency]: Use Interface For DI
 public class SubscriptionService
 {
+    //TODO: REVIEW [Warning]: Response Messages need to be reviewed
     private readonly DataCenterContext _dbContext;
     private readonly IMapper _mapper;
     public SubscriptionService(DataCenterContext dbContext, IMapper mapper)
@@ -28,81 +31,61 @@ public class SubscriptionService
         _mapper = mapper;
     }
 
-    public async Task<OperationResponse> CreateSubscription(CreateSubscriptionDto request)
+    public async Task<MessageResponse> Create(CreateSubscriptionDto request)
     {
-        if (request == null)
-            return new OperationResponse()
-            {
-                StatusCode = HttpStatusCode.BadRequest,
-                Msg = "enter subscription data "
-            };
-
-        var newsubs = _mapper.Map<Subscription>(request);
-        await _dbContext.Subscriptions.AddAsync(newsubs);
+        var data = _mapper.Map<Subscription>(request);
+        await _dbContext.Subscriptions.AddAsync(data);
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        return new MessageResponse()
         {
-            StatusCode = HttpStatusCode.OK,
+            //TODO: REVIEW: Use Sufficient Response Message.
             Msg = "ok"
         };
-
     }
 
-    public async Task<FetchSubscriptionResponseDto> GetAllSubscription(int pagenum, int pagesize)
+    public async Task<FetchSubscriptionResponseDto> GetAll(int pageNumber, int pageSize)
     {
+        //TODO: REVIEW [Warning]: Variable Naming, Use ProjectTo to avoid loading all data from DB
         var Subs_Query = await _dbContext.Subscriptions
             .Include(a => a.Service)
             .Include(a => a.Customer)
             .OrderBy(p => p.Id)
-            .Skip(pagesize * (pagenum - 1))
-            .Take(pagesize)
+            .Skip(pageSize * (pageNumber - 1))
+            .Take(pageSize)
             .ToListAsync();
-
         var result = _mapper.Map<List<SubscriptionRsponseDto>>(Subs_Query);
         var totalCount = (from Cst in Subs_Query select Cst).Count();
         var totalpages = (int)Math.Ceiling(totalCount / 25.00);
-
         return new FetchSubscriptionResponseDto()
         {
             Content = result,
-            CurrentPage = pagenum,
-            TotalPages = pagesize
+            CurrentPage = pageNumber,
+            //TODO: REVIEW [Error]: Using incorrect variable, PageSize Missing
+            TotalPages = pageSize
         };
 
     }
-    public async Task<OperationResponse> Renew(int id)
+    public async Task<MessageResponse> Renew(int id)
     {
-        
+        //TODO: REVIEW [Fatal]: data should not have a deleted status
         var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(a => a.Id == id);
-
-
-        if (data == null) return new OperationResponse()
-        {
-            StatusCode = HttpStatusCode.BadRequest,
-            Msg = "no subscription with this number "
-        };
-        if(data.Status == GeneralStatus.LockedByUser)
-        {
-            return new OperationResponse()
-            {
-                StatusCode = HttpStatusCode.BadRequest,
-                Msg = "subsciption is locked by user you cannot renew "
-
-            };
-        }
+        if (data == null) throw new NotFoundException("no subscription with this number");
+        if (data.Status == GeneralStatus.LockedByUser) throw new BadRequestException("subsciption is locked by user you cannot renew ");
+        //TODO: REVIEW [Warning]: Variable Naming
         var datetimenow = DateTime.UtcNow;
+        //TODO: REVIEW [Fatal]: Logic flow is too broad, Use Function instead with Clear Name
         var isExpired = datetimenow.CompareTo(data.EndDate);
         if (datetimenow > data.EndDate)
         {
             data.EndDate = datetimenow.AddYears(1);
             await _dbContext.SaveChangesAsync();
-
-            return new OperationResponse()
+            //TODO: REVIEW [Fatal]: Always use Early Return. (Leave Success return to LAST)
+            return new MessageResponse()
             {
                 Msg = "   تم تجديدالخدمة بداية من تاريخ اليوم: " + " بنجاح! ",
-                StatusCode = HttpStatusCode.OK
             };
         }
+        //TODO: REVIEW [Warning]: Variable Naming
         var newdateNow = datetimenow.AddDays(30);
         datetimenow = newdateNow;
         var duration = datetimenow.CompareTo(data.EndDate);
@@ -111,199 +94,138 @@ public class SubscriptionService
             var newEndDate = data.EndDate.AddYears(1);
             data.EndDate = newEndDate;
             await _dbContext.SaveChangesAsync();
-            return new OperationResponse()
+            return new MessageResponse()
             {
                 Msg = data.EndDate.ToString() + "   تم تجديدالخدمة بداية من تاريخ الانتهاء للخدمة: " + " بنجاح! ",
-                StatusCode = HttpStatusCode.OK
             };
         }
-        return new OperationResponse()
-        {
-            Msg = data.EndDate.ToString() + "   عذرا لم يتم تجديد الخدمة يمكنك التجديد عند انتهاء الخدمة او قبلها ب 30 يوما ",
-            StatusCode = HttpStatusCode.BadRequest
-        };
+        //TODO: REVIEW [Warning]: Messages need to be corrected
+        throw new BadRequestException("   عذرا لم يتم تجديد الخدمة يمكنك التجديد عند انتهاء الخدمة او قبلها ب 30 يوما ");
     }
-    public async Task<OperationResponse> UploadFile(int id, FileDto file)
+    
+    public async Task<MessageResponse> UploadFile(int id, FileDto file)
     {
+        //TODO: REVIEW [Error]: Change Model to allow Multiple Files
+        //TODO: REVIEW [Warning]: Upon making changes to Model, you no longer need to fetch the Subscription
+        // Use require only only check it exists!
         var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(a => a.Id == id);
-        if (data == null)
-        {
-            return new OperationResponse()
-            {
-                StatusCode = HttpStatusCode.BadRequest,
-                Msg = "thear is no subscription with this number"
-
-            };
-        }
-        string fileName;
-        var extention = "." + file.File.FileName.Split('.')[file.File.FileName.Split('.').Length - 1];
-        fileName = id + "_" + DateTime.UtcNow.Ticks + file.File.FileName;
+        if (data == null) throw new BadRequestException("thear is no subscription with this number");
+        var fileType = "." + file.File.FileName.Split('.')[file.File.FileName.Split('.').Length - 1];
+        var fileName = id + "_" + DateTime.UtcNow.Ticks + file.File.FileName;
+        //TODO: REVIEW [Recommendation]: Create a service responsible for File Uploads to make it managable
         var pathBuild = Path.Combine(Directory.GetCurrentDirectory(), "Upload\\Files");
         if (!Directory.Exists(pathBuild))
         {
             Directory.CreateDirectory(pathBuild);
         }
         var path = Path.Combine(Directory.GetCurrentDirectory(), "Upload\\Files\\" + fileName);
-        using (var stream = new FileStream(path, FileMode.Create))
+        await using (var stream = new FileStream(path, FileMode.Create))
         {
             await file.File.CopyToAsync(stream);
         }
-        SubscriptionFile newFile = new SubscriptionFile()
+        var newFile = new SubscriptionFile()
         {
+            //TODO: REVIEW [Warning]: CreatedById should be the current user (After Identity Completed)
             CreatedById = 3,
             CreatedOn = DateTime.UtcNow,
             FileName = path,
-            FileType = extention,
+            FileType = fileType,
             SubscriptionId = id,
         };
         await _dbContext.SubscriptionFiles.AddAsync(newFile);
         await _dbContext.SaveChangesAsync();
         data.SubscriptionFileId = newFile.Id;
-        
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        return new MessageResponse()
         {
-            StatusCode = HttpStatusCode.OK,
             Msg = "file uploaded"
         };
-        
     }
+
     public async Task<FetchSubscriptionFileResponseDto> GetFile(FetchSubscriptionRequestDto request)
     {
-       
-           
-            var queryResult = await _dbContext.SubscriptionFiles
-                .OrderBy(p => p.Id)
-                .Skip(request.PageSize * (request.PageNumber - 1))
-                .Take(request.PageSize)
-                .ToListAsync();
-            var result = _mapper.Map<List<SubscriptionFileResponsDto>>(queryResult);
-            var totalCount =  queryResult.Count();
-            var totalpages = (int)Math.Ceiling(totalCount / (decimal)request.PageSize);
-            return new FetchSubscriptionFileResponseDto()
-            {
-                Content = result,
-                CurrentPage = request.PageNumber,
-                PageSize = request.PageSize,
-                TotalPages = totalpages,
-            };
-        }
-    public async Task<SubscriptionFileResponsDto> GetFileBySubscriptionId(int id)
+        var queryResult = await _dbContext.SubscriptionFiles
+            .OrderBy(p => p.Id)
+            .Skip(request.PageSize * (request.PageNumber - 1))
+            .Take(request.PageSize)
+            .ToListAsync();
+        var result = _mapper.Map<List<SubscriptionFileResponsDto>>(queryResult);
+        //TODO: REVIEW [Fatal]: Count will only return the requested page
+        var totalCount = queryResult.Count();
+        var totalpages = (int)Math.Ceiling(totalCount / (decimal)request.PageSize);
+        //TODO: REVIEW [Fatal]: Return List of Objects containing: FileUrl, Date Added, Document Type
+        return new FetchSubscriptionFileResponseDto()
+        {
+            Content = result,
+            CurrentPage = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalPages = totalpages,
+        };
+    }
+
+    public async Task<SubscriptionFileResponsDto> GetFiles(int id)
     {
-        
+        //TODO: REVIEW [Error]: Return List of SubscriptionFiles Based on SubscriptionId
         var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(a => a.Id == id);
-       
         var fileId = data.SubscriptionFileId;
         var fileData = await _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.Id == fileId);
-       
-        
         return new SubscriptionFileResponsDto() { Id = fileData.Id, FileName = fileData.FileName , FileType = fileData.FileType };
     }
-    public async Task<OperationResponse> Lock(int id)
+    
+    public async Task<MessageResponse> Lock(int id)
     {
-        if (id < 0)
-            return new OperationResponse()
-            {
-                StatusCode = HttpStatusCode.BadRequest,
-                Msg = "incorrect Subscription id"
-            };
+        //TODO: REVIEW [Error]: Match against Not deleted
         var data = await _dbContext.Subscriptions.FirstOrDefaultAsync(b => b.Id == id && b.Status == GeneralStatus.Active);
         if (data == null)
         {
+            //TODO: REVIEW [Error]: For Clearer intent use previous Query & then match again Locked Outide null
             var isLocked = await _dbContext.Subscriptions.Where(b => b.Id == id && b.Status == GeneralStatus.LockedByUser).AnyAsync();
             if (!isLocked)
             {
-                return new OperationResponse()
-                {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Msg = "thear is no subscription with this number"
-                };
-
+                throw new BadRequestException("thear is no subscription with this number");
             }
-            return new OperationResponse()
-            {
-                Msg = "عفوًا الاشتراك مقفل مسبقًا !",
-                StatusCode = HttpStatusCode.NotFound
-            };
-
+            throw new NotFoundException("عفوًا الاشتراك مقفل مسبقًا !");
         }
         data.Status = GeneralStatus.LockedByUser;
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        //TODO: REVIEW [Fatal]: Using Customer without Include will cause an exception
+        return new MessageResponse()
         {
             Msg = data.Customer.Name + "  لقد تم قفل الاشتراك لهاذا العميل: " + " بنجاح! ",
-            StatusCode = HttpStatusCode.OK
         };
-
-
-
     }
-    public async Task<OperationResponse> Unlock(int id)
+    public async Task<MessageResponse> Unlock(int id)
     {
-        if (id < 0) return new OperationResponse()
-        {
-            StatusCode = HttpStatusCode.BadRequest,
-            Msg = "incorrect Subscription id"
-        };
+        //TODO: REVIEW [Fatal][Error]: Use Previous Review Notes
         var data = await _dbContext.Subscriptions.FirstOrDefaultAsync(b => b.Id == id && b.Status == GeneralStatus.LockedByUser);
         if (data == null)
         {
             var isUnLocked = await _dbContext.Subscriptions.Where(b => b.Id == id && b.Status == GeneralStatus.Active).AnyAsync();
             if (!isUnLocked)
             {
-                return new OperationResponse()
-                {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Msg = "thear is no subscription with this number"
-                };
-
+                throw new BadRequestException("thear is no subscription with this number");
             }
-            return new OperationResponse()
-            {
-                Msg = "عفوًا الاشتراك غير مقفل مسبقًا !",
-                StatusCode = HttpStatusCode.NotFound
-            };
-
+            throw new NotFoundException("عفوًا الاشتراك غير مقفل مسبقًا !");
         }
         data.Status = GeneralStatus.Active;
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        return new MessageResponse()
         {
             Msg = data.Customer.Name + " تم فتح القفل عن الاشتراك: " + " بنجاح! ",
-            StatusCode = HttpStatusCode.OK
         };
-
-
-
     }
-    public async Task<OperationResponse> Remove(int id)
+    public async Task<MessageResponse> Remove(int id)
     {
-        if (id < 0) return new OperationResponse()
-        {
-            StatusCode = HttpStatusCode.BadRequest,
-            Msg = "incorrect Subscription id"
-        };
         var data = await _dbContext.Subscriptions.FirstOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted);
-        if (data == null) return
-                new OperationResponse()
-                {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Msg = "thear is no subscription with this id "
-                };
-        if (data.Status == GeneralStatus.LockedByUser) return
-               new OperationResponse()
-               {
-                   Msg = "this subscription is locked by user you cannot Removed",
-                   StatusCode = HttpStatusCode.BadRequest
-               };
+        if (data == null) throw new NotFoundException("thear is no subscription with this id ");
+        if (data.Status == GeneralStatus.LockedByUser)
+            throw new BadRequestException("this subscription is locked by user you cannot Removed");
         data.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        return new MessageResponse()
         {
-            StatusCode = HttpStatusCode.OK,
             Msg = "subscription is removed"
         };
-
     }
 }
  

@@ -1,9 +1,7 @@
 ﻿using ManagementAPI.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ManagementAPI.Dtos.Subscriptions;
 using ManagementAPI.Dtos.File;
-using Shared.Dtos;
 
 namespace ManagementAPI.Controllers
 {
@@ -11,60 +9,43 @@ namespace ManagementAPI.Controllers
     [ApiController]
     public class SubscriptionController : ControllerBase
     {
-        SubscriptionService _subscriptionService;
+        private readonly SubscriptionService _subscriptionService;
         public SubscriptionController(SubscriptionService subscriptionService)
         {
             _subscriptionService = subscriptionService;
-
         }
-        [HttpPost]
-        public async Task<ActionResult> CreateSubscription([FromBody] CreateSubscriptionDto request)
-        {
-            return Ok(await _subscriptionService.CreateSubscription(request));
-
-
-        }
+        
         [HttpGet]
-        public async Task<ActionResult> GetAllSubscription([FromQuery] int pagenum, int pagesize)
-        {
+        //TODO: REVIEW [Bonus]: Add CustomerId Query to allow filtering by CustomerId
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber, int pageSize) 
+            => Ok(await _subscriptionService.GetAll(pageNumber, pageSize));
+        
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateSubscriptionDto request)
+            => Ok(await _subscriptionService.Create(request));
 
-            return Ok(await _subscriptionService.GetAllSubscription(pagenum, pagesize));
+        [HttpPut("{id:int}/Renew")]
+        public async Task<IActionResult> Renew(int id) 
+            => Ok(await _subscriptionService.Renew(id));
 
-        }
-        [HttpPut("Renew")]
-        public async Task<OperationResponse> Renew(int id)
-        {
-            return await _subscriptionService.Renew(id);
-        }
-        [HttpPost("file")]
-        public async Task<OperationResponse> UploaddFile([FromForm]FileDto file,int id)
-        {
-            return await _subscriptionService.UploadFile(id,file);
-        }
-        [HttpGet("Subscription File")]
-        public async Task<ActionResult> GetAllFile([FromQuery]FetchSubscriptionRequestDto request)
-        {
-            return Ok(await _subscriptionService.GetFile(request));
-        }
-        [HttpGet("{id}")]
-        public async Task<SubscriptionFileResponsDto> GetFileBySubscriptionId([FromQuery]int id)
-        {
-            return await _subscriptionService.GetFileBySubscriptionId(id);
-        }
-        [HttpPut("{id}/lock")]
-        public async Task<OperationResponse> Lock(int id)
-        {
-            return await _subscriptionService.Lock(id);
-        }
-        [HttpPut("{id}/unlock")]
-        public async Task<OperationResponse> Unlock(int id)
-        {
-            return await _subscriptionService.Unlock(id);
-        }
-        [HttpDelete]
-        public async Task<OperationResponse> Remove(int id)
-        {
-            return await _subscriptionService.Remove(id);
-        }
+        [HttpPut("{id:int}/lock")]
+        public async Task<IActionResult> Lock(int id)
+            => Ok(await _subscriptionService.Lock(id));
+        
+        [HttpPut("{id:int}/unlock")]
+        public async Task<IActionResult> Unlock(int id) 
+            => Ok(await _subscriptionService.Unlock(id));
+        
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Remove(int id) 
+            => Ok(await _subscriptionService.Remove(id));
+        
+        [HttpGet("{id:int}/files")]
+        public async Task<IActionResult> GetFiles(int id) 
+            => Ok(await _subscriptionService.GetFiles(id));
+        
+        [HttpPost("{id:int}/files")]
+        public async Task<IActionResult> UploadFile(int id, [FromForm] FileDto file) 
+            => Ok(await _subscriptionService.UploadFile(id, file));
     }
 }

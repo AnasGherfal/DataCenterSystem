@@ -5,8 +5,8 @@ namespace ManagementAPI.Services;
 
 public interface ICompanionService
 {
-    public Task<OperationResponse> Create(CreateCompanionRequestDto request);
+    public Task<MessageResponse> Create(CreateCompanionRequestDto request);
     public Task<FetchCompanionResponseDto> GetAll(FetchCompanionRequestDto request);
-    public Task<OperationResponse> Update(int id, UpdateCompanionRequestDto request);
-    public Task<OperationResponse> Delete(int id);
+    public Task<MessageResponse> Update(int id, UpdateCompanionRequestDto request);
+    public Task<MessageResponse> Delete(int id);
 }

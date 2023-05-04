@@ -1,8 +1,6 @@
 ﻿using ManagementAPI.Dtos.Companion;
 using ManagementAPI.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Dtos;
 
 namespace ManagementAPI.Controllers;
 
@@ -15,25 +13,20 @@ public class CompanionsController : ControllerBase
     {
         _service = service;  
     }
+    
     [HttpPost]
-    public async Task<OperationResponse> Create([FromBody] CreateCompanionRequestDto request)
-    {
-        return await _service.Create(request);
-    }
+    public async Task<IActionResult> Create([FromBody] CreateCompanionRequestDto request) 
+        => Ok(await _service.Create(request));
 
     [HttpGet]
-    public async Task<FetchCompanionResponseDto> GetAll([FromQuery] FetchCompanionRequestDto filter)
-    {
-        return await _service.GetAll(filter);
-    }
+    public async Task<IActionResult> GetAll([FromQuery] FetchCompanionRequestDto filter)
+        => Ok(await _service.GetAll(filter));
+
     [HttpPut("{id}")]
-    public async Task<OperationResponse> Update(int id, [FromBody] UpdateCompanionRequestDto request)
-    {
-        return await _service.Update(id, request);
-    }
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateCompanionRequestDto request) 
+        => Ok(await _service.Update(id, request));
+
     [HttpDelete("{id}")]
-    public async Task<OperationResponse> Delete(int id)
-    {
-        return await _service.Delete(id);
-    }
+    public async Task<IActionResult> Delete(int id) 
+        => Ok(await _service.Delete(id));
 }

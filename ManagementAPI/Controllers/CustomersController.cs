@@ -22,6 +22,7 @@ public class CustomersController : ControllerBase
         => Ok(await _service.Create(request));
 
     [HttpGet]
+    
     public async Task<IActionResult> GetAll([FromQuery] FetchCustomersRequestDto filter)
         => Ok(await _service.GetAll(filter));
 

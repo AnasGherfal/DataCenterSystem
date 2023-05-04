@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Constants;
 using Shared.Dtos;
 using System.Net;
+using Shared.Exceptions;
 
 namespace ManagementAPI.Services;
 
@@ -21,13 +22,12 @@ public class CompanionService : ICompanionService
         _dbContext = dbContext; 
         _mapper = mapper;
     }
-    public async Task<OperationResponse> Create(CreateCompanionRequestDto request)
+    public async Task<MessageResponse> Create(CreateCompanionRequestDto request)
     {
         var data = _mapper.Map<Companion>(request);
-        if (data == null)
-            return new OperationResponse()
-            { Msg = "! طلبك غير صالح يرجى إعادة المحاولة", StatusCode = HttpStatusCode.BadRequest };
-       /* var isNotUnique = await _dbContext.Companions
+        if (data == null) throw new BadRequestException("! طلبك غير صالح يرجى إعادة المحاولة");
+        //TODO: REVIEW [Warning]: Don't commit commented code
+            /* var isNotUnique = await _dbContext.Companions
                             .Where(p => p.FullName == data.FullName && p.VisitId == data.VisitId)
                             .AnyAsync();
         if (isNotUnique)
@@ -38,38 +38,25 @@ public class CompanionService : ICompanionService
             };*/
         await _dbContext.Companions.AddAsync(data);
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        return new MessageResponse()
         {
-            Msg = "تمت إضافة المرافق بنجاح",
-            StatusCode = HttpStatusCode.OK
+            Msg = "تمت إضافة المرافق بنجاح"
         };
     }
 
-    public async Task<OperationResponse> Delete(int id)
+    public async Task<MessageResponse> Delete(int id)
     {
-        if (id < 1)
-            return new OperationResponse()
-            {
-                Msg = " يرجى ادخال رقم مرافق صحيح",
-                StatusCode = HttpStatusCode.BadRequest
-            };
         var data = await _dbContext.Companions
                        .Where(p => p.Id == id)
                        .FirstOrDefaultAsync();
-        if (data == null)
-            return new OperationResponse()
-            {
-                Msg = "عفوًا لا وجود لمرافق بهذا الرقم",
-                StatusCode = HttpStatusCode.NotFound
-            };
+        if (data == null) throw new NotFoundException("عفوًا لا وجود لمرافق بهذا الرقم");
+        //TODO: REVIEW [Fatal]: Why?
         data.VisitId = 0;
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        return new MessageResponse()
         {
-            Msg = "! بنجاح " + data.FullName + " : لقد تم حذف العميل",
-            StatusCode = HttpStatusCode.OK
+            Msg = "! بنجاح " + data.FullName + " : لقد تم حذف العميل"
         };
-
     }
 
     public async Task<FetchCompanionResponseDto> GetAll(FetchCompanionRequestDto request)
@@ -81,38 +68,29 @@ public class CompanionService : ICompanionService
                               .Skip(request.PageSize * (request.PageNumber - 1))
                               .Take(request.PageSize)
                               .ToListAsync();
+        //TODO: REVIEW [Error]: Use CountAsync
         var totalCount = query.Count();
         var totalPages = Math.Ceiling(totalCount / (double)request.PageSize);
         return new FetchCompanionResponseDto()
         {
             Content = queryResult,
             CurrentPage = request.PageNumber,
+            //TODO: REVIEW [Warning]: Include PageSize
             TotalPages = (int)totalPages
         };
     }
-    public async Task<OperationResponse> Update(int id, UpdateCompanionRequestDto request)
+    public async Task<MessageResponse> Update(int id, UpdateCompanionRequestDto request)
     {
-        if (id < 1)
-            return new OperationResponse()
-            {
-                Msg = "! يرجى ادخال رقم مرافق صحيح",
-                StatusCode = HttpStatusCode.BadRequest
-            };
+        //TODO: REVIEW [Warning]: UpdateCompanionRequestDto JobTitle is not used?
         var data = await _dbContext.Companions
                          .Where(p => p.Id == id)
                          .FirstOrDefaultAsync();
-        if (data == null)
-            return new OperationResponse()
-            {
-                Msg = " يرجى التأكد من صحة رقم المرافق",
-                StatusCode = HttpStatusCode.BadRequest
-            };
+        if (data == null) throw new NotFoundException(" يرجى التأكد من صحة رقم المرافق");
         _mapper.Map(request, data);
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        return new MessageResponse()
         {
-            Msg = "! تم تعديل المرافق بنجاح",
-            StatusCode = HttpStatusCode.OK
+            Msg = "! تم تعديل المرافق بنجاح"
         };
     }
 }

@@ -22,7 +22,19 @@ public class FileDto
     {
         CascadeMode = CascadeMode.Stop;
 
-
+        RuleFor(a => a.ServiceId)
+           .NotEmpty().WithMessage("service id must be not empty")
+           .GreaterThan(0).WithMessage("id must be greater than 0");
+        RuleFor(a => a.CustomerId)
+            .NotEmpty().WithMessage("customer id must be not empty")
+            .GreaterThan(0).WithMessage("id must be greater than 0");
+        //REVIEW: Variable is being treated like a string - instead confirm its a date first
+        RuleFor(a => a.StartDate)
+            .NotEmpty().WithMessage("startdate must be not empty");
+        //REVIEW: Variable is being treated like a string - instead confirm its a date first
+        RuleFor(a => a.EndDate)
+            .NotEmpty().WithMessage("end date must be not empty")
+            .GreaterThan(a => a.StartDate).WithMessage("End date must be grater than start date");
         When(p => IsPdf(p.File), () =>
         {
             RuleFor(p => p.File.Length).LessThanOrEqualTo(5000000);
@@ -44,10 +56,10 @@ public class FileDto
             return false;
     }
 }
-public class CustomValidator : AbstractValidator<IFormFile>
+/*public class CustomValidator : AbstractValidator<FileDto>
 {
     public CustomValidator()
     {
         RuleFor(x => x.File).SetValidator(new FileDtoValidator());
     }
-}
+}*/

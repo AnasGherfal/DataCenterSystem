@@ -37,9 +37,9 @@ public class SubscriptionService
         _mapper = mapper;
     }
 
-    public async Task<MessageResponse> Create( FileDto fileRequest,CreateSubscriptionDto request)
+    public async Task<MessageResponse> Create( FileDto fileRequest)
     {
-        var data = _mapper.Map<Subscription>(request);
+        var data = _mapper.Map<Subscription>(fileRequest);
         await _dbContext.Subscriptions.AddAsync(data);
         await _dbContext.SaveChangesAsync();
         await UploadFile(data.Id,fileRequest);

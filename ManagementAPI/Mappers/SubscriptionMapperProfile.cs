@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Infrastructure.Constants;
 using Infrastructure.Models;
+using ManagementAPI.Dtos.File;
 using ManagementAPI.Dtos.Service;
 using ManagementAPI.Dtos.Subscriptions;
 
@@ -10,7 +11,7 @@ public class SubscriptionMapperProfile:Profile
 {
     public SubscriptionMapperProfile()
     {
-        CreateMap<Subscription, CreateSubscriptionDto>().ReverseMap()
+        CreateMap<Subscription, FileDto>().ReverseMap()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(x => GeneralStatus.Active))
             .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.UtcNow))
             .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1));

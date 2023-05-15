@@ -21,8 +21,8 @@ namespace ManagementAPI.Controllers
             => Ok(await _subscriptionService.GetAll(request));
         
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm]  FileDto fileRequest,[FromBody] CreateSubscriptionDto request)
-            => Ok(await _subscriptionService.Create(fileRequest, request));
+        public async Task<IActionResult> Create([FromForm]  FileDto fileRequest)
+            => Ok(await _subscriptionService.Create(fileRequest));
 
         [HttpPut("{id:int}/Renew")]
         public async Task<IActionResult> Renew(int id) 

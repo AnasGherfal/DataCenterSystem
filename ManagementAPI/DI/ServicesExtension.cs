@@ -14,6 +14,8 @@ public static class ServicesExtension
         services.AddScoped<ICompanionService, CompanionService>();
         services.AddScoped<ServiceServices>();
         services.AddScoped<SubscriptionService>();
+        services.AddScoped<UserService>();
+
 
     }
 }

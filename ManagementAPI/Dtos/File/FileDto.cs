@@ -6,22 +6,32 @@ namespace ManagementAPI.Dtos.File;
 
 public class FileDto
 {
+    public int ServiceId { get; set; }
+    public int CustomerId { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public Guid? SubscriptionFileId { get; set; }
+    public decimal? TotalPrice { get; set; }
     public IFormFile File { get; set; }
+
 }
-public class FileDtoValidator : AbstractValidator<IFormFile>
+
+    public class FileDtoValidator : AbstractValidator<FileDto>
 {
     public FileDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;
-        When(p => IsPdf(p), () =>
+
+
+        When(p => IsPdf(p.File), () =>
         {
-            RuleFor(p => p.Length).LessThanOrEqualTo(5000000);
+            RuleFor(p => p.File.Length).LessThanOrEqualTo(5000000);
         });
         
 
-        RuleFor(a=>a.Length).NotEmpty().LessThanOrEqualTo(1000000)
+        RuleFor(a=>a.File.Length).NotEmpty().LessThanOrEqualTo(1000000)
                             .WithMessage("File size is larger than allowed");
-        RuleFor(a => a.ContentType).NotEmpty().Must(x => x.Equals("image/jpeg") || x.Equals("image/jpg") || x.Equals("image/png") || x.Equals("application/pdf"));
+        RuleFor(a => a.File.ContentType).NotEmpty().Must(x => x.Equals("image/jpeg") || x.Equals("image/jpg") || x.Equals("image/png") || x.Equals("application/pdf"));
 
         
     }
@@ -34,7 +44,7 @@ public class FileDtoValidator : AbstractValidator<IFormFile>
             return false;
     }
 }
-public class CustomValidator : AbstractValidator<FileDto>
+public class CustomValidator : AbstractValidator<IFormFile>
 {
     public CustomValidator()
     {

@@ -1,6 +1,8 @@
 ﻿namespace Common.Constants;
 
-public enum SystemPermissions : short
+[Flags]
+public enum SystemPermissions : long
 {
-    
+    None = 0,
+
 }

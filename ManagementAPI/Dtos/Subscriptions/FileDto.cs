@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace ManagementAPI.Dtos.File;
+namespace ManagementAPI.Dtos.Subscriptions;
 
 public class FileDto
 {
@@ -16,7 +16,7 @@ public class FileDto
 
 }
 
-    public class FileDtoValidator : AbstractValidator<FileDto>
+public class FileDtoValidator : AbstractValidator<FileDto>
 {
     public FileDtoValidator()
     {
@@ -39,18 +39,18 @@ public class FileDto
         {
             RuleFor(p => p.File.Length).LessThanOrEqualTo(5000000);
         });
-        
 
-        RuleFor(a=>a.File.Length).NotEmpty().LessThanOrEqualTo(1000000)
+
+        RuleFor(a => a.File.Length).NotEmpty().LessThanOrEqualTo(1000000)
                             .WithMessage("File size is larger than allowed");
         RuleFor(a => a.File.ContentType).NotEmpty().Must(x => x.Equals("image/jpeg") || x.Equals("image/jpg") || x.Equals("image/png") || x.Equals("application/pdf"));
 
-        
+
     }
 
     private bool IsPdf(IFormFile file)
     {
-        if(file.ContentType == "application/pdf")
+        if (file.ContentType == "application/pdf")
             return true;
         else
             return false;

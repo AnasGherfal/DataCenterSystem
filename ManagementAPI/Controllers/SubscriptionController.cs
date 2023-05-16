@@ -1,7 +1,6 @@
 ﻿using ManagementAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using ManagementAPI.Dtos.Subscriptions;
-using ManagementAPI.Dtos.File;
 
 namespace ManagementAPI.Controllers
 {

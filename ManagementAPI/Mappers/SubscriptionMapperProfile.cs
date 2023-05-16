@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Infrastructure.Constants;
 using Infrastructure.Models;
-using ManagementAPI.Dtos.File;
 using ManagementAPI.Dtos.Service;
 using ManagementAPI.Dtos.Subscriptions;
 

@@ -8,9 +8,6 @@ public class CreateSubscriptionDto
     public int CustomerId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public Guid?  SubscriptionFileId { get; set; }
-
-    public decimal? TotalPrice { get; set; }
 }
 public class CreateSubscriptionDtoValidator : AbstractValidator<CreateSubscriptionDto>
 {

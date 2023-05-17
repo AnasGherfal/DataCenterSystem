@@ -30,5 +30,6 @@ namespace ManagementAPI.Dtos.Customer
                                  .NotNull().WithMessage("يرجى إدخال البريد الإلكتروني للعميل")
                                  .EmailAddress().WithMessage("البريد الإلكتروني الذي قمت بإدخاله غير صالح");
         }
+       
     }
 }

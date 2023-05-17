@@ -1,6 +1,10 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using static System.Net.Mime.MediaTypeNames;
+using Common.Helpers;
+using System.Text.RegularExpressions;
+using System.Globalization;
+using System;
 
 namespace ManagementAPI.Dtos.Subscriptions;
 
@@ -10,8 +14,6 @@ public class FileDto
     public int CustomerId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public Guid? SubscriptionFileId { get; set; }
-    public decimal? TotalPrice { get; set; }
     public IFormFile File { get; set; }
 
 }
@@ -31,10 +33,14 @@ public class FileDtoValidator : AbstractValidator<FileDto>
         //REVIEW: Variable is being treated like a string - instead confirm its a date first
         RuleFor(a => a.StartDate)
             .NotEmpty().WithMessage("startdate must be not empty");
+        /*.Must(BeAValidDate).WithMessage("not valid datetime");*/
         //REVIEW: Variable is being treated like a string - instead confirm its a date first
+         
         RuleFor(a => a.EndDate)
             .NotEmpty().WithMessage("end date must be not empty")
-            .GreaterThan(a => a.StartDate).WithMessage("End date must be grater than start date");
+            .GreaterThan(a => a.StartDate).WithMessage("End date must be grater than start date")
+            /*.Must(IsDateTimeValid)*/;
+        
         When(p => IsPdf(p.File), () =>
         {
             RuleFor(p => p.File.Length).LessThanOrEqualTo(5000000);
@@ -47,7 +53,18 @@ public class FileDtoValidator : AbstractValidator<FileDto>
 
 
     }
+    public async Task<bool> IsDateTimeValid(string dateTimeString)
+    {
+        // Try to parse the date time string.
+        DateTime dateTime;
+        if (!DateTime.TryParseExact(dateTimeString, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+        {
+            return false;
+        }
 
+        // The date time string is in the right format.
+        return true;
+    }
     private bool IsPdf(IFormFile file)
     {
         if (file.ContentType == "application/pdf")

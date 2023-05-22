@@ -14,6 +14,5 @@ public class CompanionProfileMapper : Profile
             .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.Now))
             .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1));
         CreateMap<Companion, CompanionResponseDto>();
-        CreateMap<UpdateCompanionRequestDto, Companion>();
     }
 }

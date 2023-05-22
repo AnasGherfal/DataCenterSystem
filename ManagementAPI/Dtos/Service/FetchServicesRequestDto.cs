@@ -10,6 +10,7 @@ public class FetchServicesRequestDto
 
 public class FetchServicesRequestDtoValidator : AbstractValidator<FetchServicesRequestDto>
 {
+    [Obsolete]
     public FetchServicesRequestDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

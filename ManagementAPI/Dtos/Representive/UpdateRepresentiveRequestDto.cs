@@ -12,6 +12,7 @@ public class UpdateRepresentiveRequestDto
 }
 public class EditRepresentiveValidator : AbstractValidator<UpdateRepresentiveRequestDto>
 {
+    [Obsolete]
     public EditRepresentiveValidator()
     {
         CascadeMode = CascadeMode.Stop;

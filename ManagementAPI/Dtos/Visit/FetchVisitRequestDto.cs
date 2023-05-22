@@ -2,14 +2,11 @@
 
 namespace ManagementAPI.Dtos.Visit;
 
-public class FetchVisitRequestDto
-{
-    public int PageNumber { get; set; } = 1;
-    public int PageSize { get; set; } = 25;
-}
+public record FetchVisitRequestDto(int PageNumber = 1, int PageSize = 10);
 
 public class FetchRepresentiveRequestDtoValidator : AbstractValidator<FetchVisitRequestDto>
 {
+    [Obsolete]
     public FetchRepresentiveRequestDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

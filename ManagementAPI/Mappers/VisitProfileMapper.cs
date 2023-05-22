@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Infrastructure.Constants;
 using Infrastructure.Models;
 using ManagementAPI.Dtos.Customer;
 using ManagementAPI.Dtos.Visit;
@@ -14,9 +15,36 @@ public class VisitProfileMapper:Profile
            .ForMember(dest => dest.Id, opt => opt.Ignore())
            .ForMember(dest => dest.TotalMin, opt => opt.MapFrom(x => x.EndTime.TimeOfDay - x.StartTime.TimeOfDay))
            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.Now))
-           .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1));
+           .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1))
+           .ForMember(dest => dest.Status, opt => opt.MapFrom(x => GeneralStatus.Active));
 
-        CreateMap<Visit, VisitResponseDto>();
+
+        CreateMap<Visit, VisitResponseDto>()
+            .ForMember(p => p.Representives, opt => opt.MapFrom(x => x.RepresentivesVisits))
+            .ForMember(dest => dest.TimeShift, opt => opt.MapFrom(x => x.TimeShift.Name))
+            .ForMember(dest => dest.VisitType, opt => opt.MapFrom(x => x.VisitType.Name))
+            .ForMember(dest => dest.Price, opt => opt.MapFrom(x => Converter(x)))
+            .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(x => x.RepresentivesVisits.Select(p=>p.Representive.Customer.Name).Single()));
+
+
         CreateMap<UpdateVisitRequestDto, Visit>();
+
+       
     }
+    private static decimal Converter(Visit x)
+    {   
+        decimal result = 0;
+        if (x.TotalMin == null) return 0;
+        
+        if (x.TotalMin.Value.TotalMinutes <= 60.00)
+        {
+           result=x.TimeShift.PriceForFirstHour;
+        }
+        else
+        {
+            result= x.TimeShift.PriceForRemainingHour;
+        }
+        return result;
+    }
+   
 }

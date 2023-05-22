@@ -21,6 +21,7 @@ public class DataCenterContext : DbContext
     public DbSet<TransactionHistory> TransactionHistories => Set<TransactionHistory>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Visit> Visits => Set<Visit>();
+    public DbSet<RepresentiveVisit> RepresentiveVisits => Set<RepresentiveVisit>();
     public DbSet<VisitTimeShift> VisitTimeShifts => Set<VisitTimeShift>();
     public DbSet<VisitType> VisitTypes => Set<VisitType>();
 
@@ -32,7 +33,7 @@ public class DataCenterContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
+        
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DataCenterContext).Assembly);
 
     }

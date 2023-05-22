@@ -1,20 +1,12 @@
 ﻿using AutoMapper;
 using Infrastructure;
 using Infrastructure.Models;
-using ManagementAPI.Dtos.Customer;
-using ManagementAPI.Dtos.Service;
 using ManagementAPI.Dtos.Subscriptions;
 using ManagementAPI.Dtos.File;
 using Infrastructure.Constants;
 using Microsoft.EntityFrameworkCore;
 using Shared.Dtos;
 using System.Net;
-using Microsoft.IdentityModel.Tokens;
-using Azure.Core;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using Serilog;
-using Microsoft.VisualBasic;
-using Infrastructure.Constants;
 
 namespace ManagementAPI.Services;
 

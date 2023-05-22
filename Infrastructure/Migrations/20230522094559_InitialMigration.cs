@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -73,6 +73,7 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: true),
                     PrimaryPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     SecondaryPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
@@ -172,6 +173,7 @@ namespace Infrastructure.Migrations
                     Filename = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DocType = table.Column<short>(type: "smallint", nullable: false),
+                    IsActive = table.Column<short>(type: "smallint", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
@@ -187,6 +189,40 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CustomerFiles_Users_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Representives",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false, computedColumnSql: "[FirstName] + ' ' + [LastName]"),
+                    IdentityNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    IdentityType = table.Column<short>(type: "smallint", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
+                    PhoneNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Status = table.Column<short>(type: "smallint", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CreatedById = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Representives", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Representives_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Representives_Users_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "Users",
                         principalColumn: "Id");
@@ -225,6 +261,36 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Subscriptions_Users_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RepresentiveFiles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Filename = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DocType = table.Column<short>(type: "smallint", nullable: false),
+                    RepresintiveId = table.Column<int>(type: "int", nullable: false),
+                    RepresentiveId = table.Column<int>(type: "int", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CreatedById = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RepresentiveFiles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RepresentiveFiles_Representives_RepresentiveId",
+                        column: x => x.RepresentiveId,
+                        principalTable: "Representives",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RepresentiveFiles_Users_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "Users",
                         principalColumn: "Id");
@@ -327,6 +393,7 @@ namespace Infrastructure.Migrations
                     TotalMin = table.Column<TimeSpan>(type: "time", nullable: true),
                     Price = table.Column<decimal>(type: "decimal(6,2)", precision: 6, scale: 2, nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    Status = table.Column<short>(type: "smallint", nullable: false),
                     VisitTypeId = table.Column<short>(type: "smallint", nullable: false),
                     SubscriptionId = table.Column<int>(type: "int", nullable: false),
                     TimeShiftId = table.Column<int>(type: "int", nullable: false),
@@ -400,72 +467,24 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Representives",
+                name: "RepresentiveVisits",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false, computedColumnSql: "[FirstName] + ' ' + [LastName]"),
-                    IdentityNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    IdentityType = table.Column<short>(type: "smallint", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
-                    PhoneNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Status = table.Column<short>(type: "smallint", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    VisitId = table.Column<int>(type: "int", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
-                    CreatedById = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Representives", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Representives_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Representives_Users_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Representives_Visits_VisitId",
-                        column: x => x.VisitId,
-                        principalTable: "Visits",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RepresentiveFiles",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Filename = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DocType = table.Column<short>(type: "smallint", nullable: false),
-                    RepresintiveId = table.Column<int>(type: "int", nullable: false),
                     RepresentiveId = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
-                    CreatedById = table.Column<int>(type: "int", nullable: false)
+                    VisitId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RepresentiveFiles", x => x.Id);
+                    table.PrimaryKey("PK_RepresentiveVisits", x => new { x.RepresentiveId, x.VisitId });
                     table.ForeignKey(
-                        name: "FK_RepresentiveFiles_Representives_RepresentiveId",
+                        name: "FK_RepresentiveVisits_Representives_RepresentiveId",
                         column: x => x.RepresentiveId,
                         principalTable: "Representives",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_RepresentiveFiles_Users_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "Users",
+                        name: "FK_RepresentiveVisits_Visits_VisitId",
+                        column: x => x.VisitId,
+                        principalTable: "Visits",
                         principalColumn: "Id");
                 });
 
@@ -535,8 +554,8 @@ namespace Infrastructure.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Representives_VisitId",
-                table: "Representives",
+                name: "IX_RepresentiveVisits_VisitId",
+                table: "RepresentiveVisits",
                 column: "VisitId");
 
             migrationBuilder.CreateIndex(
@@ -625,6 +644,9 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "RepresentiveFiles");
+
+            migrationBuilder.DropTable(
+                name: "RepresentiveVisits");
 
             migrationBuilder.DropTable(
                 name: "SubscriptionFiles");

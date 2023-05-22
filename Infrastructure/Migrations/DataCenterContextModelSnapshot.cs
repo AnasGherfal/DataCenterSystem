@@ -126,6 +126,10 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
                     b.Property<int>("CreatedById")
                         .HasColumnType("int");
 
@@ -188,6 +192,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Filename")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<short>("IsActive")
+                        .HasColumnType("smallint");
 
                     b.HasKey("Id");
 
@@ -305,16 +312,11 @@ namespace Infrastructure.Migrations
                     b.Property<short>("Status")
                         .HasColumnType("smallint");
 
-                    b.Property<int?>("VisitId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("VisitId");
 
                     b.ToTable("Representives");
                 });
@@ -357,6 +359,21 @@ namespace Infrastructure.Migrations
                     b.HasIndex("RepresentiveId");
 
                     b.ToTable("RepresentiveFiles");
+                });
+
+            modelBuilder.Entity("Infrastructure.Models.RepresentiveVisit", b =>
+                {
+                    b.Property<int>("RepresentiveId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VisitId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RepresentiveId", "VisitId");
+
+                    b.HasIndex("VisitId");
+
+                    b.ToTable("RepresentiveVisits");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Service", b =>
@@ -597,6 +614,9 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("StartTime")
                         .HasColumnType("datetime");
 
+                    b.Property<short>("Status")
+                        .HasColumnType("smallint");
+
                     b.Property<int>("SubscriptionId")
                         .HasColumnType("int");
 
@@ -783,10 +803,6 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.Models.Visit", null)
-                        .WithMany("Representives")
-                        .HasForeignKey("VisitId");
-
                     b.Navigation("CreatedBy");
 
                     b.Navigation("Customer");
@@ -808,6 +824,23 @@ namespace Infrastructure.Migrations
                     b.Navigation("CreatedBy");
 
                     b.Navigation("Representive");
+                });
+
+            modelBuilder.Entity("Infrastructure.Models.RepresentiveVisit", b =>
+                {
+                    b.HasOne("Infrastructure.Models.Representive", "Representive")
+                        .WithMany("RepresentiveVisits")
+                        .HasForeignKey("RepresentiveId")
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Models.Visit", "Visit")
+                        .WithMany("RepresentivesVisits")
+                        .HasForeignKey("VisitId")
+                        .IsRequired();
+
+                    b.Navigation("Representive");
+
+                    b.Navigation("Visit");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Service", b =>
@@ -947,6 +980,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Models.Representive", b =>
                 {
                     b.Navigation("Files");
+
+                    b.Navigation("RepresentiveVisits");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Service", b =>
@@ -999,7 +1034,7 @@ namespace Infrastructure.Migrations
                 {
                     b.Navigation("Companions");
 
-                    b.Navigation("Representives");
+                    b.Navigation("RepresentivesVisits");
                 });
 #pragma warning restore 612, 618
         }

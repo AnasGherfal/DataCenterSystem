@@ -1,16 +1,10 @@
 ﻿using Common.Helpers;
 using FluentValidation;
+using Shared.Constants;
 
 namespace ManagementAPI.Dtos.Customer
 {
-    public class CreateCustomerRequestDto
-    {
-        public string Name { get; set; } = string.Empty;
-        public string? Address { get; set; }
-        public string PrimaryPhone { get; set; } = string.Empty;
-        public string? SecondaryPhone { get; set; }
-        public string Email { get; set; } = string.Empty;
-    }
+    public record CreateCustomerRequestDto(string Name, string? Address, string PrimaryPhone, string? SecondaryPhone, string Email, IList<FileRequestDto> Files);
     public class CreateCustomerDtoValidator : AbstractValidator<CreateCustomerRequestDto>
     {
         public CreateCustomerDtoValidator()

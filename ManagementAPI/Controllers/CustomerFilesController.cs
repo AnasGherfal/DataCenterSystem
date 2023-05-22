@@ -10,14 +10,6 @@ namespace ManagementAPI.Controllers;
 [ApiController]
 public class CustomerFilesController : ControllerBase
 {
-    private readonly ICustomerFileService _service;
-    public CustomerFilesController(ICustomerFileService service)
-    {
-        _service = service;
-    }
-    [HttpPost]
-    public async Task<OperationResponse> Upload([FromForm]CustomerFileRequestDto request)
-    {
-        return await _service.Upload(request);
-    }
+ 
+ 
 }

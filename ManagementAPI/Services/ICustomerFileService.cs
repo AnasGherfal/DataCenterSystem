@@ -6,5 +6,5 @@ namespace ManagementAPI.Services;
 
 public interface ICustomerFileService
 {
-    public Task<OperationResponse> Upload(CustomerFileRequestDto request);
+   // public Task<OperationResponse> Upload(CustomerFileRequestDto request);
 }

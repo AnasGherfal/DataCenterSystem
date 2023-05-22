@@ -1,8 +1,5 @@
-﻿using Infrastructure.Models;
-using ManagementAPI.Dtos.Customer;
-using ManagementAPI.Dtos.Representive;
+﻿using ManagementAPI.Dtos.Representive;
 using ManagementAPI.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Dtos;
 
@@ -20,39 +17,27 @@ public class RepresentivesController : ControllerBase
 
 
     [HttpPost]
-    public async Task<OperationResponse> Create([FromBody] CreateRepresentiveRequestDto request)
-    {
-        return await _service.Create(request);
-    }
+    public async Task<IActionResult> Create([FromBody] CreateRepresentiveRequestDto request)
+        => Ok(await _service.Create(request));
 
     [HttpGet]
-    public async Task<FetchRepresentiveResponseDto> GetAll([FromQuery] FetchRepresentiveRequestDto filter)
-    {
-        return await _service.GetAll(filter);
-    }
+    public async Task<IActionResult> GetAll([FromQuery] FetchRepresentiveRequestDto filter)
+        => Ok(await _service.GetAll(filter));
 
     [HttpDelete("{id}")]
-    public async Task<OperationResponse> Delete(int id)
-    {
-       return await _service.Delete(id);
-    }
+    public async Task<IActionResult> Delete(int id)
+        => Ok( await _service.Delete(id));
 
     [HttpPut("{id}/lock")]
-    public async Task<OperationResponse> Lock(int id)
-    {
-        return await _service.Lock(id);
-    }
-    [HttpPut("{id}/Unlock")]
-    public async Task<OperationResponse> Unlock(int id)
-    {
-        return await _service.Unlock(id);
-       
-    }
+    public async Task<IActionResult> Lock(int id)
+        =>Ok( await _service.Lock(id));
 
+    [HttpPut("{id}/Unlock")]
+    public async Task<IActionResult> Unlock(int id) 
+        =>  Ok(await _service.Unlock(id));
+       
     [HttpPut("{id}")]
-    public async Task<OperationResponse> Update(int id, [FromBody] UpdateRepresentiveRequestDto request)
-    {
-        return await _service.Update(id, request);
-        
-    }
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateRepresentiveRequestDto request)
+    => Ok(await _service.Update(id, request));
+
 }

@@ -1,5 +1,6 @@
 ﻿using Common.Helpers;
 using FluentValidation;
+using ManagementAPI.Dtos.Companion;
 
 namespace ManagementAPI.Dtos.Visit;
 public class UpdateVisitRequestDto
@@ -10,8 +11,10 @@ public class UpdateVisitRequestDto
     public decimal Price { get; set; }
     public string? Notes { get; set; }
     public short VisitTypeId { get; set; }
-    public int VisitShiftId { get; set; }
+    public int TimeShiftId { get; set; }
     public int? InvoiceId { get; set; }
+    public IList<int> Representives { get; set; }
+    public IList<CreateCompanionRequestDto> Companions { get; set; }
 }
 public class UpdateVisitValidator : AbstractValidator<UpdateVisitRequestDto>
 {

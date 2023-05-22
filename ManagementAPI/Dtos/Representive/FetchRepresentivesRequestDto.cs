@@ -12,6 +12,7 @@ public class FetchRepresentiveRequestDto
 
 public class FetchRepresentiveRequestDtoValidator : AbstractValidator<FetchRepresentiveRequestDto>
 {
+    [Obsolete]
     public FetchRepresentiveRequestDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

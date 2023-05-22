@@ -10,6 +10,7 @@ namespace ManagementAPI.Dtos.Subscriptions
 
     public class FetchSubscriptionRequestDtoValidator : AbstractValidator<FetchSubscriptionRequestDto>
     {
+        [Obsolete]
         public FetchSubscriptionRequestDtoValidator()
         {
             CascadeMode = CascadeMode.Stop;

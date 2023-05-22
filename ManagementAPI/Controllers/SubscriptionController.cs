@@ -35,11 +35,14 @@ namespace ManagementAPI.Controllers
         public async Task<IActionResult> Unlock(int id) 
             => Ok(await _subscriptionService.Unlock(id));
         
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int}/delete")]
         public async Task<IActionResult> Remove(int id) 
             => Ok(await _subscriptionService.Remove(id));
-        
-        [HttpGet("{Id:int}/files")]
+        [HttpDelete("{id:int}/deleteFile")]
+        public async Task<IActionResult> RemoveFile(int id)
+            => Ok(await _subscriptionService.RemoveFile(id));
+
+        [HttpGet("files")]
         public async Task<IActionResult> GetFiles([FromQuery]FetchSubscriptionRequestDto request) 
             => Ok(await _subscriptionService.GetFiles(request));
         
@@ -49,8 +52,15 @@ namespace ManagementAPI.Controllers
         [HttpGet("{id:int}/fileById")]
         public async Task<IActionResult> GetFileById(int id)
             => Ok(await _subscriptionService.GetFileById(id));
-        [HttpGet("page")]
-        public async Task<IActionResult> GetPageContent(string url)
-           => Ok(await _subscriptionService.GetPageContent(url));
+
+        [HttpPut("{id:int}/update")]
+        public async Task<IActionResult> Update(int id,UpdateSubscriptionRequestDto request)
+           => Ok(await _subscriptionService.Update(id,request));
+        [HttpPut("{id:int}/updateFile")]
+        public async Task<IActionResult> UpdateFile(int id, [FromForm] UpdateFileDto request)
+           => Ok(await _subscriptionService.UpdateFile(id, request));
+        [HttpGet("Download")]
+        public async Task<IActionResult> Download(int id)
+            => Ok(await _subscriptionService.Download(id));
     }
 }

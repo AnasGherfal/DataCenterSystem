@@ -17,6 +17,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.4" />
+        <PackageReference Include="MimeMapping" Version="2.0.0" />
         <PackageReference Include="Serilog" Version="2.12.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
         <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
@@ -25,6 +26,7 @@
 
     <ItemGroup>
       <Folder Include="Dtos\File\" />
+      <Folder Include="Upload\Files\" />
       <Folder Include="wwwroot\" />
       <Folder Include="wwwroot\Uploads\" />
     </ItemGroup>

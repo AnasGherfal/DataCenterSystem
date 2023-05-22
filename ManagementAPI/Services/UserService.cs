@@ -6,6 +6,7 @@ using Infrastructure.Models;
 using ManagementAPI.Dtos.Service;
 using ManagementAPI.Dtos.Subscriptions;
 using ManagementAPI.Dtos.User;
+using Microsoft.AspNetCore.Server.IIS.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using Shared.Dtos;
@@ -28,34 +29,29 @@ public class UserService
         _dbContext = dbContext;
         _mapper = mapper;
     }
-    public async Task<OperationResponse> Create(CreateUserRequestDto request)
+    public async Task<MessageResponse> Create(CreateUserRequestDto request)
     {
         if (await _dbContext.Users.AnyAsync(p => p.FullName == request.FullName && p.Status != GeneralStatus.Deleted))
-        {
+            throw new BadRequestException("! thear is simillar user");
+
+        /* List<Hr> Hrs = new List<Hr>();
+         Hrs.Add(new Hr() {Id = 1,HasApp = true,UserName = "admin",FullName = "ehmeda",EmpId = 1001 });
+         Hrs.Add(new Hr() { Id = 2, HasApp = false, UserName = "admin1", FullName = "ashraf", EmpId = 1002 });
+         var Userdata = Hrs.SingleOrDefault(a => a.Id == request.UserId);
+         if (Userdata == null)
+         {
             return new OperationResponse()
-            {
-                Msg = "thier is simellar user stored in database",
-                StatusCode = HttpStatusCode.BadRequest,
-            };
-        }
-       /* List<Hr> Hrs = new List<Hr>();
-        Hrs.Add(new Hr() {Id = 1,HasApp = true,UserName = "admin",FullName = "ehmeda",EmpId = 1001 });
-        Hrs.Add(new Hr() { Id = 2, HasApp = false, UserName = "admin1", FullName = "ashraf", EmpId = 1002 });
-        var Userdata = Hrs.SingleOrDefault(a => a.Id == request.UserId);
-        if (Userdata == null)
-        {
-           return new OperationResponse()
-            {
-                StatusCode = HttpStatusCode.BadRequest,
-                Msg = "there is no username with this number in ltt portal system"
-            };
-        }*/
+             {
+                 StatusCode = HttpStatusCode.BadRequest,
+                 Msg = "there is no username with this number in ltt portal system"
+             };
+         }*/
         var data = _mapper.Map<User>(request);
         var generatedPassword = GeneratePassword();
         data.Password = HashPassword(await generatedPassword);
         await _dbContext.AddAsync(data);
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse() { Msg = "ok", StatusCode = HttpStatusCode.OK };
+        return new MessageResponse { Msg = "ok user created"};
     }
     public async Task<FetchUsersResponseDto> GetAll(FetchUsersRequestDto request)
     {

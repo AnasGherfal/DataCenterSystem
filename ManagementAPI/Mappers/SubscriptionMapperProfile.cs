@@ -20,7 +20,7 @@ public class SubscriptionMapperProfile:Profile
             .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(x => x.Customer.Name));
 
         CreateMap<SubscriptionFileResponsDto, SubscriptionFile>().ReverseMap();
-
+        CreateMap<UpdateSubscriptionRequestDto, Subscription>().ReverseMap();
 
     }
 }

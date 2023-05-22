@@ -9,6 +9,7 @@ namespace ManagementAPI.Dtos.User
         public short Status { get; set; }
         public long Permisssions { get; set; } = 0;
         public string Password { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public int EmpId { get; set; }
     }
 }

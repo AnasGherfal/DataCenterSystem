@@ -8,6 +8,7 @@ using ManagementAPI.Dtos.Service;
 using Azure;
 using Azure.Core;
 using System.Net;
+using ManagementAPI.Dtos.Subscriptions;
 
 namespace ManagementAPI.Controllers;
 
@@ -22,42 +23,27 @@ public class ServiceController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<OperationResponse> Create([FromBody]CreateServiceDto request)
-    {
-        var result = await _service.Create(request);
-        switch(result.StatusCode) {
-            case HttpStatusCode.OK: return result;
-            case HttpStatusCode.BadRequest: return new OperationResponse() { StatusCode = HttpStatusCode.BadRequest};
-            default: return result;
-        }
-    }
-    
+    public async Task<IActionResult> Create([FromForm] CreateServiceDto request)
+            => Ok(await _service.Create(request));
+
     [HttpGet]
-    public async Task<ActionResult<FetchServicesResponseDto>> GetAll([FromQuery]FetchServicesRequestDto fetchServicesRequestDto)
-    {
-        return Ok(await _service.GetAll(fetchServicesRequestDto));
-    }
-    [HttpPut]
-    public async Task<OperationResponse> Update(int id, UpdateServiceDto updateServiceDto)
-    {
-        return await _service.Update(id,updateServiceDto);
-    }
+    public async Task<IActionResult> GetAll([FromQuery] FetchServicesRequestDto request)
+              => Ok(await _service.GetAll(request));
 
-    [HttpDelete]
-    public async Task<OperationResponse> Remove(int id)
-    {
+    [HttpGet("{id:int}/GetById")]
+    public async Task<IActionResult> GetById(int id)
+             => Ok(await _service.GetById(id));
+    [HttpGet("{id:int}/Update")]
+    public async Task<IActionResult> Update(int id,UpdateServiceDto request)
+             => Ok(await _service.Update(id,request));
 
-        return await _service.Remove(id);
-
-    }
-    [HttpPut("{id}/lock")]
-    public async Task<OperationResponse> Lock(int id)
-    {
-        return await _service.Lock(id);
-    }
-    [HttpPut("{id}/unlock")]
-    public async Task<OperationResponse> UnLock(int id)
-    {
-        return await _service.Unlock(id);
-    }
+    [HttpDelete("{id:int}/Delete")]
+    public async Task<IActionResult> Remove(int id)
+             => Ok(await _service.Remove(id));
+    [HttpPut("{id:int}/lock")]
+    public async Task<IActionResult> Lock(int id)
+             => Ok(await _service.Lock(id));
+    [HttpPut("{id:int}/unlock")]
+    public async Task<IActionResult> Unlock(int id)
+             => Ok(await _service.Unlock(id));
 }

@@ -13,6 +13,16 @@ public enum SystemPermissions : long
     DeleteSubscription = 64,
     CompainionManegment = 128,
     DeleteCompainion = 256,
+    VisitManegment = 512,
+    DeleteVsit = 1024,
+    RepresentiveManegment = 2048,
+    DeleteRepresentive = 4096,
+    VisitShiftTime = 8192,
+    DeleteVisitShiftTime = 16384,
+
+
+
+
 
 
 

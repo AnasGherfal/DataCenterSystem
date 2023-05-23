@@ -8,6 +8,7 @@ using System.Net;
 using AutoMapper.QueryableExtensions;
 using Infrastructure.Constants;
 using Shared.Exceptions;
+using ManagementAPI.Dtos.Service;
 
 namespace ManagementAPI.Services;
 
@@ -56,7 +57,14 @@ public class CustomerService : ICustomerService
             TotalPages = (int)totalpages
         };
     }
-
+    public async Task<CustomerResponseDto> GetById(int id)
+    {
+        if (id < 0) throw new BadRequestException("! طلبك غير صالح يرجى إعادة المحاولة");
+        var query = await _dbContext.Customers.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted);
+        if (query == null) throw new NotFoundException("there is no customer with this number");
+        var result = _mapper.Map<CustomerResponseDto>(query);
+        return result;
+    }
     public async Task<MessageResponse> Update(int id, UpdateCustomerRequestDto request)
     {
         var data = await _dbContext.Customers

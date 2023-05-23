@@ -4,8 +4,11 @@ using Infrastructure;
 using Infrastructure.Constants;
 using Infrastructure.Models;
 using ManagementAPI.Dtos.Service;
+using ManagementAPI.Dtos.Subscriptions;
+using ManagementAPI.Dtos.User;
 using Microsoft.EntityFrameworkCore;
 using Shared.Dtos;
+using Shared.Exceptions;
 
 namespace ManagementAPI.Services;
 
@@ -57,7 +60,14 @@ public class ServiceServices
             TotalPages = totalpages,
         };
     }
-
+    public async Task<ServiceResponseDto> GetById(int id)
+    {
+        if (id < 0) throw new BadRequestException("! طلبك غير صالح يرجى إعادة المحاولة");
+        var query = await _dbContext.Services.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted);
+        if (query == null) throw new NotFoundException("there is no sevice with this number");
+        var result = _mapper.Map<ServiceResponseDto>(query);
+        return result;
+    }
     public async Task<OperationResponse> Update(int id, UpdateServiceDto request)
     {
         var data = await _dbContext.Services.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted );

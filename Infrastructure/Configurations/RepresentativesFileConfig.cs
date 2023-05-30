@@ -1,12 +1,12 @@
 ﻿namespace Infrastructure.Configurations;
 
-public class RepresentiveFileConfig : IEntityTypeConfiguration<RepresentiveFile>
+public class RepresentativeFileConfig : IEntityTypeConfiguration<RepresentativeFile>
 {
-    public void Configure(EntityTypeBuilder<RepresentiveFile> builder)
+    public void Configure(EntityTypeBuilder<RepresentativeFile> builder)
     {
         builder.HasKey(a => a.Id);
         builder.HasOne(a => a.CreatedBy)
-               .WithMany(u => u.RepresentiveFilesCreatedBy)
+               .WithMany(u => u.RepresentativeFilesCreatedBy)
                .HasForeignKey(a => a.CreatedById)
                .OnDelete(DeleteBehavior.ClientSetNull);
     }

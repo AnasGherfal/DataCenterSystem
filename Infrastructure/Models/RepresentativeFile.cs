@@ -1,14 +1,14 @@
 ﻿namespace Infrastructure.Models;
 
-public class RepresentiveFile : BaseModel
+public class RepresentativeFile : BaseModel
 {
     public int Id { get; set; }
     public string Filename { get; set; } = string.Empty;
     public string FileType { get; set; } = string.Empty;
     public short DocType { get; set; }
-    public int RepresintiveId { get; set; }
+    public int RepresentativeId { get; set; }
 
     //-----------Realations
 
-    public Representive Representive { get; set; }
+    public Representative Representative { get; set; }
 }

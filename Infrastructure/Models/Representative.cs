@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Models
 {
-    public class Representive : BaseModel
+    public class Representative : BaseModel
     {
         public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
@@ -16,8 +16,12 @@ namespace Infrastructure.Models
         public int CustomerId { get; set; }
 
         //--------relation
-        public ICollection<RepresentiveFile> Files { get; set; } = new List<RepresentiveFile>();
+        public ICollection<RepresentativeFile> Files { get; set; } = new List<RepresentativeFile>();
         public Customer Customer { get; set; }
+<<<<<<< Updated upstream:Infrastructure/Models/Representive.cs
         public ICollection<RepresentiveVisit> RepresentiveVisits { get; set; } = new List<RepresentiveVisit>();
+=======
+        public ICollection<RepresentativeVisit> RepresentativeVisits { get; set; } = new List<RepresentativeVisit>();
+>>>>>>> Stashed changes:Infrastructure/Models/Representative.cs
     }
 }

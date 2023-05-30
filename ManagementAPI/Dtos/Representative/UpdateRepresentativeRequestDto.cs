@@ -1,8 +1,8 @@
 ﻿using Common.Helpers;
 using FluentValidation;
 
-namespace ManagementAPI.Dtos.Representive;
-public class UpdateRepresentiveRequestDto
+namespace ManagementAPI.Dtos.Representative;
+public class UpdateRepresentativeRequestDto
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
@@ -10,10 +10,14 @@ public class UpdateRepresentiveRequestDto
     public string PhoneNo { get; set; } = string.Empty;
     public int CustomerId { get; set; }
 }
-public class EditRepresentiveValidator : AbstractValidator<UpdateRepresentiveRequestDto>
+public class EditRepresentativeValidator : AbstractValidator<UpdateRepresentativeRequestDto>
 {
     [Obsolete]
+<<<<<<< Updated upstream:ManagementAPI/Dtos/Representive/UpdateRepresentiveRequestDto.cs
     public EditRepresentiveValidator()
+=======
+    public EditRepresentativeValidator()
+>>>>>>> Stashed changes:ManagementAPI/Dtos/Representative/UpdateRepresentativeRequestDto.cs
     {
         CascadeMode = CascadeMode.Stop;
 

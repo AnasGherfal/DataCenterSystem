@@ -173,6 +173,7 @@ namespace Infrastructure.Migrations
                     Filename = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DocType = table.Column<short>(type: "smallint", nullable: false),
+                    IsActive = table.Column<short>(type: "smallint", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
@@ -194,11 +195,7 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-<<<<<<< Updated upstream
-                name: "Representives",
-=======
                 name: "Representatives",
->>>>>>> Stashed changes
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -217,25 +214,15 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-<<<<<<< Updated upstream
-                    table.PrimaryKey("PK_Representives", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Representives_Customers_CustomerId",
-=======
                     table.PrimaryKey("PK_Representatives", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Representatives_Customers_CustomerId",
->>>>>>> Stashed changes
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-<<<<<<< Updated upstream
-                        name: "FK_Representives_Users_CreatedById",
-=======
                         name: "FK_Representatives_Users_CreatedById",
->>>>>>> Stashed changes
                         column: x => x.CreatedById,
                         principalTable: "Users",
                         principalColumn: "Id");
@@ -280,11 +267,7 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-<<<<<<< Updated upstream
-                name: "RepresentiveFiles",
-=======
                 name: "RepresentativeFiles",
->>>>>>> Stashed changes
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -292,28 +275,12 @@ namespace Infrastructure.Migrations
                     Filename = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DocType = table.Column<short>(type: "smallint", nullable: false),
-                    RepresintiveId = table.Column<int>(type: "int", nullable: false),
-<<<<<<< Updated upstream
-                    RepresentiveId = table.Column<int>(type: "int", nullable: false),
-=======
                     RepresentativeId = table.Column<int>(type: "int", nullable: false),
->>>>>>> Stashed changes
                     CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-<<<<<<< Updated upstream
-                    table.PrimaryKey("PK_RepresentiveFiles", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RepresentiveFiles_Representives_RepresentiveId",
-                        column: x => x.RepresentiveId,
-                        principalTable: "Representives",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RepresentiveFiles_Users_CreatedById",
-=======
                     table.PrimaryKey("PK_RepresentativeFiles", x => x.Id);
                     table.ForeignKey(
                         name: "FK_RepresentativeFiles_Representatives_RepresentativeId",
@@ -323,7 +290,6 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_RepresentativeFiles_Users_CreatedById",
->>>>>>> Stashed changes
                         column: x => x.CreatedById,
                         principalTable: "Users",
                         principalColumn: "Id");
@@ -500,31 +466,14 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-<<<<<<< Updated upstream
-                name: "RepresentiveVisits",
-                columns: table => new
-                {
-                    RepresentiveId = table.Column<int>(type: "int", nullable: false),
-=======
                 name: "RepresentativeVisits",
                 columns: table => new
                 {
                     RepresentativeId = table.Column<int>(type: "int", nullable: false),
->>>>>>> Stashed changes
                     VisitId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-<<<<<<< Updated upstream
-                    table.PrimaryKey("PK_RepresentiveVisits", x => new { x.RepresentiveId, x.VisitId });
-                    table.ForeignKey(
-                        name: "FK_RepresentiveVisits_Representives_RepresentiveId",
-                        column: x => x.RepresentiveId,
-                        principalTable: "Representives",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_RepresentiveVisits_Visits_VisitId",
-=======
                     table.PrimaryKey("PK_RepresentativeVisits", x => new { x.RepresentativeId, x.VisitId });
                     table.ForeignKey(
                         name: "FK_RepresentativeVisits_Representatives_RepresentativeId",
@@ -533,7 +482,6 @@ namespace Infrastructure.Migrations
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_RepresentativeVisits_Visits_VisitId",
->>>>>>> Stashed changes
                         column: x => x.VisitId,
                         principalTable: "Visits",
                         principalColumn: "Id");
@@ -605,13 +553,8 @@ namespace Infrastructure.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-<<<<<<< Updated upstream
-                name: "IX_RepresentiveVisits_VisitId",
-                table: "RepresentiveVisits",
-=======
                 name: "IX_RepresentativeVisits_VisitId",
                 table: "RepresentativeVisits",
->>>>>>> Stashed changes
                 column: "VisitId");
 
             migrationBuilder.CreateIndex(
@@ -703,9 +646,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "RepresentativeVisits");
-
-            migrationBuilder.DropTable(
-                name: "RepresentiveVisits");
 
             migrationBuilder.DropTable(
                 name: "SubscriptionFiles");

@@ -148,10 +148,14 @@ public class CustomerService : ICustomerService
     public async Task<MessageResponse> Lock(int id)
     {
         var data = await _dbContext.Customers
+            .Include(p => p.Representatives)
             .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
             .FirstOrDefaultAsync();
         if (data == null) throw new NotFoundException("! عذرًا..لا وجود لعميل بهذا الرقم او هذا العميل مقيد مسبقًا");
         data.Status = GeneralStatus.LockedByUser;
+        if(data.Representatives != null)
+        foreach(var Representative in data.Representatives)
+            Representative.Status = GeneralStatus.LockedByUser;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -162,10 +166,14 @@ public class CustomerService : ICustomerService
     public async Task<MessageResponse> Unlock(int id)
     {
         var data = await _dbContext.Customers
-            .Where(p => p.Id == id && p.Status != GeneralStatus.LockedByUser)
+            .Include(p => p.Representatives)
+            .Where(p => p.Id == id && p.Status == GeneralStatus.LockedByUser)
             .FirstOrDefaultAsync();
         if (data == null) throw new NotFoundException("! عذرًا..لا وجود لعميل بهذا الرقم او هذا العميل غير مقيد");
         data.Status = GeneralStatus.Active;
+        if(data.Representatives != null)
+        foreach(var Representative in data.Representatives)
+        Representative.Status= GeneralStatus.Active;
         await _dbContext.SaveChangesAsync();
         return new OperationResponse()
         {

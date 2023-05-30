@@ -5,7 +5,11 @@ using Infrastructure.Constants;
 using Infrastructure.Models;
 using ManagementAPI.Dtos.Companion;
 using ManagementAPI.Dtos.Customer;
+<<<<<<< Updated upstream
 using ManagementAPI.Dtos.Representive;
+=======
+using ManagementAPI.Dtos.Representative;
+>>>>>>> Stashed changes
 using ManagementAPI.Dtos.Visit;
 using Microsoft.EntityFrameworkCore;
 using Shared.Constants;
@@ -27,7 +31,13 @@ public class VisitService : IVisitService
     }
     public async Task<MessageResponse> Create(CreateVisitRequestDto request)
     {
+<<<<<<< Updated upstream
         var timeShifts = await _dbContext.VisitTimeShifts.Where(p => p.Status == GeneralStatus.Active).ToListAsync();
+=======
+
+        var timeShifts = await _dbContext.VisitTimeShifts.Where(p => p.Status == GeneralStatus.Active).ToListAsync();
+        var subscription = await _dbContext.Subscriptions.Where(p => p.Id == request.SubscriptionId && p.Status != GeneralStatus.Deleted).Include(p=>p.Customer).SingleOrDefaultAsync();
+>>>>>>> Stashed changes
         var visitStartTime = request.StartTime.TimeOfDay;
         var visitEndTime = request.EndTime.TimeOfDay;
             foreach (var shift in timeShifts)
@@ -46,7 +56,11 @@ public class VisitService : IVisitService
                     var newVisit = new CreateVisitRequestDto()
                     {
                         Companions = request.Companions,
+<<<<<<< Updated upstream
                         Representives = request.Representives,
+=======
+                        Representatives = request.Representatives,
+>>>>>>> Stashed changes
                         StartTime = DateOnly.FromDateTime(request.StartTime).ToDateTime(firstEndTime),
                         EndTime = DateOnly.FromDateTime(request.EndTime).ToDateTime(lastEndTime),
                         ExpectedEndTime = request.ExpectedEndTime,
@@ -62,6 +76,10 @@ public class VisitService : IVisitService
                     partVisit.TimeShiftId=anotherTimeShift.Id;
                     partVisit.TotalMin = timeInAnotherShift;
                     partVisit.Price = CalculatePrice(partVisit);
+<<<<<<< Updated upstream
+=======
+                    
+>>>>>>> Stashed changes
                     request.EndTime = DateOnly.FromDateTime(request.StartTime).ToDateTime(firstEndTime);
                     var data = _mapper.Map<Visit>(request);
                     if (data == null)
@@ -70,8 +88,18 @@ public class VisitService : IVisitService
                     data.TimeShiftId = shift.Id;
                     var companion = _mapper.Map<IList<Companion>>(request.Companions);
                     data.Companions = companion;
+<<<<<<< Updated upstream
                     var representives = request.Representives.Select(p => new RepresentiveVisit() { RepresentiveId = p }).ToList();
                     data.RepresentivesVisits = representives;
+=======
+                    var Representatives = request.Representatives.Select(p => new RepresentativeVisit() { RepresentativeId = p }).ToList();
+                    foreach(var Representative in Representatives)
+                    {
+                        if (Representative.Representative.CustomerId != subscription.CustomerId)
+                            throw new BadHttpRequestException($"عذرًا المخول {Representative.Representative.FullName} ليس مخولًا للزبون {subscription.Customer.Name}");
+                    }
+                    data.RepresentativesVisits = Representatives;
+>>>>>>> Stashed changes
                     data.TotalMin = timeInThisShift;
                     data.Price = CalculatePrice(data);
                     //TODO: Declare Subscription to Decrease Monthly Visit if there a Visit in "While Work" Time Shift.
@@ -83,14 +111,28 @@ public class VisitService : IVisitService
                 else
                 {
                     var data= _mapper.Map<Visit>(request);
+<<<<<<< Updated upstream
                      if (data == null)
+=======
+                    if (data == null)
+>>>>>>> Stashed changes
                        throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
                     data.TimeShiftId = shift.Id;
                     data.TimeShift = shift;
                     var companion = _mapper.Map<IList<Companion>>(request.Companions);
                     data.Companions = companion;
+<<<<<<< Updated upstream
                     var representives = request.Representives.Select(p => new RepresentiveVisit() {RepresentiveId=p}).ToList();
                     data.RepresentivesVisits = representives;
+=======
+                    var Representatives = request.Representatives.Select(p => new RepresentativeVisit() {RepresentativeId=p}).ToList();
+                    foreach (var Representative in Representatives)
+                    {
+                        if (!subscription.Customer.Representatives.Select(p=> p.Id).Contains(Representative.RepresentativeId))
+                            throw new BadHttpRequestException($"عذرًا المخول {Representative.RepresentativeId}  {subscription.Customer.Name} ليس مخولًا للزبون ");
+                    }
+                    data.RepresentativesVisits = Representatives;
+>>>>>>> Stashed changes
                     data.Price = CalculatePrice(data);
        
                      await _dbContext.Visits.AddAsync(data);
@@ -118,10 +160,17 @@ public class VisitService : IVisitService
     public async Task<FetchVisitResponseDto> GetAll(FetchVisitRequestDto request)
     {
         var query = _dbContext.Visits
+<<<<<<< Updated upstream
                 .Include(p => p.RepresentivesVisits)
                 .ThenInclude(p => p.Representive)
                 .Include(p => p.TimeShift)
                 .Where(p => p.Status != GeneralStatus.Deleted);
+=======
+                .Include(p => p.RepresentativesVisits)
+                .ThenInclude(p => p.Representative)
+                .Include(p => p.TimeShift)
+                .Where(p => p.InvoiceId==0||p.InvoiceId==null);
+>>>>>>> Stashed changes
         
        
         var queryResult = await query .OrderBy(p => p.Id)
@@ -188,7 +237,11 @@ public class VisitService : IVisitService
     public async Task<MessageResponse> Update(int id, UpdateVisitRequestDto request)
     {
         var data = await _dbContext.Visits
+<<<<<<< Updated upstream
            .Include(p=> p.RepresentivesVisits)
+=======
+           .Include(p=> p.RepresentativesVisits)
+>>>>>>> Stashed changes
            .Include(p => p.Companions)
            .Where(p => p.Id == id && p.InvoiceId == null)
            .FirstOrDefaultAsync();
@@ -196,10 +249,17 @@ public class VisitService : IVisitService
         if(IsLocked(data.Status))
             throw new NotFoundException("! عذرًا..لا وجود لزيارة بهذا الرقم أو أن هذه الزيارة مقيدة ");
 
+<<<<<<< Updated upstream
         var rep = request.Representives.Select(p => new RepresentiveVisit { RepresentiveId=p }).ToList();
         foreach (var i in rep)
             i.VisitId = id;
         data.RepresentivesVisits= rep;
+=======
+        var rep = request.Representatives.Select(p => new RepresentativeVisit { RepresentativeId=p }).ToList();
+        foreach (var i in rep)
+            i.VisitId = id;
+        data.RepresentativesVisits= rep;
+>>>>>>> Stashed changes
         if(request.Companions != null)
             data.Companions.Clear();
         data.Companions= _mapper.Map<IList<Companion>>(request.Companions);
@@ -252,7 +312,13 @@ public class VisitService : IVisitService
         }
         else
         {
+<<<<<<< Updated upstream
             result = x.TimeShift.PriceForRemainingHour;
+=======
+            var timeAfterFirstHour = x.TotalMin.Value.TotalMinutes - 60;
+            var priceByMin=(double) x.TimeShift.PriceForRemainingHour/60;
+            result =(decimal)(timeAfterFirstHour * priceByMin) + x.TimeShift.PriceForFirstHour;
+>>>>>>> Stashed changes
         }
         return result;
     }

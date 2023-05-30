@@ -4,10 +4,14 @@ namespace ManagementAPI.Dtos.Visit;
 
 public record FetchVisitRequestDto(int PageNumber = 1, int PageSize = 10);
 
-public class FetchRepresentiveRequestDtoValidator : AbstractValidator<FetchVisitRequestDto>
+public class FetchRepresentativeRequestDtoValidator : AbstractValidator<FetchVisitRequestDto>
 {
     [Obsolete]
+<<<<<<< Updated upstream
     public FetchRepresentiveRequestDtoValidator()
+=======
+    public FetchRepresentativeRequestDtoValidator()
+>>>>>>> Stashed changes
     {
         CascadeMode = CascadeMode.Stop;
 

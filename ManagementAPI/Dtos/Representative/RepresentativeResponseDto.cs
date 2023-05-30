@@ -3,9 +3,9 @@ using Infrastructure.Models;
 using ManagementAPI.Dtos.Customer;
 using Shared.Constants;
 
-namespace ManagementAPI.Dtos.Representive;
+namespace ManagementAPI.Dtos.Representative;
 
-public class RepresentiveResponseDto
+public class RepresentativeResponseDto
 {
     public int Id { get; set; }
     public string FirstName { get; set; } = string.Empty;

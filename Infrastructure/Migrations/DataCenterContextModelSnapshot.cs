@@ -258,7 +258,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("Invoices");
                 });
 
-            modelBuilder.Entity("Infrastructure.Models.Representive", b =>
+            modelBuilder.Entity("Infrastructure.Models.Representative", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -318,10 +318,14 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CustomerId");
 
+<<<<<<< Updated upstream
                     b.ToTable("Representives");
+=======
+                    b.ToTable("Representatives");
+>>>>>>> Stashed changes
                 });
 
-            modelBuilder.Entity("Infrastructure.Models.RepresentiveFile", b =>
+            modelBuilder.Entity("Infrastructure.Models.RepresentativeFile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -346,19 +350,31 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RepresentiveId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RepresintiveId")
+                    b.Property<int>("RepresentativeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("RepresentiveId");
+                    b.HasIndex("RepresentativeId");
 
-                    b.ToTable("RepresentiveFiles");
+                    b.ToTable("RepresentativeFiles");
+                });
+
+            modelBuilder.Entity("Infrastructure.Models.RepresentativeVisit", b =>
+                {
+                    b.Property<int>("RepresentativeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VisitId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RepresentativeId", "VisitId");
+
+                    b.HasIndex("VisitId");
+
+                    b.ToTable("RepresentativeVisits");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.RepresentiveVisit", b =>
@@ -790,15 +806,15 @@ namespace Infrastructure.Migrations
                     b.Navigation("Subscription");
                 });
 
-            modelBuilder.Entity("Infrastructure.Models.Representive", b =>
+            modelBuilder.Entity("Infrastructure.Models.Representative", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
-                        .WithMany("RepresentivesCreatedBy")
+                        .WithMany("RepresentativesCreatedBy")
                         .HasForeignKey("CreatedById")
                         .IsRequired();
 
                     b.HasOne("Infrastructure.Models.Customer", "Customer")
-                        .WithMany("Representives")
+                        .WithMany("Representatives")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -808,22 +824,39 @@ namespace Infrastructure.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Infrastructure.Models.RepresentiveFile", b =>
+            modelBuilder.Entity("Infrastructure.Models.RepresentativeFile", b =>
                 {
                     b.HasOne("Infrastructure.Models.User", "CreatedBy")
-                        .WithMany("RepresentiveFilesCreatedBy")
+                        .WithMany("RepresentativeFilesCreatedBy")
                         .HasForeignKey("CreatedById")
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.Models.Representive", "Representive")
+                    b.HasOne("Infrastructure.Models.Representative", "Representative")
                         .WithMany("Files")
-                        .HasForeignKey("RepresentiveId")
+                        .HasForeignKey("RepresentativeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("Representive");
+                    b.Navigation("Representative");
+                });
+
+            modelBuilder.Entity("Infrastructure.Models.RepresentativeVisit", b =>
+                {
+                    b.HasOne("Infrastructure.Models.Representative", "Representative")
+                        .WithMany("RepresentativeVisits")
+                        .HasForeignKey("RepresentativeId")
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Models.Visit", "Visit")
+                        .WithMany("RepresentativesVisits")
+                        .HasForeignKey("VisitId")
+                        .IsRequired();
+
+                    b.Navigation("Representative");
+
+                    b.Navigation("Visit");
                 });
 
             modelBuilder.Entity("Infrastructure.Models.RepresentiveVisit", b =>
@@ -967,7 +1000,7 @@ namespace Infrastructure.Migrations
                 {
                     b.Navigation("Files");
 
-                    b.Navigation("Representives");
+                    b.Navigation("Representatives");
 
                     b.Navigation("Subscriptions");
                 });
@@ -977,11 +1010,15 @@ namespace Infrastructure.Migrations
                     b.Navigation("Visits");
                 });
 
-            modelBuilder.Entity("Infrastructure.Models.Representive", b =>
+            modelBuilder.Entity("Infrastructure.Models.Representative", b =>
                 {
                     b.Navigation("Files");
 
+<<<<<<< Updated upstream
                     b.Navigation("RepresentiveVisits");
+=======
+                    b.Navigation("RepresentativeVisits");
+>>>>>>> Stashed changes
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Service", b =>
@@ -1011,9 +1048,9 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("InvoicesCreatedBy");
 
-                    b.Navigation("RepresentiveFilesCreatedBy");
+                    b.Navigation("RepresentativeFilesCreatedBy");
 
-                    b.Navigation("RepresentivesCreatedBy");
+                    b.Navigation("RepresentativesCreatedBy");
 
                     b.Navigation("ServicesCreatedBy");
 
@@ -1034,7 +1071,11 @@ namespace Infrastructure.Migrations
                 {
                     b.Navigation("Companions");
 
+<<<<<<< Updated upstream
                     b.Navigation("RepresentivesVisits");
+=======
+                    b.Navigation("RepresentativesVisits");
+>>>>>>> Stashed changes
                 });
 #pragma warning restore 612, 618
         }

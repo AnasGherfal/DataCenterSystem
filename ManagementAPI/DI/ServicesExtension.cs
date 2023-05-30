@@ -10,7 +10,7 @@ public static class ServicesExtension
         services.AddSingleton(config);
         services.AddScoped<IInvoiceService, InvoiceService>();
         services.AddScoped<ICustomerService, CustomerService>();
-        services.AddScoped<IRepresentiveService, RepresentiveService>();
+        services.AddScoped<IRepresentativeService, RepresentativeService>();
         services.AddScoped<ICustomerFileService, CustomerFileService>();
         services.AddScoped<IVisitService, VisitService>();
         services.AddScoped<IVisitTimeShiftService, VisitTimeShiftService>();

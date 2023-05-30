@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.Models;
+﻿using Infrastructure.Constants;
+
+namespace Infrastructure.Models;
 
 public class Visit : BaseModel
 { 
@@ -10,6 +12,7 @@ public class Visit : BaseModel
     public TimeSpan? TotalMin { get; set; }
     public decimal Price { get; set; }
     public string? Notes { get; set; } 
+    public GeneralStatus Status { get; set; }
     public short VisitTypeId { get; set; }
     public int SubscriptionId { get; set; }
     public int TimeShiftId { get; set; }
@@ -18,10 +21,10 @@ public class Visit : BaseModel
 
     //---------------Relations
 
-    public VisitType VisitType { get; set; } 
+    public VisitType VisitType { get; set; } =default!;
     public ICollection<Companion> Companions { get; set; }=new List<Companion>();
     public Invoice? Invoice { get; set; }
-    public ICollection<Representive> Representives { get; set; } = new List<Representive>();
-    public VisitTimeShift TimeShift { get; set; } 
+    public ICollection<RepresentativeVisit> RepresentativesVisits { get; set; } = new List<RepresentativeVisit>();
+    public VisitTimeShift TimeShift { get; set; } =default!;
 
 }

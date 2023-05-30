@@ -9,6 +9,7 @@ public class FetchVisitTimeShiftRequestDto
 
 public class FetchVisitTimeShiftRequestDtoValidator : AbstractValidator<FetchVisitTimeShiftRequestDto>
 {
+    [Obsolete]
     public FetchVisitTimeShiftRequestDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

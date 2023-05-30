@@ -1,15 +1,17 @@
-﻿using ManagementAPI.Dtos.Visit;
+﻿using ManagementAPI.Dtos.Companion;
+using ManagementAPI.Dtos.Visit;
 using Shared.Dtos;
 
 namespace ManagementAPI.Services;
 
 public interface IVisitService
 {
-    public Task<OperationResponse> Create(CreateVisitRequestDto request);
+    public Task<MessageResponse> Create(CreateVisitRequestDto request);
     public Task<FetchVisitResponseDto> GetAll(FetchVisitRequestDto request);
-    public Task<OperationResponse> Lock(int id);
-    public Task<OperationResponse> Unlock(int id);
-    public Task<OperationResponse> Update(int id, UpdateVisitRequestDto request);
-    public Task<OperationResponse> Delete(int id);
-    public Task<OperationResponse> Paid(int id, int InvoiceId);
+    public Task<MessageResponse> Lock(int id);
+    public Task<MessageResponse> Unlock(int id);
+    public Task<MessageResponse> Update(int id, UpdateVisitRequestDto request);
+    //public Task<OperationResponse> UpdateCompanion(int visitId,int companionId, UpdateCompanionRequestDto request);
+    public Task<MessageResponse> Delete(int id);
+    public Task<MessageResponse> Paid(int id, int InvoiceId);
 }

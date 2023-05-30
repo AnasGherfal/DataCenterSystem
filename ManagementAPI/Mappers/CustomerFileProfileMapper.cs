@@ -8,11 +8,12 @@ public class CustomerFileProfileMapper : Profile
 {
     public CustomerFileProfileMapper()
     {
-        CreateMap<CustomerFileRequestDto, CustomerFile>()
+        CreateMap<FormFile, CustomerFile>()
             .ForMember(dest => dest.Id, src => src.Ignore())
-             .ForMember(dest => dest.Filename, src => src.MapFrom(p => Path.GetFileNameWithoutExtension(p.File.FileName)))
-            .ForMember(dest => dest.FileType, src => src.MapFrom(p => Path.GetExtension(p.File.FileName)))
+             .ForMember(dest => dest.Filename, src => src.Ignore())
+            .ForMember(dest => dest.FileType, src => src.Ignore())
             .ForMember(dest => dest.CreatedById, src => src.MapFrom(x => 1))
             .ForMember(dest => dest.CreatedOn, src => src.MapFrom(x => DateTime.UtcNow));
+        
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.Models;
+﻿using Infrastructure.Constants;
+
+namespace Infrastructure.Models;
 
 public class Invoice : BaseModel
 {
@@ -10,7 +12,7 @@ public class Invoice : BaseModel
     //public string? Notes { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public short Status { get; set; }
+    public GeneralStatus Status { get; set; }
     public bool IsPaid { get; set; }
     public int SubscriptionId { get; set; }
     //----Realation----------

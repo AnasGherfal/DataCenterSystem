@@ -14,6 +14,7 @@ public class CreateSubscriptionDto
 }
 public class CreateSubscriptionDtoValidator : AbstractValidator<CreateSubscriptionDto>
 {
+    [Obsolete]
     public CreateSubscriptionDtoValidator() {
         CascadeMode = CascadeMode.Stop;
 

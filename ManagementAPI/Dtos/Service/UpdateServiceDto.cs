@@ -14,6 +14,7 @@ public class UpdateServiceDto
 
     public class UpdateServiceDtoValidator:AbstractValidator<UpdateServiceDto>
     {
+        [Obsolete]
         public UpdateServiceDtoValidator()
         {
             CascadeMode = CascadeMode.Stop;

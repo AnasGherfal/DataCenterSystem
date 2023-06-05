@@ -30,10 +30,6 @@ public class ServiceServices
             };
         }
         var data = _mapper.Map<Service>(request);
-        data.CreatedOn = DateTime.UtcNow;
-        //todo: replace with user id when added
-        data.CreatedById = 3;
-        data.Status =  GeneralStatus.Active;
         await _dbContext.Services.AddAsync(data);
         await _dbContext.SaveChangesAsync();
         return new OperationResponse() { Msg = "ok", StatusCode = HttpStatusCode.OK };

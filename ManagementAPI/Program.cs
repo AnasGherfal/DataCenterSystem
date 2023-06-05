@@ -1,13 +1,15 @@
+using Infrastructure.Models;
 using ManagementAPI.DI;
+using Microsoft.Extensions.Configuration;
 using Shared.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
-var useInMemoryDb = true;
+var useInMemoryDb = false;
 // Add services to the container.
 builder.Services.AddCustomControllers();
 builder.Services.AddSwagger();
 builder.Services.AddCustomCors();
-builder.Services.AddServices();
+builder.Services.AddServices(builder.Configuration);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddPersistence(useInMemoryDb, builder.Configuration.GetConnectionString("Persistence")!);
 

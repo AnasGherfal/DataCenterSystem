@@ -17,6 +17,7 @@ namespace ManagementAPI.Dtos.Service
 
     public class CreateServiceDtoValidator : AbstractValidator<CreateServiceDto>
     {
+        [Obsolete]
         public CreateServiceDtoValidator()
         {
             CascadeMode = CascadeMode.Stop;

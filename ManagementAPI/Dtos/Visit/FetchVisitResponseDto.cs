@@ -1,6 +1,4 @@
-﻿
-
-namespace ManagementAPI.Dtos.Visit;
+﻿namespace ManagementAPI.Dtos.Visit;
 
 public class FetchVisitResponseDto
 {

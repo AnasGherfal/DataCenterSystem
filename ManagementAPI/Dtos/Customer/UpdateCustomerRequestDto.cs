@@ -3,16 +3,10 @@ using FluentValidation;
 
 namespace ManagementAPI.Dtos.Customer;
 
-public class UpdateCustomerRequestDto
-{
-    public string Name { get; set; } = string.Empty;
-    public string? Address { get; set; }
-    public string PrimaryPhone { get; set; } = string.Empty;
-    public string? SecondaryPhone { get; set; }
-    public string Email { get; set; } = string.Empty;
-}
+public record UpdateCustomerRequestDto(string Name, string? Address, string PrimaryPhone, string? SecondaryPhone,string Email,IList<FileRequestDto>? Files);
 public class EditCustomerDtoValidator : AbstractValidator<UpdateCustomerRequestDto>
 {
+    [Obsolete]
     public EditCustomerDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

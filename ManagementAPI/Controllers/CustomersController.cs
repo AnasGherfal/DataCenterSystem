@@ -1,6 +1,7 @@
 ﻿using ManagementAPI.Dtos.Customer;
 using ManagementAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Constants;
 
 namespace ManagementAPI.Controllers;
 
@@ -9,18 +10,17 @@ namespace ManagementAPI.Controllers;
 public class CustomersController : ControllerBase
 {
     private readonly ICustomerService _service;
-    //TODO: REVIEW [Warning]: Remove unused variable
-    private readonly ICustomerFileService _fileService;
-    public CustomersController(ICustomerService service, ICustomerFileService fileService)
+    public CustomersController(ICustomerService service)
     {
         _service = service;
-        _fileService = fileService;
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateCustomerRequestDto request)
-        => Ok(await _service.Create(request));
-
+     [HttpPost]
+     public async Task<IActionResult> Create([FromForm] CreateCustomerRequestDto request)
+         => Ok(await _service.Create(request));
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+       => Ok(await _service.GetById(id));
     [HttpGet]
     
     public async Task<IActionResult> GetAll([FromQuery] FetchCustomersRequestDto filter)

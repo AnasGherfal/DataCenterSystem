@@ -27,8 +27,8 @@ public class User
     public ICollection<Companion> CompanionsCreatedBy { get; set; } = default!;
     public ICollection<CustomerFile> CustomerFilesCreatedBy { get; set; } = default!;
     public ICollection<Invoice> InvoicesCreatedBy { get; set; } = default!;
-    public ICollection<Representive> RepresentivesCreatedBy { get; set; } = default!;
-    public ICollection<RepresentiveFile> RepresentiveFilesCreatedBy { get; set; } = default!;
+    public ICollection<Representative> RepresentativesCreatedBy { get; set; } = default!;
+    public ICollection<RepresentativeFile> RepresentativeFilesCreatedBy { get; set; } = default!;
     public ICollection<Service> ServicesCreatedBy { get; set; } = default!;
     public ICollection<Subscription> SubscriptionsCreatedBy { get; set; } = default!;
     public ICollection<SubscriptionFile> SubscriptionFilesCreatedBy { get; set; } = default!;

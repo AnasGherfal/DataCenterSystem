@@ -22,17 +22,12 @@ public class CustomerFileService:ICustomerFileService
         _mapper = mapper;
         _env = env;
     }
-    public async Task<OperationResponse> Upload(CustomerFileRequestDto request) 
+
+   
+}
+  /*  public async Task<OperationResponse> Upload(CustomerFileRequestDto request) 
     {
         var file = request.File;
-        
-        var data =await _dbContext.Customers.Where(p => p.Id == request.CustomerId).FirstOrDefaultAsync();
-        if (data== null)
-            return new OperationResponse() 
-            {
-                Msg="عذرًا..لا وجود لعميل بهذا الرقم",
-                StatusCode=HttpStatusCode.BadRequest,
-            }; 
         string notTrustedFileName = Path.GetFileNameWithoutExtension(file.FileName);
         string trustedFileName = ToTrustedFileName(data.Name,request.DocType);
         string fileExt = Path.GetExtension(file.FileName);
@@ -61,7 +56,7 @@ public class CustomerFileService:ICustomerFileService
                StatusCode=HttpStatusCode.OK
             };
         }
-    }
+    }*/
     /*public async Task<OperationResponse> Delete(int id)
     {
         
@@ -96,7 +91,7 @@ public class CustomerFileService:ICustomerFileService
                 StatusCode = HttpStatusCode.OK
             };
         }
-    }*/
+    }
     private string GetFilePath()
     {
         return _env.WebRootPath + "\\Uploads\\";
@@ -106,4 +101,4 @@ public class CustomerFileService:ICustomerFileService
         return Path.Combine(customerName+"-"+type.ToString());
     }
 }
-
+*/

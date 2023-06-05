@@ -1,18 +1,12 @@
-﻿using AutoMapper.Execution;
-using Common.Helpers;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace ManagementAPI.Dtos.Customer;
 
-public class FetchCustomersRequestDto
-{
-    public int PageNumber { get; set; } = 1;
-    public int PageSize { get; set; } = 25;
-
-}
+public record FetchCustomersRequestDto(int PageNumber=1, int PageSize = 10);
 
 public class FetchCustomersRequestDtoValidator : AbstractValidator<FetchCustomersRequestDto>
 {
+    [Obsolete]
     public FetchCustomersRequestDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

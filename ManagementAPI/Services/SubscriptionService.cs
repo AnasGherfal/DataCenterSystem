@@ -1,17 +1,14 @@
-﻿using AutoMapper;
+﻿
+
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Infrastructure;
-using Infrastructure.Models;
-using ManagementAPI.Dtos.Customer;
-using ManagementAPI.Dtos.Service;
-using ManagementAPI.Dtos.Subscriptions;
 using Infrastructure.Constants;
+using Infrastructure.Models;
+using ManagementAPI.Dtos.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 using Shared.Dtos;
 using Shared.Exceptions;
-using AutoMapper.QueryableExtensions;
-using Microsoft.AspNetCore.Mvc;
-
-
 
 namespace ManagementAPI.Services;
 

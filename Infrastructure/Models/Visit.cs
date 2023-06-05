@@ -24,11 +24,7 @@ public class Visit : BaseModel
     public VisitType VisitType { get; set; } =default!;
     public ICollection<Companion> Companions { get; set; }=new List<Companion>();
     public Invoice? Invoice { get; set; }
-<<<<<<< Updated upstream
-    public ICollection<RepresentiveVisit> RepresentivesVisits { get; set; } = new List<RepresentiveVisit>();
-=======
     public ICollection<RepresentativeVisit> RepresentativesVisits { get; set; } = new List<RepresentativeVisit>();
->>>>>>> Stashed changes
     public VisitTimeShift TimeShift { get; set; } =default!;
 
 }

@@ -18,10 +18,6 @@ namespace Infrastructure.Models
         //--------relation
         public ICollection<RepresentativeFile> Files { get; set; } = new List<RepresentativeFile>();
         public Customer Customer { get; set; }
-<<<<<<< Updated upstream:Infrastructure/Models/Representive.cs
-        public ICollection<RepresentiveVisit> RepresentiveVisits { get; set; } = new List<RepresentiveVisit>();
-=======
         public ICollection<RepresentativeVisit> RepresentativeVisits { get; set; } = new List<RepresentativeVisit>();
->>>>>>> Stashed changes:Infrastructure/Models/Representative.cs
     }
 }

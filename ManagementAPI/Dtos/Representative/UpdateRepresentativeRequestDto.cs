@@ -13,11 +13,7 @@ public class UpdateRepresentativeRequestDto
 public class EditRepresentativeValidator : AbstractValidator<UpdateRepresentativeRequestDto>
 {
     [Obsolete]
-<<<<<<< Updated upstream:ManagementAPI/Dtos/Representive/UpdateRepresentiveRequestDto.cs
-    public EditRepresentiveValidator()
-=======
     public EditRepresentativeValidator()
->>>>>>> Stashed changes:ManagementAPI/Dtos/Representative/UpdateRepresentativeRequestDto.cs
     {
         CascadeMode = CascadeMode.Stop;
 

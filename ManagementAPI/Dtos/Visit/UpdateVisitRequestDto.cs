@@ -13,11 +13,7 @@ public class UpdateVisitRequestDto
     public short VisitTypeId { get; set; }
     public int TimeShiftId { get; set; }
     public int? InvoiceId { get; set; }
-<<<<<<< Updated upstream
-    public IList<int> Representives { get; set; }
-=======
     public IList<int> Representatives { get; set; }
->>>>>>> Stashed changes
     public IList<CreateCompanionRequestDto> Companions { get; set; }
 }
 public class UpdateVisitValidator : AbstractValidator<UpdateVisitRequestDto>

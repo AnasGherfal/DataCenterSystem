@@ -21,11 +21,7 @@ public class DataCenterContext : DbContext
     public DbSet<TransactionHistory> TransactionHistories => Set<TransactionHistory>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Visit> Visits => Set<Visit>();
-<<<<<<< Updated upstream
-    public DbSet<RepresentiveVisit> RepresentiveVisits => Set<RepresentiveVisit>();
-=======
     public DbSet<RepresentativeVisit> RepresentativeVisits => Set<RepresentativeVisit>();
->>>>>>> Stashed changes
     public DbSet<VisitTimeShift> VisitTimeShifts => Set<VisitTimeShift>();
     public DbSet<VisitType> VisitTypes => Set<VisitType>();
 

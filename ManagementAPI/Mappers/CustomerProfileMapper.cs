@@ -20,13 +20,9 @@ public class CustomerProfileMapper : Profile
 
 
         CreateMap<Customer, CustomerResponseDto>()
-<<<<<<< Updated upstream
-            .ForMember(dest => dest.FileName, opt => opt.MapFrom(x => x.Files.Select(p => p.Filename).ToList()));
-=======
             .ForMember(dest => dest.FileName, opt => opt.MapFrom(x => x.Files.Select(p => p.Filename).ToList()))
             .ForMember(dest => dest.Subsicrptions, opt => opt.MapFrom(x => x.Subscriptions.Select(p => p.Id).ToList()))
             .ForMember(dest => dest.Representative, opt => opt.MapFrom(x => x.Representatives.Select(p => p.Id).ToList()));
->>>>>>> Stashed changes
         CreateMap<UpdateCustomerRequestDto, Customer>();
     }
 }

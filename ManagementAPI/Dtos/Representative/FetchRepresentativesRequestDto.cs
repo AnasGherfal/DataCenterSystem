@@ -13,11 +13,7 @@ public class FetchRepresentativeRequestDto
 public class FetchRepresentativeRequestDtoValidator : AbstractValidator<FetchRepresentativeRequestDto>
 {
     [Obsolete]
-<<<<<<< Updated upstream:ManagementAPI/Dtos/Representive/FetchRepresentivesRequestDto.cs
-    public FetchRepresentiveRequestDtoValidator()
-=======
     public FetchRepresentativeRequestDtoValidator()
->>>>>>> Stashed changes:ManagementAPI/Dtos/Representative/FetchRepresentativesRequestDto.cs
     {
         CascadeMode = CascadeMode.Stop;
 

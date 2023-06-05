@@ -25,7 +25,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Dtos\File\" />
       <Folder Include="Upload\Files\" />
       <Folder Include="wwwroot\" />
       <Folder Include="wwwroot\Uploads\" />

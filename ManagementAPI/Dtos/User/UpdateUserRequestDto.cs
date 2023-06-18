@@ -12,6 +12,7 @@ public class UpdateUserRequestDto
 }
 public class UpdateUserDtoValidator : AbstractValidator<UpdateUserRequestDto>
 {
+    [Obsolete("UpdateUserDto")]
     public UpdateUserDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

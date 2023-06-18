@@ -10,5 +10,5 @@ public class SubscriptionFile : BaseModel
     public GeneralStatus  Status { get; set; }
     public int SubscriptionId { get; set; }
     //--------------Relations
-    public Subscription  Subscription { get; set; }
+    public Subscription Subscription { get; set; } = default!;
 }

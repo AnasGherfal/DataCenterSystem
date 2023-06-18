@@ -13,5 +13,5 @@ public class Companion : BaseModel
     public int VisitId { get; set; }
 
     //-----------Relations
-    public Visit Visit { get; set; }
+    public Visit Visit { get; set; } = default!;
 }

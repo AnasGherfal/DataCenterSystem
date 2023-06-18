@@ -7,6 +7,7 @@ public record CreateInvoiceRequestDto(DateTime Date, string? Description, string
 
 public class CreateInvoiceDtoValidator : AbstractValidator<CreateInvoiceRequestDto>
 {
+    [Obsolete("CreateInvoiceDto")]
     public CreateInvoiceDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

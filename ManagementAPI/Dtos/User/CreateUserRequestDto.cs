@@ -12,6 +12,7 @@ public class CreateUserRequestDto
 }
 public class CreateUserDtoValidator : AbstractValidator<CreateUserRequestDto>
 {
+    [Obsolete("CreateUserDto")]
     public CreateUserDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

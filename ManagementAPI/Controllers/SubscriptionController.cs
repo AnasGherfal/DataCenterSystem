@@ -1,6 +1,7 @@
 ﻿using ManagementAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using ManagementAPI.Dtos.Subscriptions;
+using ManagementAPI.Dtos;
 
 namespace ManagementAPI.Controllers
 {
@@ -20,8 +21,8 @@ namespace ManagementAPI.Controllers
             => Ok(await _subscriptionService.GetAll(request));
         
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm]  FileDto fileRequest)
-            => Ok(await _subscriptionService.Create(fileRequest));
+        public async Task<IActionResult> Create([FromForm]  CreateSubscriptionRequestDto request)
+            => Ok(await _subscriptionService.Create(request));
 
         [HttpPut("{id:int}/Renew")]
         public async Task<IActionResult> Renew(int id) 
@@ -57,7 +58,7 @@ namespace ManagementAPI.Controllers
         public async Task<IActionResult> Update(int id,UpdateSubscriptionRequestDto request)
            => Ok(await _subscriptionService.Update(id,request));
         [HttpPut("{id:int}/updateFile")]
-        public async Task<IActionResult> UpdateFile(int id, [FromForm] UpdateFileDto request)
+        public async Task<IActionResult> UpdateFile(int id, [FromForm] FileRequestDto request)
            => Ok(await _subscriptionService.UpdateFile(id, request));
         [HttpGet("Download")]
         public async Task<IActionResult> Download(int id)

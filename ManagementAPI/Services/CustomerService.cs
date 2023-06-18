@@ -29,8 +29,7 @@ public class CustomerService : ICustomerService
 
     public async Task<MessageResponse> Create(CreateCustomerRequestDto request)
     {
-        var data = _mapper.Map<Customer>(request);
-        if (data == null) throw new BadRequestException("! طلبك غير صالح يرجى إعادة المحاولة");
+        var data = _mapper.Map<Customer>(request) ?? throw new BadRequestException("! طلبك غير صالح يرجى إعادة المحاولة");
         var isNotUnique = await _dbContext.Customers
             .Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted)
             .AnyAsync();
@@ -76,12 +75,10 @@ public class CustomerService : ICustomerService
 
     public async Task<CustomerResponseDto> GetById(int id)
     {
-        if (id <= 0)
-            throw new BadHttpRequestException("عذرًا رقم العميل الذي أدخلته غير صالح!");
-        var data = _dbContext.Customers.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+        if (id <= 0) throw new BadRequestException("عذرًا رقم العميل الذي أدخلته غير صالح!");
+        var data = await _dbContext.Customers.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
                                        .ProjectTo<CustomerResponseDto>(_mapper.ConfigurationProvider)
-                                       .SingleOrDefault();
-        if (data == null) throw new NotFoundException("عذرًا لا وجود لعميل بهذا الرقم يرجى التأكد!");
+                                       .SingleOrDefaultAsync() ?? throw new NotFoundException("عذرًا لا وجود لعميل بهذا الرقم يرجى التأكد!");
         return data;
     }
     public async Task<FetchCustomersResponseDto> GetAll(FetchCustomersRequestDto request)
@@ -108,8 +105,7 @@ public class CustomerService : ICustomerService
         var data = await _dbContext.Customers
             .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
             .Include(p => p.Files)
-            .FirstOrDefaultAsync();
-        if (data == null) throw new BadRequestException(" يرجى التأكد من صحة رقم العميل");
+            .FirstOrDefaultAsync() ?? throw new BadRequestException(" يرجى التأكد من صحة رقم العميل");
         if (data.Name != request.Name)
         {
             var isNotUnique = await _dbContext.Customers
@@ -135,8 +131,7 @@ public class CustomerService : ICustomerService
     {
         var data = await _dbContext.Customers
             .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
-            .FirstOrDefaultAsync();
-        if (data == null) throw new NotFoundException("عفوًا لا وجود لعميل بهذا الرقم");
+            .FirstOrDefaultAsync() ?? throw new NotFoundException("عفوًا لا وجود لعميل بهذا الرقم");
         data.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
@@ -150,8 +145,7 @@ public class CustomerService : ICustomerService
         var data = await _dbContext.Customers
             .Include(p => p.Representatives)
             .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
-            .FirstOrDefaultAsync();
-        if (data == null) throw new NotFoundException("! عذرًا..لا وجود لعميل بهذا الرقم او هذا العميل مقيد مسبقًا");
+            .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لعميل بهذا الرقم او هذا العميل مقيد مسبقًا");
         data.Status = GeneralStatus.LockedByUser;
         if(data.Representatives != null)
         foreach(var Representative in data.Representatives)
@@ -168,8 +162,7 @@ public class CustomerService : ICustomerService
         var data = await _dbContext.Customers
             .Include(p => p.Representatives)
             .Where(p => p.Id == id && p.Status == GeneralStatus.LockedByUser)
-            .FirstOrDefaultAsync();
-        if (data == null) throw new NotFoundException("! عذرًا..لا وجود لعميل بهذا الرقم او هذا العميل غير مقيد");
+            .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لعميل بهذا الرقم او هذا العميل غير مقيد");
         data.Status = GeneralStatus.Active;
         if(data.Representatives != null)
         foreach(var Representative in data.Representatives)
@@ -186,7 +179,7 @@ private string GetFilePath(string customerName)
     return _config.GetValue<string>("Storage:Customer")+"\\" +DateOnly.FromDateTime(DateTime.UtcNow).Year.ToString()+"\\" + $"\\{customerName}\\";
       
 }
-private string ToTrustedFileName(string ext)
+private static string ToTrustedFileName(string ext)
 {
     return Guid.NewGuid().ToString() + ext;
 }

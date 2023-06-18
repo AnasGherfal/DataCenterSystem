@@ -14,7 +14,4 @@ public enum SystemPermissions : long
     CompainionManegment = 128,
     DeleteCompainion = 256,
 
-
-
-
 }

@@ -24,5 +24,11 @@ public class CustomerProfileMapper : Profile
             .ForMember(dest => dest.Subsicrptions, opt => opt.MapFrom(x => x.Subscriptions.Select(p => p.Id).ToList()))
             .ForMember(dest => dest.Representative, opt => opt.MapFrom(x => x.Representatives.Select(p => p.Id).ToList()));
         CreateMap<UpdateCustomerRequestDto, Customer>();
+        CreateMap<FormFile, CustomerFile>()
+            .ForMember(dest => dest.Id, src => src.Ignore())
+             .ForMember(dest => dest.Filename, src => src.Ignore())
+            .ForMember(dest => dest.FileType, src => src.Ignore())
+            .ForMember(dest => dest.CreatedById, src => src.MapFrom(x => 1))
+            .ForMember(dest => dest.CreatedOn, src => src.MapFrom(x => DateTime.UtcNow));
     }
 }

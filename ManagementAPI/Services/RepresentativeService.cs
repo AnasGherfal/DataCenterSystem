@@ -30,12 +30,12 @@ public class RepresentativeService : IRepresentativeService
     public async Task<MessageResponse> Create(CreateRepresentativeRequestDto request)
     {
         var NewRepresentative = _mapper.Map<Representative>(request);
-        var customer =await _dbContext.Customers.Include(p => p.Representatives).Where(p => p.Id == request.CustomerId).SingleOrDefaultAsync();
-        if (customer == null)
-            throw new BadHttpRequestException("عذرًا رقم العميل الذي أدخلته غير صحيح يرجى إعادة المحاولة");
+        var customer =await _dbContext.Customers.Include(p => p.Representatives)
+                            .Where(p => p.Id == request.CustomerId).SingleOrDefaultAsync()
+                              ?? throw new BadRequestException("عذرًا رقم العميل الذي أدخلته غير صحيح يرجى إعادة المحاولة");
         var RepresentativeCount = customer.Representatives.Count;
-        if (RepresentativeCount >= 2)
-            throw new BadHttpRequestException("عذرًا هذا العميل لديه الحد الأقصى من عدد المخوليين");
+        if (RepresentativeCount == 2)
+            throw new BadRequestException("عذرًا هذا العميل لديه الحد الأقصى من عدد المخوليين");
         _dbContext.Representatives.Add(NewRepresentative);
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
@@ -72,7 +72,7 @@ public class RepresentativeService : IRepresentativeService
     public async Task<MessageResponse> Delete(int id)
     {
         if (id <= 0)
-           throw new BadHttpRequestException("الرجاء ادخال رقم مخول صحيح وموجود فعلًا");    
+           throw new BadRequestException("الرجاء ادخال رقم مخول صحيح وموجود فعلًا");    
         var Representative = _dbContext.Representatives
                                       .Where(p => p.Id == id && p.Status == GeneralStatus.Active && p.Customer.Status==GeneralStatus.Active)
                                       .FirstOrDefault();
@@ -88,7 +88,7 @@ public class RepresentativeService : IRepresentativeService
     public async Task<MessageResponse> Lock(int id)
     {
         if (id <= 0)
-            throw new BadHttpRequestException("الرجاء ادخال رقم مخول صحيح وموجود فعلًا");
+            throw new BadRequestException("الرجاء ادخال رقم مخول صحيح وموجود فعلًا");
         var Representative = await _dbContext.Representatives
                                            .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
                                            .FirstOrDefaultAsync();
@@ -104,12 +104,12 @@ public class RepresentativeService : IRepresentativeService
             };
         }
         else
-            throw new BadHttpRequestException(" ! عذرًا .. هذا المخول مقيد مسبقًا");
+            throw new BadRequestException(" ! عذرًا .. هذا المخول مقيد مسبقًا");
     }
     public async Task<MessageResponse> Unlock(int id)
     {
         if (id <= 0)
-            throw new BadHttpRequestException("الرجاء ادخال رقم مخول صحيح وموجود فعلًا");
+            throw new BadRequestException("الرجاء ادخال رقم مخول صحيح وموجود فعلًا");
         var Representative = await _dbContext.Representatives.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
                                                          .FirstOrDefaultAsync();
         if (Representative == null)
@@ -124,20 +124,18 @@ public class RepresentativeService : IRepresentativeService
             };
         }
         else
-            throw new BadHttpRequestException( " ! عذرًا .. هذا المخول غير مقيد " );
+            throw new BadRequestException( " ! عذرًا .. هذا المخول غير مقيد " );
     }
 
     public async Task<MessageResponse> Update(int id, UpdateRepresentativeRequestDto request)
     {
         if (id <= 0)
-            throw new BadHttpRequestException("الرجاء ادخال رقم مخول صحيح وموجود فعلًا");
+            throw new BadRequestException("الرجاء ادخال رقم مخول صحيح وموجود فعلًا");
         var Representative = await _dbContext.Representatives
                                            .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
-                                           .FirstOrDefaultAsync();
-        if (Representative == null)
-            throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
+                                           .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
         if (IsLocked(Representative.Status))
-            throw new BadHttpRequestException("! عذرًا..هذا المخول مقيد لا يمكنك تعديل بياناته ");
+            throw new BadRequestException("! عذرًا..هذا المخول مقيد لا يمكنك تعديل بياناته ");
         _mapper.Map(request, Representative);
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()

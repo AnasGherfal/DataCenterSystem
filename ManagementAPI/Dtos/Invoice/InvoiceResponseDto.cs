@@ -15,6 +15,6 @@ public class InvoiceResponseDto
     public GeneralStatus Status { get; set; }
     public bool IsPaid { get; set; }
     public int SubscriptionId { get; set; }
-    public IList<VisitResponseDto> Visits { get; set; }
+    public IList<VisitResponseDto> Visits { get; set; }=new List<VisitResponseDto>();
 }
 //DateTime Date, bool IsPayed, short Status, decimal TotalPrice, string CustomerName, int SubsicrptionId

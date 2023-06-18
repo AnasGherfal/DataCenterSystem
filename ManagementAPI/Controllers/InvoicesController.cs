@@ -24,6 +24,6 @@ public class InvoicesController : ControllerBase
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
-        => Ok(_service.GetById(id));
+        => Ok(await _service.GetById(id));
 
 }

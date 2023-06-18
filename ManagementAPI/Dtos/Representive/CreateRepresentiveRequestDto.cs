@@ -17,6 +17,7 @@ public class CreateRepresentiveRequestDto
 }
 public class CreateRepresentiveDtoValidator : AbstractValidator<CreateRepresentiveRequestDto>
 {
+    [Obsolete("CreateRepresentiveDto")]
     public CreateRepresentiveDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

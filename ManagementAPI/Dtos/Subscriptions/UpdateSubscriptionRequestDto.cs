@@ -14,6 +14,7 @@ namespace ManagementAPI.Dtos.Subscriptions
     }
     public class UpdateSubscriptionRequestDtoValidator:AbstractValidator<UpdateSubscriptionRequestDto>
     {
+        [Obsolete("UpdateSubscriptionRequestDto")]
         public UpdateSubscriptionRequestDtoValidator() 
         {
             CascadeMode = CascadeMode.Stop;

@@ -13,9 +13,9 @@ namespace Infrastructure.Models
         public GeneralStatus Status { get; set; }
         public decimal? TotalPrice { get; set; }
         //----------relations
-        public Service Service { get; set; } 
-        public Customer Customer { get; set; }
-        public ICollection<SubscriptionFile> SubscriptionFiles { get; set; } = new List<SubscriptionFile>();
+        public Service Service { get; set; } = default!;
+        public Customer Customer { get; set; } = default!;
+        public SubscriptionFile SubscriptionFile { get; set; } = default!;
         public ICollection<Visit> Visits { get; set; } = new List<Visit>();
         public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();   
         public ICollection<AdditionalPower> AdditionalPowers { get; set; } = new List<AdditionalPower>();

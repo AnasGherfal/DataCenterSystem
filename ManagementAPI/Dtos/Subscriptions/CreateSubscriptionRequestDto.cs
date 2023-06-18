@@ -8,19 +8,20 @@ using System;
 
 namespace ManagementAPI.Dtos.Subscriptions;
 
-public class FileDto
+public class CreateSubscriptionRequestDto
 {
     public int ServiceId { get; set; }
     public int CustomerId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public IFormFile File { get; set; }
+    public FileRequestDto File { get; set; } = default!;
 
 }
 
-public class FileDtoValidator : AbstractValidator<FileDto>
+public class CreateSubscriptionRequestDtoValidator : AbstractValidator<CreateSubscriptionRequestDto>
 {
-    public FileDtoValidator()
+    [Obsolete("CreateSubscriptionRequestDto")]
+    public CreateSubscriptionRequestDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;
 
@@ -35,37 +36,37 @@ public class FileDtoValidator : AbstractValidator<FileDto>
             .NotEmpty().WithMessage("startdate must be not empty");
         /*.Must(BeAValidDate).WithMessage("not valid datetime");*/
         //REVIEW: Variable is being treated like a string - instead confirm its a date first
-         
+
         RuleFor(a => a.EndDate)
             .NotEmpty().WithMessage("end date must be not empty")
-            .GreaterThan(a => a.StartDate).WithMessage("End date must be grater than start date")
-            /*.Must(IsDateTimeValid)*/;
+            .GreaterThan(a => a.StartDate).WithMessage("End date must be grater than start date");
+            
         
-        When(p => IsPdf(p.File), () =>
+        /*When(p => IsPdf(p.File.File), () =>
         {
-            RuleFor(p => p.File.Length).LessThanOrEqualTo(5000000);
+            RuleFor(p => p.File.File.Length).LessThanOrEqualTo(5000000);
         });
 
 
-        RuleFor(a => a.File.Length).NotEmpty().LessThanOrEqualTo(1000000)
+        RuleFor(a => a.File.File.Length).NotEmpty().LessThanOrEqualTo(1000000)
                             .WithMessage("File size is larger than allowed");
-        RuleFor(a => a.File.ContentType).NotEmpty().Must(x => x.Equals("image/jpeg") || x.Equals("image/jpg") || x.Equals("image/png") || x.Equals("application/pdf"));
-
+        RuleFor(a => a.File.File.ContentType).NotEmpty().Must(x => x.Equals("image/jpeg") || x.Equals("image/jpg") || x.Equals("image/png") || x.Equals("application/pdf"));
+*/
 
     }
-    public async Task<bool> IsDateTimeValid(string dateTimeString)
+   /*private bool  IsDateTimeValid(string dateTimeString)
     {
         // Try to parse the date time string.
         DateTime dateTime;
-        if (!DateTime.TryParseExact(dateTimeString, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+         if (!DateTime.TryParseExact(dateTimeString, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
         {
-            return false;
+             return false;
         }
 
         // The date time string is in the right format.
-        return true;
-    }
-    private bool IsPdf(IFormFile file)
+             return true;
+    }*/
+    private static bool IsPdf(FormFile file)
     {
         if (file.ContentType == "application/pdf")
             return true;
@@ -73,10 +74,3 @@ public class FileDtoValidator : AbstractValidator<FileDto>
             return false;
     }
 }
-/*public class CustomValidator : AbstractValidator<FileDto>
-{
-    public CustomValidator()
-    {
-        RuleFor(x => x.File).SetValidator(new FileDtoValidator());
-    }
-}*/

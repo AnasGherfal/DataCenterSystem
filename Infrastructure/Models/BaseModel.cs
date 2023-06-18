@@ -6,5 +6,5 @@ public abstract class BaseModel
 {
     public DateTime CreatedOn { get; set; }
     public int CreatedById { get; set; }
-    public User CreatedBy { get; set; }
+    public User CreatedBy { get; set; } = default!;
 }

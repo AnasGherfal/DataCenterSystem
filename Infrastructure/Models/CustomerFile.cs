@@ -12,6 +12,6 @@ public class CustomerFile : BaseModel
     public short IsActive { get; set; }
     public int CustomerId { get; set; }
 
-    public Customer Customer { get; set; }
+    public Customer Customer { get; set; } = default!;
 
 }

@@ -7,9 +7,10 @@ namespace ManagementAPI.Dtos.User
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 25;
     }
-    public class FetchUsersRequestDtoFetchUsersRequestDtoalidator:AbstractValidator<FetchUsersRequestDto>
+    public class FetchUsersRequestDtoValidator:AbstractValidator<FetchUsersRequestDto>
     {
-        public FetchUsersRequestDtoFetchUsersRequestDtoalidator()
+        [Obsolete("FetchUsersRequestDto")]
+        public FetchUsersRequestDtoValidator()
         {
             CascadeMode = CascadeMode.Stop;
             RuleFor(a => a.PageNumber).GreaterThan(0).WithMessage("enter number graeter 0");

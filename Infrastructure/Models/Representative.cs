@@ -17,7 +17,7 @@ namespace Infrastructure.Models
 
         //--------relation
         public ICollection<RepresentativeFile> Files { get; set; } = new List<RepresentativeFile>();
-        public Customer Customer { get; set; }
+        public Customer Customer { get; set; } = default!;
         public ICollection<RepresentativeVisit> RepresentativeVisits { get; set; } = new List<RepresentativeVisit>();
     }
 }

@@ -10,5 +10,5 @@ public class RepresentativeFile : BaseModel
 
     //-----------Realations
 
-    public Representative Representative { get; set; }
+    public Representative Representative { get; set; } = default!;
 }

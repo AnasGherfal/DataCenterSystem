@@ -14,7 +14,7 @@ public static class ServicesExtension
         services.AddScoped<ICustomerFileService, CustomerFileService>();
         services.AddScoped<IVisitService, VisitService>();
         services.AddScoped<IVisitTimeShiftService, VisitTimeShiftService>();
-        services.AddScoped<IFileUploadService, FileUploadService>();
+        services.AddScoped<IUploadFileService, UploadFileService>();
         services.AddScoped<ServiceServices>();
         services.AddScoped<SubscriptionService>();
         services.AddScoped<UserService>();

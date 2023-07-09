@@ -4,6 +4,6 @@ namespace Shared.Dtos;
 
 public class MessageResponse
 {
-    [JsonPropertyName("msg")]
-    public string Msg { get; set; } = default!;
+    [JsonPropertyName("msg")] 
+    public string Msg { get; set; } = string.Empty;
 }

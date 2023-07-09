@@ -1,11 +1,16 @@
-﻿namespace Infrastructure;
+﻿using Infrastructure.Audits.Abstracts;
+using Infrastructure.Configurations;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-public class DataCenterContext : DbContext
+namespace Infrastructure;
+
+public class DataCenterContext : IdentityDbContext<Admin, AdminRole, Guid>
 {
     public DataCenterContext(DbContextOptions<DataCenterContext> options) : base(options)
     {
     }
     
+    public DbSet<Audit> Audits => Set<Audit>();
     public DbSet<AdditionalPower> AdditionalPowers => Set<AdditionalPower>();
     public DbSet<Companion> Companions => Set<Companion>();
     public DbSet<Customer> Customers => Set<Customer>();
@@ -33,9 +38,8 @@ public class DataCenterContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
+        this.AddAuditBuilder(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DataCenterContext).Assembly);
-
+        base.OnModelCreating(modelBuilder);
     }
-
 }

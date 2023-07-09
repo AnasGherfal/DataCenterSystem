@@ -37,6 +37,10 @@ public class ExceptionMiddleware
                     httpContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
                     responseMessage = e.Message;
                     break;
+                case BadRequestException e:
+                    httpContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+                    responseMessage = e.Message;
+                    break;
                 default:
                     _logger.LogCritical(ex, "{@protocol} {@scheme} {@method} {@path} {@queryString} {@body}",
                         httpContext.Request.Protocol,

@@ -4,7 +4,7 @@ namespace ManagementAPI.Dtos.Customer;
 
 public class CustomerResponseDto {
 
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Name { get; set; } = default!;
     public string? Address { get; set; }
     public string PrimaryPhone { get; set; } = default!;
@@ -12,7 +12,7 @@ public class CustomerResponseDto {
     public string Email { get; set; } = default!;
     public GeneralStatus Status { get; set; }
 
-    public IList<int> Subsicrptions { get; set; } = new List<int>();
-    public IList<int> Representative { get; set; }= new List<int>();
+    public IList<Guid> Subsicrptions { get; set; } = new List<Guid>();
+    public IList<Guid> Representative { get; set; }= new List<Guid>();
     public IList<string> FileName { get; set; } = new List<string>();
    }

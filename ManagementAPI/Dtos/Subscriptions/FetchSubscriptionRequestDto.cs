@@ -5,12 +5,12 @@ namespace ManagementAPI.Dtos.Subscriptions
     public class FetchSubscriptionRequestDto
     {
         public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 25;
+        public int PageSize { get; set; } = 10;
     }
 
     public class FetchSubscriptionRequestDtoValidator : AbstractValidator<FetchSubscriptionRequestDto>
     {
-        [Obsolete]
+        [Obsolete("FetchSubscriptionRequest")]
         public FetchSubscriptionRequestDtoValidator()
         {
             CascadeMode = CascadeMode.Stop;

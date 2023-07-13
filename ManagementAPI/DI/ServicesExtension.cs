@@ -11,11 +11,11 @@ public static class ServicesExtension
         services.AddScoped<IInvoiceService, InvoiceService>();
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IRepresentativeService, RepresentativeService>();
-        services.AddScoped<ICustomerFileService, CustomerFileService>();
         services.AddScoped<IVisitService, VisitService>();
+        services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IVisitTimeShiftService, VisitTimeShiftService>();
         services.AddScoped<IUploadFileService, UploadFileService>();
-        services.AddScoped<ServiceServices>();
+        services.AddScoped<IServiceServices,ServiceServices>();
         services.AddScoped<SubscriptionService>();
         services.AddScoped<UserService>();
 

@@ -114,11 +114,26 @@ public class VisitService : IVisitService
         };
     
     }
-   
 
-    public Task<MessageResponse> Delete(int id)
+    public async Task<VisitResponseDto> GetById(Guid id)
     {
-        throw new NotImplementedException();
+        
+        var data = await _dbContext.Visits.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+            .ProjectTo<VisitResponseDto>(_mapper.ConfigurationProvider).SingleOrDefaultAsync() ??
+            throw new BadHttpRequestException("عذرًا لا وجود لفاتورة بهذا الرقم");
+        return data;
+    }
+    public async Task<MessageResponse> Delete(Guid id)
+    {
+        
+        var data = await _dbContext.Visits.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted).SingleOrDefaultAsync() ??
+            throw new BadHttpRequestException("عذرًا لا وجود لفاتورة بهذا الرقم");
+        data.Status = GeneralStatus.Deleted;
+        await _dbContext.SaveChangesAsync();
+        return new MessageResponse()
+        {
+            Msg = $"بنجاح  {id} تم حذف الزيارة "
+        };
     }
 
     public async Task<FetchVisitResponseDto> GetAll(FetchVisitRequestDto request)
@@ -127,7 +142,7 @@ public class VisitService : IVisitService
                 .Include(p => p.RepresentativesVisits)
                 .ThenInclude(p => p.Representative)
                 .Include(p => p.TimeShift)
-                .Where(p => p.InvoiceId==0||p.InvoiceId==null);
+                .Where(p => p.InvoiceId==null);
         var queryResult = await query .OrderBy(p => p.Id)
                               .Skip(request.PageSize * (request.PageNumber - 1))
                               .Take(request.PageSize)
@@ -145,7 +160,7 @@ public class VisitService : IVisitService
 
     }
 
-    public async Task<MessageResponse> Lock(int id)
+    public async Task<MessageResponse> Lock(Guid id)
     {
         var data = await _dbContext.Visits
            .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
@@ -158,7 +173,7 @@ public class VisitService : IVisitService
         };
     }
 
-    public async Task<MessageResponse> Paid(int id, int invoiceId)
+    public async Task<MessageResponse> Paid(Guid id, Guid invoiceId)
     {
         var data = await _dbContext.Visits
           .Where(p => p.Id == id && p.InvoiceId ==null )
@@ -173,7 +188,7 @@ public class VisitService : IVisitService
         };
     }
 
-    public async Task<MessageResponse> Unlock(int id)
+    public async Task<MessageResponse> Unlock(Guid id)
     {
         var data = await _dbContext.Visits
            .Where(p => p.Id == id && p.Status == GeneralStatus.LockedByUser)
@@ -186,7 +201,7 @@ public class VisitService : IVisitService
         };
     }
 
-    public async Task<MessageResponse> Update(int id, UpdateVisitRequestDto request)
+    public async Task<MessageResponse> Update(Guid id, UpdateVisitRequestDto request)
     {
         var data = await _dbContext.Visits
                        .Include(p=> p.RepresentativesVisits)

@@ -73,9 +73,9 @@ public class CustomerService : ICustomerService
         };
     }
 
-    public async Task<CustomerResponseDto> GetById(int id)
+    public async Task<CustomerResponseDto> GetById(Guid id)
     {
-        if (id <= 0) throw new BadRequestException("عذرًا رقم العميل الذي أدخلته غير صالح!");
+         
         var data = await _dbContext.Customers.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
                                        .ProjectTo<CustomerResponseDto>(_mapper.ConfigurationProvider)
                                        .SingleOrDefaultAsync() ?? throw new NotFoundException("عذرًا لا وجود لعميل بهذا الرقم يرجى التأكد!");
@@ -100,7 +100,7 @@ public class CustomerService : ICustomerService
         return new FetchCustomersResponseDto(request.PageNumber, (int)totalPages, queryResult);
     }
 
-    public async Task<MessageResponse> Update(int id, UpdateCustomerRequestDto request)
+    public async Task<MessageResponse> Update(Guid id, UpdateCustomerRequestDto request)
     {
         var data = await _dbContext.Customers
             .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
@@ -127,7 +127,7 @@ public class CustomerService : ICustomerService
         };
     }
 
-    public async Task<MessageResponse> Delete(int id)
+    public async Task<MessageResponse> Delete(Guid id)
     {
         var data = await _dbContext.Customers
             .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
@@ -140,7 +140,7 @@ public class CustomerService : ICustomerService
         };
     }
 
-    public async Task<MessageResponse> Lock(int id)
+    public async Task<MessageResponse> Lock(Guid id)
     {
         var data = await _dbContext.Customers
             .Include(p => p.Representatives)
@@ -157,7 +157,7 @@ public class CustomerService : ICustomerService
         };
     }
 
-    public async Task<MessageResponse> Unlock(int id)
+    public async Task<MessageResponse> Unlock(Guid id)
     {
         var data = await _dbContext.Customers
             .Include(p => p.Representatives)

@@ -6,8 +6,8 @@ namespace ManagementAPI.Dtos.Subscriptions
 {
     public class UpdateSubscriptionRequestDto
     {
-        public int ServiceId { get; set; }
-        public int CustomerId { get; set; }
+        public Guid ServiceId { get; set; }
+        public Guid CustomerId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public decimal? TotalPrice { get; set; }
@@ -20,11 +20,9 @@ namespace ManagementAPI.Dtos.Subscriptions
             CascadeMode = CascadeMode.Stop;
 
             RuleFor(a => a.ServiceId)
-               .NotEmpty().WithMessage("service id must be not empty")
-               .GreaterThan(0).WithMessage("id must be greater than 0");
+               .NotEmpty().WithMessage("service id must be not empty");
             RuleFor(a => a.CustomerId)
-                .NotEmpty().WithMessage("customer id must be not empty")
-                .GreaterThan(0).WithMessage("id must be greater than 0");
+                .NotEmpty().WithMessage("customer id must be not empty");
             //REVIEW: Variable is being treated like a string - instead confirm its a date first
             RuleFor(a => a.StartDate)
                 .NotEmpty().WithMessage("startdate must be not empty")

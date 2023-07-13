@@ -27,32 +27,32 @@ namespace ManagementAPI.Controllers
             return Ok(await _userService.GetAll(request));
         }
         [HttpGet("{id:int}/Get")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             return Ok(await _userService.GetById(id));
         }
         [HttpPut("{id:int}/Reset")]
-        public async Task<IActionResult> Reset(int id)
+        public async Task<IActionResult> Reset(Guid id)
         {
             return Ok(await _userService.Reset(id));
         }
         [HttpDelete("{id:int}/Delete")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _userService.Delete(id));
         }
         [HttpPut("{id:int}/Edit")]
-        public async Task<IActionResult> Edit(int id,[FromBody]UpdateUserRequestDto request)
+        public async Task<IActionResult> Edit(Guid id,[FromBody]UpdateUserRequestDto request)
         {
             return Ok(await _userService.Edit(id, request));
         }
         [HttpPut("{id:int}/Lock")]
-        public async Task<IActionResult> Lock(int id)
+        public async Task<IActionResult> Lock(Guid id)
         {
             return Ok(await _userService.Lock(id));
         }
         [HttpPut("{id:int}/Unlock")]
-        public async Task<IActionResult> UnLock(int id)
+        public async Task<IActionResult> UnLock(Guid id)
         {
             return Ok(await _userService.Unlock(id));
         }

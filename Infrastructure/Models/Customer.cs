@@ -5,7 +5,7 @@ namespace Infrastructure.Models;
 public class Customer: BaseModel
 
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? Address { get; set; }
     public string PrimaryPhone { get; set; } = string.Empty;

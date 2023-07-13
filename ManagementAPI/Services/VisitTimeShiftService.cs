@@ -39,7 +39,7 @@ public class VisitTimeShiftService : IVisitTimeShiftService
         };
     }
 
-    public async Task<OperationResponse> Delete(int id)
+    public async Task<OperationResponse> Delete(Guid id)
     {
         var query = await _dbContext.VisitTimeShifts.SingleOrDefaultAsync(p => p.Id == id && p.Status == GeneralStatus.Active);
         if (query == null) return new OperationResponse()
@@ -75,14 +75,9 @@ public class VisitTimeShiftService : IVisitTimeShiftService
         };
     }
 
-    public async Task<OperationResponse> Lock(int id)
+    public async Task<OperationResponse> Lock(Guid id)
     {
-        if (id is <= 0)
-            return new OperationResponse()
-            {
-                Msg = "الرجاء ادخال رقم توقيت زيارة صحيح وموجود فعلًا",
-                StatusCode = HttpStatusCode.BadRequest
-            };
+       
 
         var data = await _dbContext.VisitTimeShifts.Where(p => p.Id == id && p.Status == GeneralStatus.Active)
                                                  .FirstOrDefaultAsync();
@@ -112,14 +107,9 @@ public class VisitTimeShiftService : IVisitTimeShiftService
             };
     }
 
-    public async Task<OperationResponse> Unlock(int id)
+    public async Task<OperationResponse> Unlock(Guid id)
     {
-        if (id <= 0)
-            return new OperationResponse()
-            {
-                Msg = "الرجاء ادخال رقم توقيت زيارة صحيح وموجود فعلًا",
-                StatusCode = HttpStatusCode.BadRequest
-            };
+        
 
         var data = await _dbContext.VisitTimeShifts
                          .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
@@ -147,14 +137,9 @@ public class VisitTimeShiftService : IVisitTimeShiftService
         };
 
     }
-    public async Task<OperationResponse> Update(int id, UpdateVisitTimeShiftRequestDto request)
+    public async Task<OperationResponse> Update(Guid id, UpdateVisitTimeShiftRequestDto request)
     {
-        if (id < 1)
-            return new OperationResponse()
-            {
-                Msg = "! يرجى ادخال رقم توقيت زيارة صحيح",
-                StatusCode = HttpStatusCode.BadRequest
-            };
+       
         var data = await _dbContext.VisitTimeShifts
                          .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
                          .FirstOrDefaultAsync();

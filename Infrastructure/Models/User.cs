@@ -4,7 +4,7 @@ namespace Infrastructure.Models;
 
 public class User
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string FullName { get; set; } = string.Empty;
     public GeneralStatus Status { get; set; }
     public int EmpId { get; set; }
@@ -12,7 +12,7 @@ public class User
     public string Email { get; set; }=string.Empty;
     public long Permissions { get; set; } = 0;
     public DateTime CreatedOn { get; set; }
-    public int? CreatedById { get; set; }
+    public Guid? CreatedById { get; set; }
 
     //------Relation
     //  [NotMapped]

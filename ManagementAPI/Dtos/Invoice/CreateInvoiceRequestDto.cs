@@ -3,10 +3,11 @@ using ManagementAPI.Dtos.Customer;
 
 namespace ManagementAPI.Dtos.Invoice;
 
-public record CreateInvoiceRequestDto(DateTime Date, string? Description, string? InvoiceNo, DateTime StartDate, DateTime EndDate, int SubscriptionId);
+public record CreateInvoiceRequestDto(DateTime Date, string? Description, string? InvoiceNo, DateTime StartDate, DateTime EndDate, Guid SubscriptionId);
 
 public class CreateInvoiceDtoValidator : AbstractValidator<CreateInvoiceRequestDto>
 {
+    [Obsolete("CreateInvoiceDto")]
     public CreateInvoiceDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

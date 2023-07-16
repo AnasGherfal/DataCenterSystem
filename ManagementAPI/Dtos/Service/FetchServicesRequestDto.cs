@@ -5,12 +5,12 @@ namespace ManagementAPI.Dtos.Service;
 public class FetchServicesRequestDto
 {
     public int PageNumber { get; set; } = 1;
-    public int PageSize { get; set; } = 25;
+    public int PageSize { get; set; } = 10;
 }
 
 public class FetchServicesRequestDtoValidator : AbstractValidator<FetchServicesRequestDto>
 {
-    [Obsolete]
+    [Obsolete("FetchServicesRequest")]
     public FetchServicesRequestDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

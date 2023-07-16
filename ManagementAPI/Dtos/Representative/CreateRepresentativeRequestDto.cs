@@ -12,11 +12,12 @@ public class CreateRepresentativeRequestDto
     public short IdentityType { get; set; }
     public string Email { get; set; } = string.Empty;
     public string PhoneNo { get; set; } = string.Empty;
-    public int CustomerId { get; set; }
-   // public IList<FileRequestDto> Files { get; set; }
+    public Guid CustomerId { get; set; }
+    public IList<FileRequestDto> Files { get; set; } = default!;
 }
 public class CreateRepresentativeDtoValidator : AbstractValidator<CreateRepresentativeRequestDto>
 {
+    [Obsolete("CreateRepresentativeDto")]
     public CreateRepresentativeDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

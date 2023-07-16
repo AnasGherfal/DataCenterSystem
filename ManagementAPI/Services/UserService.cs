@@ -60,8 +60,7 @@ public class UserService
         var queryResult = await query.OrderBy(p => p.Id)
             .Skip(request.PageSize * (request.PageNumber - 1))
             .Take(request.PageSize)
-            .ToListAsync();
-        if (queryResult == null) throw new NotFoundException("there is no users in database");
+            .ToListAsync() ?? throw new NotFoundException("there is no users in database");
         var result = _mapper.Map<List<UserResponseDto>>(queryResult);
         var totalCount = await query.CountAsync();
         var totalpages = (int)Math.Ceiling(totalCount / (decimal)request.PageSize);
@@ -74,36 +73,33 @@ public class UserService
         };
 
     }
-    public async Task<UserResponseDto> GetById(int id)
+    public async Task<UserResponseDto> GetById(Guid id)
     {
-        if (id < 0) throw new BadRequestException("! طلبك غير صالح يرجى إعادة المحاولة");
-        var query = await _dbContext.Users.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted);
-        if (query == null) throw new NotFoundException("there is no user with this number");
+       
+        var query = await _dbContext.Users.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("there is no user with this number");
         var data = _mapper.Map<UserResponseDto>(query);
         return data;
     }
-    public static Random random = new Random();
+    private readonly Random random = new();
 
-    public async Task<string> GeneratePassword()
+    public Task<string> GeneratePassword()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        var newPassword = (Enumerable.Repeat(chars, 8)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-        return  new string(newPassword);
+        var newPassword = Enumerable.Repeat(chars, 8)
+            .Select(s => s[random.Next(s.Length)]).ToArray();
+        
+       return Task.FromResult(new string(newPassword));
     }
     private static string HashPassword(string password)
     {
-        using (var sha256 = SHA256.Create())
-        {
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
-        }
+        using SHA256 sha256 = SHA256.Create();
+        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+        return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
     }
-    public async Task<MessageResponse> Reset(int id)
+    public async Task<MessageResponse> Reset(Guid id)
     {
-        if (id < 0) throw new BadRequestException("! طلبك غير صالح يرجى إعادة المحاولة");
-        var query = await _dbContext.Users.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted);
-        if (query == null) throw new NotFoundException("there is no user with this number");
+        
+        var query = await _dbContext.Users.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("there is no user with this number");
         if (query.Status == GeneralStatus.LockedByUser) throw new BadRequestException("user is locked ");
         var generatedPassword = GeneratePassword();
         query.Password = HashPassword(await generatedPassword);
@@ -115,11 +111,10 @@ public class UserService
             
         };
     }
-    public async Task<MessageResponse> Delete(int id)
+    public async Task<MessageResponse> Delete(Guid id)
     {
-        if (id < 0) throw new BadRequestException("! incorrect user id ");
-        var query = await _dbContext.Users.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted);
-        if (query == null) throw new NotFoundException("there is no user with this number");
+       
+        var query = await _dbContext.Users.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("there is no user with this number");
         if (query.Status == GeneralStatus.LockedByUser) throw new BadRequestException("user is locked ");
         query.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
@@ -130,11 +125,10 @@ public class UserService
         };
 
     }
-    public async Task<MessageResponse> Edit(int id,UpdateUserRequestDto request)
+    public async Task<MessageResponse> Edit(Guid id,UpdateUserRequestDto request)
     {
-        if (id < 0) throw new BadRequestException("! incorrect user id ");
-        var query = await _dbContext.Users.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted);
-        if (query == null) throw new NotFoundException("there is no user with this number");
+        
+        var query = await _dbContext.Users.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("there is no user with this number");
         if (query.Status == GeneralStatus.LockedByUser) throw new BadRequestException("user is locked ");
         var data = _mapper.Map<User>(request);
         await _dbContext.AddAsync(data);
@@ -145,15 +139,12 @@ public class UserService
         };
 
     }
-    public async Task<MessageResponse> Lock(int id)
+    public async Task<MessageResponse> Lock(Guid id)
     {
-        if (id < 0) throw new BadRequestException("! incorrect  id ");
-        var data = await _dbContext.Users.FirstOrDefaultAsync(b => b.Id == id && b.Status != GeneralStatus.Deleted);
-        if (data == null)
-        {
-            throw new NotFoundException("thear is no user with this number");
+       
+        var data = await _dbContext.Users.FirstOrDefaultAsync(b => b.Id == id && b.Status != GeneralStatus.Deleted)?? throw new NotFoundException("thear is no user with this number");
 
-        }
+        
         if (data.Status == GeneralStatus.LockedByUser)
         {
             throw new BadRequestException("عفوًا المستخدم مقفل مسبقًا !");
@@ -165,15 +156,10 @@ public class UserService
             Msg = "  لقد تم قفل المستخدم: " + " بنجاح! ",
         };
     }
-    public async Task<MessageResponse> Unlock(int id)
+    public async Task<MessageResponse> Unlock(Guid id)
     {
-        if (id < 0) throw new BadRequestException("! incorrect  id ");
-        var data = await _dbContext.Users.FirstOrDefaultAsync(b => b.Id == id && b.Status != GeneralStatus.Deleted);
-        if (data == null)
-        {
-            throw new NotFoundException("thear is no user with this number");
-
-        }
+        
+        var data = await _dbContext.Users.FirstOrDefaultAsync(b => b.Id == id && b.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no user with this number");
         if (data.Status == GeneralStatus.Active)
         {
             throw new BadRequestException("عفوًا المستخدم غير مقفل مسبقًا !");

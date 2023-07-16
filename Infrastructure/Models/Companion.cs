@@ -2,7 +2,7 @@
 
 public class Companion : BaseModel
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string FirstName { get; set; } = String.Empty;
     public string LastName { get; set; } = String.Empty;
     public string FullName { get; set; } = string.Empty;
@@ -10,8 +10,8 @@ public class Companion : BaseModel
     public short IdentityType { get; set; } 
     //
     public string? JobTitle { get; set; } = String.Empty;
-    public int VisitId { get; set; }
+    public Guid VisitId { get; set; }
 
     //-----------Relations
-    public Visit Visit { get; set; }
+    public Visit Visit { get; set; } = default!;
 }

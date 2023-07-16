@@ -28,17 +28,21 @@ public class VisitController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] FetchVisitRequestDto filter)
         => Ok(await _service.GetAll(filter));
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id)
+      => Ok(await _service.GetById(id));
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, UpdateVisitRequestDto request)
+    public async Task<IActionResult> Update(Guid id, UpdateVisitRequestDto request)
         => Ok(await _service.Update(id, request));
 
     [HttpPut("{id}/lock")]
-    public async Task<IActionResult> Lock(int id) 
+    public async Task<IActionResult> Lock(Guid id) 
         => Ok(await _service.Lock(id));
     [HttpPut("{id}/Unlock")]
-    public async Task<IActionResult> Unlock(int id) 
-        => Ok(await _service.Unlock(id));
+    public async Task<IActionResult> Unlock(Guid id) 
+        => Ok(await _service.Unlock(id));   
     [HttpPut("{id}/Pay")]
-    public async Task<IActionResult> Paid(int id, int invioceId) 
+    public async Task<IActionResult> Paid(Guid id, Guid invioceId) 
         => Ok(await _service.Paid(id, invioceId));
 }

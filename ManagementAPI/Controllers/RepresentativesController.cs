@@ -24,20 +24,24 @@ public class RepresentativesController : ControllerBase
     public async Task<IActionResult> GetAll([FromQuery] FetchRepresentativeRequestDto filter)
         => Ok(await _service.GetAll(filter));
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id)
+       => Ok(await _service.GetById(id));
+
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Guid id)
         => Ok( await _service.Delete(id));
 
     [HttpPut("{id}/lock")]
-    public async Task<IActionResult> Lock(int id)
+    public async Task<IActionResult> Lock(Guid id)
         =>Ok( await _service.Lock(id));
 
     [HttpPut("{id}/Unlock")]
-    public async Task<IActionResult> Unlock(int id) 
+    public async Task<IActionResult> Unlock(Guid id) 
         =>  Ok(await _service.Unlock(id));
        
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateRepresentativeRequestDto request)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateRepresentativeRequestDto request)
     => Ok(await _service.Update(id, request));
 
 }

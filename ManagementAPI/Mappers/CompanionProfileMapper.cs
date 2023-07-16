@@ -11,8 +11,7 @@ public class CompanionProfileMapper : Profile
     {
         CreateMap<CreateCompanionRequestDto, Companion>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.Now))
-            .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1));
+            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.Now));
         CreateMap<Companion, CompanionResponseDto>();
     }
 }

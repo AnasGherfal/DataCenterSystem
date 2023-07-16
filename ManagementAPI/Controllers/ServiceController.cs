@@ -22,42 +22,30 @@ public class ServiceController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<OperationResponse> Create([FromBody]CreateServiceDto request)
-    {
-        var result = await _service.Create(request);
-        switch(result.StatusCode) {
-            case HttpStatusCode.OK: return result;
-            case HttpStatusCode.BadRequest: return new OperationResponse() { StatusCode = HttpStatusCode.BadRequest};
-            default: return result;
-        }
-    }
-    
+    public async Task<IActionResult> Create([FromForm] CreateServiceDto request)
+         => Ok(await _service.Create(request));
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id)
+       => Ok(await _service.GetById(id));
     [HttpGet]
-    public async Task<ActionResult<FetchServicesResponseDto>> GetAll([FromQuery]FetchServicesRequestDto fetchServicesRequestDto)
-    {
-        return Ok(await _service.GetAll(fetchServicesRequestDto));
-    }
-    [HttpPut]
-    public async Task<OperationResponse> Update(int id, UpdateServiceDto updateServiceDto)
-    {
-        return await _service.Update(id,updateServiceDto);
-    }
 
-    [HttpDelete]
-    public async Task<OperationResponse> Remove(int id)
-    {
+    public async Task<IActionResult> GetAll([FromQuery] FetchServicesRequestDto filter)
+        => Ok(await _service.GetAll(filter));
 
-        return await _service.Remove(id);
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateServiceDto request)
+        => Ok(await _service.Update(id, request));
 
-    }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+        => Ok(await _service.Delete(id));
+
     [HttpPut("{id}/lock")]
-    public async Task<OperationResponse> Lock(int id)
-    {
-        return await _service.Lock(id);
-    }
+    public async Task<IActionResult> Lock(Guid id)
+        => Ok(await _service.Lock(id));
+
     [HttpPut("{id}/unlock")]
-    public async Task<OperationResponse> UnLock(int id)
-    {
-        return await _service.Unlock(id);
-    }
+    public async Task<IActionResult> Unlock(Guid id)
+        => Ok(await _service.Unlock(id));
 }
+

@@ -4,7 +4,7 @@ namespace Infrastructure.Models;
 
 public class Visit : BaseModel
 { 
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public DateTime? ExpectedStartTime { get; set; }
     public DateTime? ExpectedEndTime { get; set; }
     public DateTime? StartTime { get; set; }
@@ -14,9 +14,9 @@ public class Visit : BaseModel
     public string? Notes { get; set; } 
     public GeneralStatus Status { get; set; }
     public short VisitTypeId { get; set; }
-    public int SubscriptionId { get; set; }
-    public int TimeShiftId { get; set; }
-    public int? InvoiceId { get; set; }
+    public Guid SubscriptionId { get; set; }
+    public Guid TimeShiftId { get; set; }
+    public Guid? InvoiceId { get; set; }
 
 
     //---------------Relations

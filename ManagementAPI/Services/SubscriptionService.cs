@@ -2,123 +2,106 @@
 
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Azure.Core;
 using Infrastructure;
 using Infrastructure.Constants;
 using Infrastructure.Models;
+using ManagementAPI.Dtos;
+using ManagementAPI.Dtos.Invoice;
+using ManagementAPI.Dtos.Service;
 using ManagementAPI.Dtos.Subscriptions;
 using Microsoft.EntityFrameworkCore;
+using Shared.Constants;
 using Shared.Dtos;
 using Shared.Exceptions;
 
 namespace ManagementAPI.Services;
 
 //TODO: REVIEW [Consistency]: Use Interface For DI
-public class SubscriptionService
+public class SubscriptionService:ISubscriptionService
 {
     //TODO: REVIEW [Warning]: Response Messages need to be reviewed
     private readonly DataCenterContext _dbContext;
+    private readonly IUploadFileService _uploadFile;
     private readonly IMapper _mapper;
-    public SubscriptionService(DataCenterContext dbContext, IMapper mapper)
+    public SubscriptionService(DataCenterContext dbContext, IMapper mapper, IUploadFileService uploadFile)
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _uploadFile = uploadFile;
     }
 
-    public async Task<MessageResponse> Create( FileDto fileRequest)
+    public async Task<MessageResponse> Create(CreateSubscriptionRequestDto request)
     {
-        var data = _mapper.Map<Subscription>(fileRequest);
-        await _dbContext.Subscriptions.AddAsync(data);
-        await _dbContext.SaveChangesAsync();
-        await UploadFile(data.Id,fileRequest.File);
+        var data = _mapper.Map<Subscription>(request) ?? throw new BadRequestException("! طلبك غير صالح يرجى إعادة المحاولة");
+        _dbContext.Subscriptions.Add(data);
+        _dbContext.SaveChanges();
+        await _uploadFile.Upload(request.File,EntityType.SubscriptionFile,data);
         return new MessageResponse()
         {
-            Msg = "ok subscription created"
+            Msg = "تم اضافة الإشتراك بنجاح!"
         };
     }
-    public async Task<MessageResponse> Update(int id , UpdateSubscriptionRequestDto request)
+    public async Task<MessageResponse> Update(Guid id , UpdateSubscriptionRequestDto request)
     {
-        if (id < 0) throw new BadRequestException("! incorrect  id ");
-        var query = await _dbContext.Subscriptions.SingleOrDefaultAsync(x => x.Id == id && x.Status != GeneralStatus.Deleted);
-        if(query == null) throw new BadRequestException("thear is no subscription with this number");
-        if (query.Status == GeneralStatus.LockedByUser) throw new BadRequestException("this service is locked by user you cannot updated");
+       
+        var query = await _dbContext.Subscriptions.SingleOrDefaultAsync(x => x.Id == id && x.Status != GeneralStatus.Deleted) ?? throw new BadRequestException("thear is no subscription with this number");
+        if (query.Status == GeneralStatus.LockedByUser) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
         var data = _mapper.Map<Subscription>(request);
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
-            Msg = "ok subscription Updated"
+            Msg = "تم تعديل هذا الإشتراك بنجاح!"
         };
 
     }
+
     public async Task<FetchSubscriptionResponseDto> GetAll(FetchSubscriptionRequestDto request)
     {
-        var data = await _dbContext.Subscriptions
-            .Where(p => p.Status != GeneralStatus.Deleted)
+        var query = _dbContext.Subscriptions
             .Include(a => a.Service)
             .Include(a => a.Customer)
-            .OrderBy(p => p.Id)
+            .Where(p => p.Status != GeneralStatus.Deleted);
+            var data= await query.OrderBy(p => p.Id)
             .Skip(request.PageSize * (request.PageNumber - 1))
             .Take(request.PageSize)
             .ProjectTo<SubscriptionRsponseDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
-        /* var result = _mapper.Map<List<SubscriptionRsponseDto>>(Subs_Query);*/
-        var query = _dbContext.Subscriptions
-            .Where(p => p.Status != GeneralStatus.Deleted);
-        var totalCount = await query.CountAsync();
-        var totalpages = (int)Math.Ceiling(totalCount / 25.00);
+        var totalCount = query.Count();
+        var totalpages = (int)Math.Ceiling(totalCount /(decimal)request.PageSize);
         return new FetchSubscriptionResponseDto()
         {
             Content = data,
             CurrentPage = request.PageNumber,
-            PageSize = request.PageSize,
             TotalPages = totalpages,
         };
 
     }
-    public async Task<MessageResponse> Renew(int id)
+    public async Task<MessageResponse> Renew(Guid id)
     {
-        if (id < 0) throw new BadRequestException("! incorrect  id ");
-        var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted);
-        if (data == null) throw new NotFoundException("no subscription with this number");
-        if (data.Status == GeneralStatus.LockedByUser) throw new BadRequestException("subsciption is locked by user you cannot renew ");
-        //TODO: REVIEW [Warning]: Variable Naming
-        var dateTimeNow = DateTime.UtcNow;
-        //TODO: REVIEW [Fatal]: Logic flow is too broad, Use Function instead with Clear Name
-        /*var isExpired = dateTimeNow.CompareTo(data.EndDate);*/
-        if (dateTimeNow > data.EndDate)
+        var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("عذرًا لا وجود لإشتراك مفعل بهذا الرقم");
+        if (data.Status == GeneralStatus.LockedByUser) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
+        var duration = DateTime.Now.AddDays(29);
+        if (!IsExpired(data))
+            if (duration > data.EndDate)
+                throw new BadRequestException("عذرًا لا يمكنك تجديد هذا الإشتراك! التجديد يتم عند انتهاء الإشتراك أو قبل إنتهاءه بمدة 30 يومًا! ");
+        //TODO:["Review | Qustion"]Is started With new StartDate Or Create NEw Subscription???
+        data.EndDate = data.EndDate.AddYears(1);
+        await _dbContext.SaveChangesAsync();
+        return new MessageResponse()
         {
-            data.EndDate = dateTimeNow.AddYears(1);
-            await _dbContext.SaveChangesAsync();
-            //TODO: REVIEW [Fatal]: Always use Early Return. (Leave Success return to LAST)
-            return new MessageResponse()
-            {
-                Msg = "   تم تجديدالخدمة بداية من تاريخ اليوم: " + " بنجاح! ",
-            };
-        }
-        dateTimeNow = dateTimeNow.AddDays(30);
-        /*var duration = datetimenow.CompareTo(data.EndDate);*/
-        if (dateTimeNow >= data.EndDate)
-        {
-            var newEndDate = data.EndDate.AddYears(1);
-            data.EndDate = newEndDate;
-            await _dbContext.SaveChangesAsync();
-            return new MessageResponse()
-            {
-                Msg = data.EndDate.ToString() + "   تم تجديدالخدمة بداية من تاريخ الانتهاء للخدمة: " + " بنجاح! ",
-            };
-        }
-        //TODO: REVIEW [Warning]: Messages need to be corrected
-        throw new BadRequestException("   عذرا لم يتم تجديد الخدمة يمكنك التجديد عند انتهاء تاريخ الخدمة او قبلها ب 30 يوما ");
+            Msg = "لقد تم تجديد هذا الإشتراك بنجاح !"
+        };
     }
     
-    public async Task<MessageResponse> UploadFile(int id, IFormFile file)
+   /* public async Task<MessageResponse> UploadFile(int id, IFormFile file)
     {
 
         //TODO: REVIEW [Error]: Change Model to allow Multiple Files
         //TODO: REVIEW [Warning]: Upon making changes to Model, you no longer need to fetch the Subscription
         // Use require only only check it exists!
         if (id < 0) throw new BadRequestException("! incorrect  id ");
-        var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(a => a.Id == id);
-        if (data == null) throw new BadRequestException("thear is no subscription with this number");
+        var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(a => a.Id == id) ?? throw new BadRequestException("thear is no subscription with this number");
         var fileType = "." + file.FileName.Split('.')[file.FileName.Split('.').Length - 1];
         var fileName = id + "_" + DateTime.UtcNow.Ticks + file.FileName;
         //TODO: REVIEW [Recommendation]: Create a service responsible for File Uploads to make it managable
@@ -146,13 +129,13 @@ public class SubscriptionService
         };
         await _dbContext.SubscriptionFiles.AddAsync(newFile);
         await _dbContext.SaveChangesAsync();
-        /*data.SubscriptionFileId = newFile.Id;*/
+        *//*data.SubscriptionFileId = newFile.Id;*//*
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
             Msg = "file uploaded"
         };
-    }
+    }*/
 
     public async Task<FetchSubscriptionFileResponseDto> GetFiles(FetchSubscriptionRequestDto request)
     {
@@ -164,7 +147,7 @@ public class SubscriptionService
             .ToListAsync();
         var result = _mapper.Map<List<SubscriptionFileResponsDto>>(queryResult);
         //TODO: REVIEW [Fatal]: Count will only return the requested page
-        var totalCount = queryResult.Count();
+        var totalCount = queryResult.Count;
         var totalpages = (int)Math.Ceiling(totalCount / (decimal)request.PageSize);
         //TODO: REVIEW [Fatal]: Return List of Objects containing: FileUrl, Date Added, Document Type
         return new FetchSubscriptionFileResponseDto()
@@ -175,19 +158,18 @@ public class SubscriptionService
             TotalPages = totalpages,
         };
     }
-    public async Task<MessageResponse> UpdateFile(int id , UpdateFileDto request)
+    public async Task<MessageResponse> UpdateFile(Guid id , FileRequestDto request)
     {
-        if (id < 0) throw new BadRequestException("icorrect id ");
-        var query = await _dbContext.SubscriptionFiles.Where(a => a.SubscriptionId == id && a.Status != GeneralStatus.Deleted).ToListAsync();
-        if (query == null) throw new NotFoundException("thear is no files with this id ");
-        foreach( var item in query)
+       
+        var query = await _dbContext.SubscriptionFiles.Where(a => a.SubscriptionId == id && a.Status != GeneralStatus.Deleted).Include(p=>p.Subscription).ToListAsync() ?? throw new NotFoundException("عذرًا لا وجود لملف لهذا الإشتراك..يرجى مراجعة الطلب!");
+        foreach ( var item in query)
             item.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
-        await UploadFile(id, request.File);
+        await _uploadFile.Upload(request, EntityType.SubscriptionFile, query.Select(p => p.Subscription).Single());
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
-            Msg = "ok file updated"
+            Msg = "تم تحديث الملف الخاص بهذا الإشتراك بنجاح!"
         };
 
         
@@ -195,27 +177,22 @@ public class SubscriptionService
     }
     public async Task<string> GetPageContent(string url)
     {
-        using (var client = new HttpClient())
-        {
-            var response = await client.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return content;
-        }
+        using var client = new HttpClient();
+        var response = await client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadAsStringAsync();
+        return content;
     }
-    public async Task<List<SubscriptionFileResponsDto>> GetFileById(int id)
+    public async Task<List<SubscriptionFileResponsDto>> GetFileById(Guid id)
     {
-        if (id < 0) throw new BadRequestException("! incorrect  id ");
+       
         var data = await _dbContext.SubscriptionFiles.Where(a => a.SubscriptionId == id && a.Status != GeneralStatus.Deleted).
-            ProjectTo<SubscriptionFileResponsDto>(_mapper.ConfigurationProvider).ToListAsync();
-        if (data == null) throw new BadRequestException("no file with this subs number");
+            ProjectTo<SubscriptionFileResponsDto>(_mapper.ConfigurationProvider).ToListAsync() ?? throw new BadRequestException("no file with this subs number");
         return data;
     }
-    public async Task<FileStream> Download(int id)
+    public async Task<FileStream> Download(Guid id)
     {
-        if (id < 0) throw new BadRequestException("icorrect id ");
-        var data = await  _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.SubscriptionId == id && a.Status != GeneralStatus.Deleted);
-        if (data == null) throw new BadRequestException("no file with this subs number");
+        var data = await  _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.SubscriptionId == id && a.Status != GeneralStatus.Deleted) ?? throw new BadRequestException("no file with this subs number");
         var path = data.FileName;
         // Check if the file exists.
         if (!File.Exists(path))
@@ -227,15 +204,10 @@ public class SubscriptionService
         return File.OpenRead(path);
     }
 
-    public async Task<MessageResponse> Lock(int id)
+    public async Task<MessageResponse> Lock(Guid id)
     {
-        if (id < 0) throw new BadRequestException("! incorrect  id ");
-        var data = await _dbContext.Subscriptions.FirstOrDefaultAsync(b => b.Id == id && b.Status != GeneralStatus.Deleted);
-        if (data == null)
-        {
-            throw new NotFoundException("thear is no subscription with this number");
-          
-        }
+        
+        var data = await _dbContext.Subscriptions.FirstOrDefaultAsync(b => b.Id == id && b.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription with this number");
         if (data.Status == GeneralStatus.LockedByUser)
         {
             throw new BadRequestException("عفوًا الاشتراك مقفل مسبقًا !");
@@ -247,16 +219,10 @@ public class SubscriptionService
             Msg =  "  لقد تم قفل الاشتراك لهاذا العميل: " + " بنجاح! ",
         };
     }
-    public async Task<MessageResponse> Unlock(int id)
+    public async Task<MessageResponse> Unlock(Guid id)
     {
-        if (id < 0) throw new BadRequestException("! incorrect  id ");
-        var data = await _dbContext.Subscriptions.FirstOrDefaultAsync(b => b.Id == id && b.Status != GeneralStatus.Deleted);
-        if (data == null)
-        {
-            throw new NotFoundException("thear is no subscription with this number");
-
-        }
-        if (data.Status == GeneralStatus.Active)
+        var data = await _dbContext.Subscriptions.FirstOrDefaultAsync(b => b.Id == id && b.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription with this number");
+        if (IsLocked(data.Status))
         {
             throw new BadRequestException("عفوًا الاشتراك غير مقفل مسبقًا !");
         }
@@ -267,12 +233,10 @@ public class SubscriptionService
             Msg = "  لقد تم فك قفل الاشتراك لهاذا العميل: " + " بنجاح! ",
         };
     }
-    public async Task<MessageResponse> Remove(int id)
+    public async Task<MessageResponse> Delete(Guid id)
     {
-        if (id < 0) throw new BadRequestException("! incorrect  id ");
-        var data = await _dbContext.Subscriptions.FirstOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted);
-        if (data == null) throw new NotFoundException("thear is no subscription with this id ");
-        if (data.Status == GeneralStatus.LockedByUser)
+        var data = await _dbContext.Subscriptions.FirstOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription with this id ");
+        if (IsLocked(data.Status))
             throw new BadRequestException("this subscription is locked by user you cannot Removed");
         data.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
@@ -281,18 +245,45 @@ public class SubscriptionService
             Msg = "subscription is removed"
         };
     }
-    public async Task<MessageResponse> RemoveFile(int id)
+    public async Task<MessageResponse> DeleteFile(Guid id)
     {
-        if (id < 0) throw new BadRequestException("! incorrect  id ");
-        var data = await _dbContext.SubscriptionFiles.FirstOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted);
-        if (data == null) throw new NotFoundException("thear is no subscription file with this id ");
-        if (data.Status == GeneralStatus.LockedByUser)
+        var data = await _dbContext.SubscriptionFiles.FirstOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription file with this id ");
+        if (IsLocked(data.Status))
             throw new BadRequestException("this subscription file is locked by user you cannot Removed");
         data.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
             Msg = "subscription file is removed"
+        };
+    }
+    public async Task<SubscriptionRsponseDto> GetById(Guid id)
+    {
+       
+        var data = await _dbContext.Subscriptions.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+            .Include(p => p.Visits)
+            .Include(a => a.Service)
+            .Include(a => a.Customer).SingleOrDefaultAsync() ?? throw new BadHttpRequestException("عذرًا لا وجود لإشتراك بهذا الرقم");
+        
+        var result = _mapper.Map<SubscriptionRsponseDto>(data);
+        return result;
+    }
+
+    private static bool IsExpired(Subscription subscription)
+    {
+        var nowDate=DateTime.UtcNow;
+        if(subscription.EndDate<nowDate)
+            return true;
+        else
+            return false;
+    }
+    private static bool IsLocked(GeneralStatus status)
+    {
+        return status switch
+        {
+            GeneralStatus.Active => false,
+            GeneralStatus.LockedByUser => true,
+            _ => true,
         };
     }
 }

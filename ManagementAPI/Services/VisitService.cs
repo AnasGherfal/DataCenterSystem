@@ -24,7 +24,7 @@ public class VisitService : IVisitService
     public async Task<MessageResponse> Create(CreateVisitRequestDto request)
     {
         var timeShifts = await _dbContext.VisitTimeShifts.Where(p => p.Status == GeneralStatus.Active).ToListAsync();
-        var subscription = await _dbContext.Subscriptions.Where(p => p.Id == request.SubscriptionId && p.Status != GeneralStatus.Deleted).Include(p=>p.Customer).SingleOrDefaultAsync();
+        var subscription = await _dbContext.Subscriptions.Where(p => p.Id == request.SubscriptionId && p.Status == GeneralStatus.Active).Include(p => p.Customer).ThenInclude(p=>p.Representatives).SingleOrDefaultAsync() ?? throw new BadRequestException("عذرًا يرجى التأكد من الإشتراك الخاص بالزبون!");
         
         var visitStartTime = request.StartTime.TimeOfDay;
         var visitEndTime = request.EndTime.TimeOfDay;
@@ -53,32 +53,28 @@ public class VisitService : IVisitService
                         SubscriptionId = request.SubscriptionId,
                         VisitTypeId = request.VisitTypeId
                     };
-                    var partVisit = _mapper.Map<Visit>(newVisit);
-                    if (partVisit == null)
-                        throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
+                    var partVisit = _mapper.Map<Visit>(newVisit) ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
                     partVisit.TimeShift = anotherTimeShift;
                     partVisit.TimeShiftId = anotherTimeShift.Id;
                     partVisit.TotalMin = timeInAnotherShift;
                     partVisit.Price = CalculatePrice(partVisit);
 
                     request.EndTime = DateOnly.FromDateTime(request.StartTime).ToDateTime(firstEndTime);
-                    var data = _mapper.Map<Visit>(request);
-                    if (data == null)
-                        throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
+                    var data = _mapper.Map<Visit>(request) ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
                     data.TimeShift = shift;
                     data.TimeShiftId = shift.Id;
                     var companion = _mapper.Map<IList<Companion>>(request.Companions);
                     data.Companions = companion;
-                    var Representatives = request.Representatives
+                    var representatives = request.Representatives
                         .Select(p => new RepresentativeVisit() { RepresentativeId = p }).ToList();
-                    foreach (var Representative in Representatives)
+                    foreach (var representative in representatives)
                     {
-                        if (Representative.Representative.CustomerId != subscription.CustomerId)
+                        if (representative.Representative.CustomerId != subscription.CustomerId)
                             throw new BadHttpRequestException(
-                                $"عذرًا المخول {Representative.Representative.FullName} ليس مخولًا للزبون {subscription.Customer.Name}");
+                                $"عذرًا المخول {representative.Representative.FullName} ليس مخولًا للزبون {subscription.Customer.Name}");
                     }
 
-                    data.RepresentativesVisits = Representatives;
+                    data.RepresentativesVisits = representatives;
                     data.TotalMin = timeInThisShift;
                     data.Price = CalculatePrice(data);
                     //TODO: Declare Subscription to Decrease Monthly Visit if there a Visit in "While Work" Time Shift.
@@ -89,24 +85,22 @@ public class VisitService : IVisitService
                 }
                 else
                 {
-                    var data = _mapper.Map<Visit>(request);
-                    if (data == null)
-                        throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
+                    var data = _mapper.Map<Visit>(request) ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
                     data.TimeShiftId = shift.Id;
                     data.TimeShift = shift;
                     var companion = _mapper.Map<IList<Companion>>(request.Companions);
                     data.Companions = companion;
-                    var Representatives = request.Representatives
+                    var representatives = request.Representatives
                         .Select(p => new RepresentativeVisit() { RepresentativeId = p }).ToList();
-                    foreach (var Representative in Representatives)
+                    foreach (var representative in representatives)
                     {
                         if (!subscription.Customer.Representatives.Select(p => p.Id)
-                                .Contains(Representative.RepresentativeId))
+                                .Contains(representative.RepresentativeId))
                             throw new BadHttpRequestException(
-                                $"عذرًا المخول {Representative.RepresentativeId}  {subscription.Customer.Name} ليس مخولًا للزبون ");
+                                $"عذرًا المخول {representative.RepresentativeId}  {subscription.Customer.Name} ليس مخولًا للزبون ");
                     }
 
-                    data.RepresentativesVisits = Representatives;
+                    data.RepresentativesVisits = representatives;
                     data.Price = CalculatePrice(data);
                     await _dbContext.Visits.AddAsync(data);
                     await _dbContext.SaveChangesAsync();
@@ -120,11 +114,26 @@ public class VisitService : IVisitService
         };
     
     }
-   
 
-    public Task<MessageResponse> Delete(int id)
+    public async Task<VisitResponseDto> GetById(Guid id)
     {
-        throw new NotImplementedException();
+        
+        var data = await _dbContext.Visits.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+            .ProjectTo<VisitResponseDto>(_mapper.ConfigurationProvider).SingleOrDefaultAsync() ??
+            throw new BadHttpRequestException("عذرًا لا وجود لفاتورة بهذا الرقم");
+        return data;
+    }
+    public async Task<MessageResponse> Delete(Guid id)
+    {
+        
+        var data = await _dbContext.Visits.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted).SingleOrDefaultAsync() ??
+            throw new BadHttpRequestException("عذرًا لا وجود لفاتورة بهذا الرقم");
+        data.Status = GeneralStatus.Deleted;
+        await _dbContext.SaveChangesAsync();
+        return new MessageResponse()
+        {
+            Msg = $"بنجاح  {id} تم حذف الزيارة "
+        };
     }
 
     public async Task<FetchVisitResponseDto> GetAll(FetchVisitRequestDto request)
@@ -133,7 +142,7 @@ public class VisitService : IVisitService
                 .Include(p => p.RepresentativesVisits)
                 .ThenInclude(p => p.Representative)
                 .Include(p => p.TimeShift)
-                .Where(p => p.InvoiceId==0||p.InvoiceId==null);
+                .Where(p => p.InvoiceId==null);
         var queryResult = await query .OrderBy(p => p.Id)
                               .Skip(request.PageSize * (request.PageNumber - 1))
                               .Take(request.PageSize)
@@ -151,12 +160,11 @@ public class VisitService : IVisitService
 
     }
 
-    public async Task<MessageResponse> Lock(int id)
+    public async Task<MessageResponse> Lock(Guid id)
     {
         var data = await _dbContext.Visits
            .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
-           .FirstOrDefaultAsync();
-        if (data == null) throw new NotFoundException("! عذرًا..لا وجود لزيارة بهذا الرقم او هذه الزيارة مقيدة مسبقًا");
+           .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لزيارة بهذا الرقم او هذه الزيارة مقيدة مسبقًا");
         data.Status = GeneralStatus.LockedByUser;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
@@ -165,13 +173,12 @@ public class VisitService : IVisitService
         };
     }
 
-    public async Task<MessageResponse> Paid(int id, int invoiceId)
+    public async Task<MessageResponse> Paid(Guid id, Guid invoiceId)
     {
         var data = await _dbContext.Visits
           .Where(p => p.Id == id && p.InvoiceId ==null )
-          .FirstOrDefaultAsync();
-        if (data == null) throw new NotFoundException("! عذرًا..لا وجود لزيارة بهذا الرقم او أن هذه الزيارة مضافة الي فاتورة مسبقًا ");
-        if(IsLocked(data.Status))
+          .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لزيارة بهذا الرقم او أن هذه الزيارة مضافة الي فاتورة مسبقًا ");
+        if (IsLocked(data.Status))
             throw new BadHttpRequestException("! عذرًا..قد تكون هذه الزيارة مقيدة ");
         data.InvoiceId = invoiceId;
         await _dbContext.SaveChangesAsync();
@@ -181,12 +188,11 @@ public class VisitService : IVisitService
         };
     }
 
-    public async Task<MessageResponse> Unlock(int id)
+    public async Task<MessageResponse> Unlock(Guid id)
     {
         var data = await _dbContext.Visits
            .Where(p => p.Id == id && p.Status == GeneralStatus.LockedByUser)
-           .FirstOrDefaultAsync();
-        if (data == null) throw new NotFoundException("! عذرًا..لا وجود لزيارة بهذا الرقم أو أن هذه الزيارة غير مقيدة ");
+           .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لزيارة بهذا الرقم أو أن هذه الزيارة غير مقيدة ");
         data.Status = GeneralStatus.Active;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
@@ -195,15 +201,14 @@ public class VisitService : IVisitService
         };
     }
 
-    public async Task<MessageResponse> Update(int id, UpdateVisitRequestDto request)
+    public async Task<MessageResponse> Update(Guid id, UpdateVisitRequestDto request)
     {
         var data = await _dbContext.Visits
                        .Include(p=> p.RepresentativesVisits)
                        .Include(p => p.Companions)
            .Where(p => p.Id == id && p.InvoiceId == null)
-           .FirstOrDefaultAsync();
-        if (data == null) throw new BadRequestException(" يرجى التأكد من صحة رقم الزيارة");
-        if(IsLocked(data.Status))
+           .FirstOrDefaultAsync() ?? throw new BadRequestException(" يرجى التأكد من صحة رقم الزيارة");
+        if (IsLocked(data.Status))
             throw new NotFoundException("! عذرًا..لا وجود لزيارة بهذا الرقم أو أن هذه الزيارة مقيدة ");
         
         var rep = request.Representatives.Select(p => new RepresentativeVisit { RepresentativeId=p }).ToList();
@@ -239,21 +244,18 @@ public class VisitService : IVisitService
         };
 
     }*/
-        private bool IsLocked(GeneralStatus status)
+        private static bool IsLocked(GeneralStatus status)
         {
-            switch (status)
-            {
-                case GeneralStatus.Active:
-                    return false;
-                case GeneralStatus.LockedByUser:
-                    return true;
-                default:
-                    return true;
-            }
-        }
+        return status switch
+        {
+            GeneralStatus.Active => false,
+            GeneralStatus.LockedByUser => true,
+            _ => true,
+        };
+    }
     private static decimal CalculatePrice(Visit x)
     {
-        decimal result = 0;
+        decimal result;
         if (x.TotalMin == null) return 0;
 
         if (x.TotalMin.Value.TotalMinutes <= 60.00)

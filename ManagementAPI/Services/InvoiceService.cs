@@ -7,6 +7,7 @@ using ManagementAPI.Dtos.Customer;
 using ManagementAPI.Dtos.Invoice;
 using Microsoft.EntityFrameworkCore;
 using Shared.Dtos;
+using Shared.Exceptions;
 
 namespace ManagementAPI.Services;
 
@@ -21,11 +22,9 @@ public class InvoiceService : IInvoiceService
     }
     public async Task<MessageResponse> Create(CreateInvoiceRequestDto request)
     {
-        var data = _mapper.Map<Invoice>(request);
-        if (data == null) throw new BadHttpRequestException("الرجاء التأكيد على ملئ البيانات بالكامل");
+        var data = _mapper.Map<Invoice>(request)?? throw new BadRequestException("الرجاء التأكيد على ملئ البيانات بالكامل");
         var visits=await _dbContext.Visits.
-            Where(p => (p.StartTime >= request.StartDate && p.EndTime <= request.EndDate)&& p.SubscriptionId==request.SubscriptionId).ToListAsync();
-        if (visits == null) throw new BadHttpRequestException("عذرًا لا وجود لزيارات لهذا الإشتراك في المدة الزمنية المحددة");
+            Where(p => (p.StartTime >= request.StartDate && p.EndTime <= request.EndDate)&& p.SubscriptionId==request.SubscriptionId).ToListAsync()?? throw new BadRequestException("عذرًا لا وجود لزيارات لهذا الإشتراك في المدة الزمنية المحددة");
         data.Visits= visits;
 
         foreach (var visit in visits) 
@@ -45,9 +44,17 @@ public class InvoiceService : IInvoiceService
             
     }
 
-    public Task<MessageResponse> Delete(int id)
+    public async Task<MessageResponse> Delete(Guid id)
     {
-        throw new NotImplementedException();
+        
+        var data = await _dbContext.Invoices.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted).SingleOrDefaultAsync() ??
+            throw new BadHttpRequestException("عذرًا لا وجود لفاتورة بهذا الرقم");
+        data.Status = GeneralStatus.Deleted;
+        await _dbContext.SaveChangesAsync();
+        return new MessageResponse()
+        {
+            Msg = $"بنجاح  {id} تم حذف الفاتورة "
+        };
     }
 
     public async Task<FetchInvoicesResponseDto> GetAll(FetchInvoicesRequestDto request)
@@ -69,28 +76,45 @@ public class InvoiceService : IInvoiceService
         return new FetchInvoicesResponseDto(request.PageNumber, (int)totalPages, queryResult);
     }
 
-    public async Task<InvoiceResponseDto> GetById(int id)
+    public async Task<InvoiceResponseDto> GetById(Guid id)
     {
-        if (id <= 0)
-            throw new BadHttpRequestException("عذرًا رقم الفاتورة الذي أدخلته غير صالح!");
-        var data = _dbContext.Invoices.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted).SingleOrDefault();
-        if (data == null) throw new BadHttpRequestException("عذرًا لا وجود لفاتورة بهذا الرقم");
+        
+        var data = await _dbContext.Invoices.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted).Include(p=>p.Visits).SingleOrDefaultAsync()?? throw new BadHttpRequestException("عذرًا لا وجود لفاتورة بهذا الرقم");
         var result = _mapper.Map<InvoiceResponseDto>(data);
         return result;
     }
 
-    public Task<MessageResponse> Lock(int id)
+    public async Task<MessageResponse> Lock(Guid id)
     {
-        throw new NotImplementedException();
+        var data = await _dbContext.Invoices.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted).SingleOrDefaultAsync() ?? throw new BadHttpRequestException("عذرًا لا وجود لفاتورة بهذا الرقم");
+        data.Status= GeneralStatus.Locked;
+        await _dbContext.SaveChangesAsync();
+        return new MessageResponse()
+        {
+            Msg = $"بنجاح  {id} تم تقييد الفاتورة "
+        };
     }
 
-    public Task<MessageResponse> Unlock(int id)
+    public async Task<MessageResponse> Unlock(Guid id)
     {
-        throw new NotImplementedException();
+        var data = await _dbContext.Invoices.Where(p => p.Id == id && p.Status == GeneralStatus.Locked).SingleOrDefaultAsync() ?? throw new BadHttpRequestException("عذرًا لا وجود لفاتورة بهذا الرقم");
+        data.Status = GeneralStatus.Active;
+        await _dbContext.SaveChangesAsync();
+        return new MessageResponse()
+        {
+            Msg = $"بنجاح  {id} تم فك تقييد الفاتورة "
+    };
     }
 
-    public Task<MessageResponse> Update(int id, UpdateInvoiceRequestDto request)
+    public async Task<MessageResponse> Update(Guid id, UpdateInvoiceRequestDto request)
     {
-        throw new NotImplementedException();
+        var data = await _dbContext.Invoices.Where(p => p.Id == id && (p.Status != GeneralStatus.Locked  || p.Status != GeneralStatus.Deleted)).SingleOrDefaultAsync() ?? throw new BadHttpRequestException("عذرًا لا وجود لفاتورة بهذا الرقم");
+        _mapper.Map(request, data);
+        await _dbContext.SaveChangesAsync();
+        return new MessageResponse()
+        {
+            Msg = $"بنجاح  {id} تم تعديل الفاتورة"
+        };
+        
     }
 }

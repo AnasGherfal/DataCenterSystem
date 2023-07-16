@@ -12,7 +12,7 @@ public class CreateCompanionRequestDto
 }
 public class CreateCompanionRequestDtoValidator : AbstractValidator<CreateCompanionRequestDto>
 {
-    [Obsolete]
+    [Obsolete("CreateCompanionRequestDto")]
     public CreateCompanionRequestDtoValidator()
     {
         CascadeMode = CascadeMode.Stop;

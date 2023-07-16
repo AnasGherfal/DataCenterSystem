@@ -25,7 +25,7 @@ public enum EntityType : short
     RepresentativeFile = 8,
     Service = 9,
     Subscription = 10,
-    SubscriptionAdditionalPower = 11,
+    SubscriptionFile = 11,
     User = 12,
     Visit = 13,
     VisitTimeShift = 14,

@@ -1,15 +1,18 @@
 ﻿using System.Net;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Infrastructure;
 using Infrastructure.Constants;
 using Infrastructure.Models;
+using ManagementAPI.Dtos.Customer;
 using ManagementAPI.Dtos.Service;
 using Microsoft.EntityFrameworkCore;
 using Shared.Dtos;
+using Shared.Exceptions;
 
 namespace ManagementAPI.Services;
 
-public class ServiceServices
+public class ServiceServices : IServiceServices
 {
     private readonly DataCenterContext _dbContext;
     private readonly IMapper _mapper;
@@ -19,177 +22,127 @@ public class ServiceServices
         _dbContext = dbContext;
         _mapper = mapper;
     }
-    public async Task<OperationResponse> Create(CreateServiceDto request)
+    public async Task<MessageResponse> Create(CreateServiceDto request)
     {
         if (await _dbContext.Services.AnyAsync(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted))
-        {
-            return new OperationResponse()
-            {
-                Msg = "thier is simellar name stored in database",
-                StatusCode = HttpStatusCode.BadRequest,
-            };
-        }
+            throw new BadRequestException("عذرًا ولكن هذا الأسم موجود مسبقًا");
         var data = _mapper.Map<Service>(request);
         await _dbContext.Services.AddAsync(data);
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse() { Msg = "ok", StatusCode = HttpStatusCode.OK };
+        return new MessageResponse() { Msg = "تمت إضافة الباقة بنجاح" };
     }
 
+    public async Task<ServiceResponseDto> GetById(Guid id)
+    {
+       
+        var data = await _dbContext.Services.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+                                       .ProjectTo<ServiceResponseDto>(_mapper.ConfigurationProvider)
+                                       .SingleOrDefaultAsync() ?? throw new NotFoundException("عذرًا لا وجود لباقة بهذا الرقم يرجى التأكد من الرقم!");
+        return data;
+    }
     public async Task<FetchServicesResponseDto> GetAll(FetchServicesRequestDto request)
     {
         var query =  _dbContext.Services
             .Where(p => p.Status != GeneralStatus.Deleted);
-        var queryResult = await query.OrderBy(p => p.Id)
+        var queryResult = await query
+            .ProjectTo<ServiceResponseDto>(_mapper.ConfigurationProvider)
+            .OrderBy(p => p.Id)
             .Skip(request.PageSize * (request.PageNumber - 1))
             .Take(request.PageSize)
             .ToListAsync();
-        var result = _mapper.Map<List<ServiceResponseDto>>(queryResult);
+        
         var totalCount = await query.CountAsync();
         var totalpages = (int) Math.Ceiling(totalCount / (decimal) request.PageSize);
         return new FetchServicesResponseDto() {
-            Content = result,
+            Content = queryResult,
             CurrentPage = request.PageNumber,
-            PageSize = request.PageSize,
             TotalPages = totalpages,
         };
     }
 
-    public async Task<OperationResponse> Update(int id, UpdateServiceDto request)
+    public async Task<MessageResponse> Update(Guid id, UpdateServiceDto request)
     {
-        var data = await _dbContext.Services.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted );
-        if (data == null) return
-                new OperationResponse()
-                {
-                    Msg = "no service with this number",
-                    StatusCode = HttpStatusCode.BadRequest
-                };
-        if (data.Status == GeneralStatus.LockedByUser) return
-                new OperationResponse()
-                {
-                    Msg = "this service is locked by user you cannot updated",
-                    StatusCode = HttpStatusCode.BadRequest
-                };
+        var data = await _dbContext.Services.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+       ?? throw new NotFoundException("!عذرًا لا وجود لباقة بهذا الرقم");
+        if(IsLocked(data.Status))
+            throw new BadRequestException($"! {data.Id}: عذرًا هذه الباقة مقيدة");
         if (data.Name != request.Name)
         {
             var isNotUnique = await _dbContext.Services.Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted).AnyAsync();
-            if (isNotUnique) return new OperationResponse()
-            { 
-                Msg = "الاسم موجود مسبقًا",
-                StatusCode = HttpStatusCode.BadRequest
-            };
+            if (isNotUnique)
+            throw new BadRequestException("!عذرًا ولكن هذا الأسم محجوز لباقة أخرى");
         }
         _mapper.Map(request, data);
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse() 
+        return new MessageResponse() 
         {
-            Msg = "ok edit", 
-            StatusCode = HttpStatusCode.OK
+            Msg = "تم تعديل الباقة بنجاح"
+            
         };
     }
 
-    public async Task<OperationResponse> Remove(int id)
+    public async Task<MessageResponse> Delete(Guid id)
     {
-        var data = await _dbContext.Services.FirstOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted);
-        if (data == null) return
-                new OperationResponse()
-        { StatusCode = HttpStatusCode.BadRequest,
-            Msg = "thear is no service with this id "
-        };
-        if (data.Status == GeneralStatus.LockedByUser) return
-               new OperationResponse()
-               {
-                   Msg = "this service is locked by user you cannot Removed",
-                   StatusCode = HttpStatusCode.BadRequest
-               };
+        var data = await _dbContext.Services.FirstOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted)
+          ?? throw new NotFoundException("عذرًا لا وجود لباقة بهذا الرقم");
+        if (IsLocked(data.Status))
+            throw new BadRequestException($"! {data.Id}: عذرًا هذه الباقة مقيدة");
+          
         data.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse() 
+        return new MessageResponse() 
         {
-            StatusCode=HttpStatusCode.OK,
-            Msg="service is removed"
+            
+            Msg=$"بنجاح {data.Name} تم حذف الباقة "
         };
 
     }
 
-  public async Task<OperationResponse> Lock(int id)
+  public async Task<MessageResponse> Lock(Guid id)
     {
-        if (id < 0)
-            return new OperationResponse()
-            {
-                StatusCode = HttpStatusCode.BadRequest,
-                Msg = "incorrect service id"
-            };
-        var data = await _dbContext.Services.FirstOrDefaultAsync(b => b.Id == id && b.Status == GeneralStatus.Active);
-        if(data == null)
-        {
-            var isLocked = await _dbContext.Services.Where(b => b.Id == id && b.Status == GeneralStatus.LockedByUser).AnyAsync();
-            if (!isLocked)
-            {
-                return new OperationResponse()
-                {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Msg = "thear is no service with this number"
-                };
-
-            }
-            return new OperationResponse()
-            {
-                Msg = "عفوًا الخدمة مقفله مسبقًا !",
-                StatusCode = HttpStatusCode.NotFound
-            };
-
-        }
+        var data = await _dbContext.Services.FirstOrDefaultAsync(b => b.Id == id && b.Status != GeneralStatus.Deleted)
+            ?? throw new NotFoundException("!عذرًا ولكن لا وجود لباقة بهذا الرقم");
+        
+        if(IsLocked(data.Status))
+            throw new BadRequestException($"! {data.Id}: عذرًا هذه الباقة مقيدة مسبقًا"); 
+        
         data.Status = GeneralStatus.LockedByUser;
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        return new MessageResponse()
         {
-            Msg = data.Name + " لقد تم قفل الخدمة: " + " بنجاح! ",
-            StatusCode = HttpStatusCode.OK
+            Msg = data.Name + " لقد تم تقييد الخدمة: " + " بنجاح! ",
+            
         };
-
-
 
     }
 
-  public async Task<OperationResponse> Unlock(int id)
+  public async Task<MessageResponse> Unlock(Guid id)
   {
-      if (id < 0)
-          return new OperationResponse()
+      
+        var data = await _dbContext.Services.FirstOrDefaultAsync(
+          b => b.Id == id && b.Status != GeneralStatus.Deleted)
+        ?? throw new NotFoundException("! عذرًا لاوجود لباقة بهذا الرقم");
+        if (!IsLocked(data.Status))
+            throw new BadRequestException("! عذرًا ولكن هذه الباقة ليست مقيدة");
+        data.Status = GeneralStatus.Active;
+          return new MessageResponse()
           {
-              StatusCode = HttpStatusCode.BadRequest,
-              Msg = "thear is no service with this number"
-          };
-      var data = await _dbContext.Services.FirstOrDefaultAsync(
-          b => b.Id == id && b.Status == GeneralStatus.LockedByUser);
-      if (data == null)
-      {
-          var isUnLocked = await _dbContext.Services.Where(b => b.Id == id && b.Status == GeneralStatus.Active)
-              .AnyAsync();
-          if (!isUnLocked)
-          {
-              return new OperationResponse()
-              {
-                  StatusCode = HttpStatusCode.BadRequest,
-                  Msg = "thear is no service with this number"
-              };
-
-          }
-
-          return new OperationResponse()
-          {
-              Msg = "عفوًا الخدمة غير مقفله مسبقًا !",
-              StatusCode = HttpStatusCode.NotFound
+              Msg = "تم إلفاء التقييد عن هذه الباقة بنجاح ",
           };
 
-      }
-      data.Status = GeneralStatus.Active;
-      await _dbContext.SaveChangesAsync();
-      return new OperationResponse()
-      {
-          Msg = data.Name + " تم فتح القفل عن الخدمة: " + " بنجاح! ",
-          StatusCode = HttpStatusCode.OK
-      };
+      
+ 
   }
+
+    private static bool IsLocked(GeneralStatus status)
+    {
+        return status switch
+        {
+            GeneralStatus.Active => false,
+            GeneralStatus.LockedByUser => true,
+            _ => true,
+        };
+    }
 }
 
 

@@ -19,7 +19,7 @@ public class CustomersController : ControllerBase
      public async Task<IActionResult> Create([FromForm] CreateCustomerRequestDto request)
          => Ok(await _service.Create(request));
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(Guid id)
        => Ok(await _service.GetById(id));
     [HttpGet]
     
@@ -27,18 +27,18 @@ public class CustomersController : ControllerBase
         => Ok(await _service.GetAll(filter));
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateCustomerRequestDto request)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCustomerRequestDto request)
         => Ok(await _service.Update(id, request));
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Guid id)
         => Ok(await _service.Delete(id));
 
     [HttpPut("{id}/lock")]
-    public async Task<IActionResult> Lock(int id)
+    public async Task<IActionResult> Lock(Guid id)
         => Ok(await _service.Lock(id));
     
     [HttpPut("{id}/unlock")]
-    public async Task<IActionResult> Unlock(int id) 
+    public async Task<IActionResult> Unlock(Guid id) 
         => Ok(await _service.Unlock(id));
 }

@@ -2,13 +2,13 @@
 
 public class RepresentativeFile : BaseModel
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Filename { get; set; } = string.Empty;
     public string FileType { get; set; } = string.Empty;
     public short DocType { get; set; }
-    public int RepresentativeId { get; set; }
+    public Guid RepresentativeId { get; set; }
 
     //-----------Realations
 
-    public Representative Representative { get; set; }
+    public Representative Representative { get; set; } = default!;
 }

@@ -8,10 +8,11 @@ public interface IVisitService
 {
     public Task<MessageResponse> Create(CreateVisitRequestDto request);
     public Task<FetchVisitResponseDto> GetAll(FetchVisitRequestDto request);
-    public Task<MessageResponse> Lock(int id);
-    public Task<MessageResponse> Unlock(int id);
-    public Task<MessageResponse> Update(int id, UpdateVisitRequestDto request);
+    public Task<VisitResponseDto> GetById(Guid id);
+    public Task<MessageResponse> Lock(Guid id);
+    public Task<MessageResponse> Unlock(Guid id);
+    public Task<MessageResponse> Update(Guid id, UpdateVisitRequestDto request);
     //public Task<OperationResponse> UpdateCompanion(int visitId,int companionId, UpdateCompanionRequestDto request);
-    public Task<MessageResponse> Delete(int id);
-    public Task<MessageResponse> Paid(int id, int InvoiceId);
+    public Task<MessageResponse> Delete(Guid id);
+    public Task<MessageResponse> Paid(Guid id, Guid InvoiceId);
 }

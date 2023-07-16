@@ -30,12 +30,12 @@ public class RepresentativeService : IRepresentativeService
     public async Task<MessageResponse> Create(CreateRepresentativeRequestDto request)
     {
         var NewRepresentative = _mapper.Map<Representative>(request);
-        var customer =await _dbContext.Customers.Include(p => p.Representatives).Where(p => p.Id == request.CustomerId).SingleOrDefaultAsync();
-        if (customer == null)
-            throw new BadHttpRequestException("عذرًا رقم العميل الذي أدخلته غير صحيح يرجى إعادة المحاولة");
+        var customer =await _dbContext.Customers.Include(p => p.Representatives)
+                            .Where(p => p.Id == request.CustomerId).SingleOrDefaultAsync()
+                              ?? throw new BadRequestException("عذرًا رقم العميل الذي أدخلته غير صحيح يرجى إعادة المحاولة");
         var RepresentativeCount = customer.Representatives.Count;
-        if (RepresentativeCount >= 2)
-            throw new BadHttpRequestException("عذرًا هذا العميل لديه الحد الأقصى من عدد المخوليين");
+        if (RepresentativeCount == 2)
+            throw new BadRequestException("عذرًا هذا العميل لديه الحد الأقصى من عدد المخوليين");
         _dbContext.Representatives.Add(NewRepresentative);
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
@@ -44,12 +44,11 @@ public class RepresentativeService : IRepresentativeService
         };
     }
 
-    public async Task<RepresentativeResponseDto> GetById(int id, int customerId)
+    public async Task<RepresentativeResponseDto> GetById(Guid id)
     {
-        var data =await _dbContext.Representatives.Where(p => p.Id == id && p.CustomerId == customerId)   
+        var data =await _dbContext.Representatives.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)   
             .ProjectTo<RepresentativeResponseDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync();
-        if (data == null) throw new NotFoundException("عذرًا لا وجود لعميل أو مخول بهذا الرقم يرجى التأكد وإعادة المحاولة");
+            .FirstOrDefaultAsync()?? throw new NotFoundException("عذرًا لا وجود لعميل أو مخول بهذا الرقم يرجى التأكد وإعادة المحاولة");
         return data;
     }
     public async Task<FetchRepresentativeResponseDto> GetAll(FetchRepresentativeRequestDto request)
@@ -69,76 +68,60 @@ public class RepresentativeService : IRepresentativeService
             TotalPages = (int)totalpages
         };
     }
-    public async Task<MessageResponse> Delete(int id)
-    {
-        if (id <= 0)
-           throw new BadHttpRequestException("الرجاء ادخال رقم مخول صحيح وموجود فعلًا");    
-        var Representative = _dbContext.Representatives
+    public async Task<MessageResponse> Delete(Guid id)
+    {   
+        var data = _dbContext.Representatives
                                       .Where(p => p.Id == id && p.Status == GeneralStatus.Active && p.Customer.Status==GeneralStatus.Active)
-                                      .FirstOrDefault();
-        if (Representative == null)
-           throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");     
-        Representative.Status = GeneralStatus.Deleted;
+                                      .FirstOrDefault()?? throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");     
+        data.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
-            Msg = "!بنجاح " + Representative.FullName + " : لقد تم حذف المخول",
+            Msg = "!بنجاح " + data.FullName + " : لقد تم حذف المخول",
         };
     }
-    public async Task<MessageResponse> Lock(int id)
+    public async Task<MessageResponse> Lock(Guid id)
     {
-        if (id <= 0)
-            throw new BadHttpRequestException("الرجاء ادخال رقم مخول صحيح وموجود فعلًا");
-        var Representative = await _dbContext.Representatives
+        var data = await _dbContext.Representatives
                                            .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
-                                           .FirstOrDefaultAsync();
-        if (Representative == null)
-            throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
-        if (!IsLocked(Representative.Status))
+                                           .FirstOrDefaultAsync()?? throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
+        if (!IsLocked(data.Status))
         {
-            Representative.Status = GeneralStatus.LockedByUser;
+            data.Status = GeneralStatus.LockedByUser;
             await _dbContext.SaveChangesAsync();
             return new MessageResponse()
             {
-                Msg = "!بنجاح " + Representative.FullName + " : لقد تم تقييد المخول",
+                Msg = "!بنجاح " + data.FullName + " : لقد تم تقييد المخول",
             };
         }
         else
-            throw new BadHttpRequestException(" ! عذرًا .. هذا المخول مقيد مسبقًا");
+            throw new BadRequestException(" ! عذرًا .. هذا المخول مقيد مسبقًا");
     }
-    public async Task<MessageResponse> Unlock(int id)
+    public async Task<MessageResponse> Unlock(Guid id)
     {
-        if (id <= 0)
-            throw new BadHttpRequestException("الرجاء ادخال رقم مخول صحيح وموجود فعلًا");
-        var Representative = await _dbContext.Representatives.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
-                                                         .FirstOrDefaultAsync();
-        if (Representative == null)
-            throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
-        if (IsLocked(Representative.Status))
+        var data= await _dbContext.Representatives.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+                                                         .FirstOrDefaultAsync()?? throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
+        if (IsLocked(data.Status))
         {
-            Representative.Status = GeneralStatus.Active;
+            data.Status = GeneralStatus.Active;
             await _dbContext.SaveChangesAsync();
             return new MessageResponse()
             {
-                Msg ="بنجاح " +Representative.FullName+ " : لقد تم إلغاء التقييد عن المخول",
+                Msg ="بنجاح " +data.FullName+ " : لقد تم إلغاء التقييد عن المخول",
             };
         }
         else
-            throw new BadHttpRequestException( " ! عذرًا .. هذا المخول غير مقيد " );
+            throw new BadRequestException( " ! عذرًا .. هذا المخول غير مقيد " );
     }
 
-    public async Task<MessageResponse> Update(int id, UpdateRepresentativeRequestDto request)
+    public async Task<MessageResponse> Update(Guid id, UpdateRepresentativeRequestDto request)
     {
-        if (id <= 0)
-            throw new BadHttpRequestException("الرجاء ادخال رقم مخول صحيح وموجود فعلًا");
-        var Representative = await _dbContext.Representatives
+        var data = await _dbContext.Representatives
                                            .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
-                                           .FirstOrDefaultAsync();
-        if (Representative == null)
-            throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
-        if (IsLocked(Representative.Status))
-            throw new BadHttpRequestException("! عذرًا..هذا المخول مقيد لا يمكنك تعديل بياناته ");
-        _mapper.Map(request, Representative);
+                                           .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
+        if (IsLocked(data.Status))
+            throw new BadRequestException("! عذرًا..هذا المخول مقيد لا يمكنك تعديل بياناته ");
+        _mapper.Map(request, data);
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -147,16 +130,13 @@ public class RepresentativeService : IRepresentativeService
     }
 
 
-    private bool IsLocked(GeneralStatus status)
+    private static bool IsLocked(GeneralStatus status)
     {
-        switch (status)
+        return status switch
         {
-            case GeneralStatus.Active:
-                return false;
-            case GeneralStatus.LockedByUser:
-                return true;
-            default:
-                return true;
-        }
+            GeneralStatus.Active => false,
+            GeneralStatus.LockedByUser => true,
+            _ => true,
+        };
     }
 }

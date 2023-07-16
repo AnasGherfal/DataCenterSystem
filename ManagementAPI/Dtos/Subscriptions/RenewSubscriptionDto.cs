@@ -8,7 +8,7 @@ namespace ManagementAPI.Dtos.Subscriptions
     }
     public class RenewSubscriptionDtoValidator : AbstractValidator<RenewSubscriptionDto>
     {
-        [Obsolete]
+        [Obsolete("RenewSubscriptionDto")]
         public RenewSubscriptionDtoValidator() {
             CascadeMode = CascadeMode.Stop;
             //var minimumExpiration = DateTime.UtcNow.AddYears(1);

@@ -30,19 +30,19 @@ public class VisitController : ControllerBase
         => Ok(await _service.GetAll(filter));
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
-      => Ok(await _service.GetById(id));
+    public async Task<IActionResult> GetById(string id)
+      => Ok(await _service.GetById(Guid.Parse(id)));
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, UpdateVisitRequestDto request)
-        => Ok(await _service.Update(id, request));
+    public async Task<IActionResult> Update(string id, UpdateVisitRequestDto request)
+        => Ok(await _service.Update(Guid.Parse(id), request));
 
     [HttpPut("{id}/lock")]
-    public async Task<IActionResult> Lock(Guid id) 
-        => Ok(await _service.Lock(id));
+    public async Task<IActionResult> Lock(string id) 
+        => Ok(await _service.Lock(Guid.Parse(id)));
     [HttpPut("{id}/Unlock")]
-    public async Task<IActionResult> Unlock(Guid id) 
-        => Ok(await _service.Unlock(id));   
+    public async Task<IActionResult> Unlock(string id) 
+        => Ok(await _service.Unlock(Guid.Parse(id)));   
     [HttpPut("{id}/Pay")]
-    public async Task<IActionResult> Paid(Guid id, Guid invioceId) 
-        => Ok(await _service.Paid(id, invioceId));
+    public async Task<IActionResult> Paid(string id, Guid invioceId) 
+        => Ok(await _service.Paid(Guid.Parse(id), invioceId));
 }

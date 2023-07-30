@@ -16,12 +16,10 @@ public class VisitProfileMapper:Profile
            .ForMember(dest => dest.InvoiceId, opt => opt.MapFrom(x => 0))
            .ForMember(dest => dest.TotalMin, opt => opt.MapFrom(x => x.EndTime.TimeOfDay - x.StartTime.TimeOfDay))
            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.Now))
-           .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1))
            .ForMember(dest => dest.Status, opt => opt.MapFrom(x => GeneralStatus.Active));
 
 
         CreateMap<Visit, VisitResponseDto>()
-            .ForMember(dest => dest.Price, opt => opt.MapFrom(x => Converter(x)))
             .ForMember(p => p.Representatives, opt => opt.MapFrom(x => x.RepresentativesVisits))
             .ForMember(dest => dest.TimeShift, opt => opt.MapFrom(x => x.TimeShift.Name))
             .ForMember(dest => dest.VisitType, opt => opt.MapFrom(x => x.VisitType.Name))
@@ -32,20 +30,6 @@ public class VisitProfileMapper:Profile
 
        
     }
-    private static decimal Converter(Visit x)
-    {   
-        decimal result = 0;
-        if (x.TotalMin == null) return 0;
-        
-        if (x.TotalMin.Value.TotalMinutes <= 60.00)
-        {
-           result=x.TimeShift.PriceForFirstHour;
-        }
-        else
-        {
-            result= x.TimeShift.PriceForRemainingHour;
-        }
-        return result;
-    }
+    
    
 }

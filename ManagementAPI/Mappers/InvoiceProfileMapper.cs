@@ -13,7 +13,6 @@ public class InvoiceProfileMapper : Profile
         CreateMap<CreateInvoiceRequestDto, Invoice>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.Status, opt => opt.MapFrom(x => GeneralStatus.Active))
-            .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1))
             .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.Now))
             .ForMember(dest => dest.Date, opt => opt.MapFrom(x => DateTime.Now))
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(x => x.EndDate))

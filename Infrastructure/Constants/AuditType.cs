@@ -9,4 +9,10 @@ public enum AuditType
     AdminUnlocked = 4,
     AdminDeleted = 5,
     AdminPasswordReset = 6,
+    CustomerCreated=7,
+    CustomerUpdated=8,
+    CustomerLocked=9,
+    CustomerUnlocked=10,
+    CustomerDeleted=11,
+
 }

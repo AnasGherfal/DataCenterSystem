@@ -14,8 +14,7 @@ public class VisitTimeShiftProfileMapper: Profile
         CreateMap<CreateVisitTimeShiftRequestDto, VisitTimeShift>()
                   .ForMember(dest => dest.Id, opt => opt.Ignore())
                   .ForMember(dest => dest.Status, opt => opt.MapFrom(x => GeneralStatus.Active))
-                  .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x=> DateTime.UtcNow))
-                  .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1));
+                  .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x=> DateTime.UtcNow));
         CreateMap<VisitTimeShift, VisitTimeShiftResponseDto>();
         CreateMap<UpdateVisitTimeShiftRequestDto, VisitTimeShift>();
     }

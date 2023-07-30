@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Infrastructure.Constants;
 using Infrastructure.Models;
-using ManagementAPI.Dtos;
+using Shared.Dtos;
 using ManagementAPI.Dtos.Service;
 using ManagementAPI.Dtos.Subscriptions;
 
@@ -13,13 +13,11 @@ public class SubscriptionMapperProfile:Profile
     {
         CreateMap<CreateSubscriptionRequestDto, Subscription>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(x => GeneralStatus.Active))
-            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.UtcNow))
-            .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1));
+            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.UtcNow));
         
         CreateMap<FileRequestDto, SubscriptionFile>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(x => GeneralStatus.Active))
             .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.UtcNow))
-            .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1))
             .ForMember(dest => dest.FileName,opt => opt.Ignore())
             .ForMember(dest => dest.FileType, opt => opt.Ignore())
             .ForMember(dest => dest.Id, opt => opt.Ignore());
@@ -27,7 +25,6 @@ public class SubscriptionMapperProfile:Profile
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.FileName, opt => opt.Ignore())
             .ForMember(dest => dest.FileType, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1))
             .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.UtcNow))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(x => GeneralStatus.Active));
        

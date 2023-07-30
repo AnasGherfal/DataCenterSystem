@@ -27,34 +27,34 @@ namespace ManagementAPI.Controllers
             return Ok(await _userService.GetAll(request));
         }
         [HttpGet("{id:int}/Get")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(string id)
         {
-            return Ok(await _userService.GetById(id));
+            return Ok(await _userService.GetById(Guid.Parse(id)));
         }
         [HttpPut("{id:int}/Reset")]
-        public async Task<IActionResult> Reset(Guid id)
+        public async Task<IActionResult> Reset(string id)
         {
-            return Ok(await _userService.Reset(id));
+            return Ok(await _userService.Reset(Guid.Parse(id)));
         }
         [HttpDelete("{id:int}/Delete")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(string id)
         {
-            return Ok(await _userService.Delete(id));
+            return Ok(await _userService.Delete(Guid.Parse(id)));
         }
         [HttpPut("{id:int}/Edit")]
-        public async Task<IActionResult> Edit(Guid id,[FromBody]UpdateUserRequestDto request)
+        public async Task<IActionResult> Edit(string id,[FromBody]UpdateUserRequestDto request)
         {
-            return Ok(await _userService.Edit(id, request));
+            return Ok(await _userService.Edit(Guid.Parse(id), request));
         }
         [HttpPut("{id:int}/Lock")]
-        public async Task<IActionResult> Lock(Guid id)
+        public async Task<IActionResult> Lock(string id)
         {
-            return Ok(await _userService.Lock(id));
+            return Ok(await _userService.Lock(Guid.Parse(id)));
         }
         [HttpPut("{id:int}/Unlock")]
-        public async Task<IActionResult> UnLock(Guid id)
+        public async Task<IActionResult> UnLock(string id)
         {
-            return Ok(await _userService.Unlock(id));
+            return Ok(await _userService.Unlock(Guid.Parse(id)));
         }
     }
 }

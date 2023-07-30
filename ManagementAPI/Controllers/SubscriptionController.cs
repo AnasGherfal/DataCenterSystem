@@ -1,7 +1,7 @@
 ﻿using ManagementAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using ManagementAPI.Dtos.Subscriptions;
-using ManagementAPI.Dtos;
+using Shared.Dtos;
 using Infrastructure.Models;
 
 namespace ManagementAPI.Controllers
@@ -26,27 +26,21 @@ namespace ManagementAPI.Controllers
             => Ok(await _service.GetAll(request));
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-     => Ok(await _service.GetById(id));
+        public async Task<IActionResult> GetById(string id) => Ok(await _service.GetById(Guid.Parse(id)));
 
         [HttpPut("{id:int}/Renew")]
-        public async Task<IActionResult> Renew(Guid id) 
-            => Ok(await _service.Renew(id));
+        public async Task<IActionResult> Renew(string id) => Ok(await _service.Renew(Guid.Parse(id)));
 
         [HttpPut("{id:int}/lock")]
-        public async Task<IActionResult> Lock(Guid id)
-            => Ok(await _service.Lock(id));
+        public async Task<IActionResult> Lock(string id) => Ok(await _service.Lock(Guid.Parse(id)));
         
         [HttpPut("{id:int}/unlock")]
-        public async Task<IActionResult> Unlock(Guid id) 
-            => Ok(await _service.Unlock(id));
+        public async Task<IActionResult> Unlock(string id) => Ok(await _service.Unlock(Guid.Parse(id)));
         
         [HttpDelete("{id:int}/delete")]
-        public async Task<IActionResult> Delete(Guid id) 
-            => Ok(await _service.Delete(id));
+        public async Task<IActionResult> Delete(string id) => Ok(await _service.Delete(Guid.Parse(id)));
         [HttpDelete("{id:int}/deleteFile")]
-        public async Task<IActionResult> DeleteFile(Guid id)
-            => Ok(await _service.DeleteFile(id));
+        public async Task<IActionResult> DeleteFile(string id) => Ok(await _service.DeleteFile(Guid.Parse(id)));
 
         [HttpGet("files")]
         public async Task<IActionResult> GetFiles([FromQuery]FetchSubscriptionRequestDto request) 
@@ -56,17 +50,15 @@ namespace ManagementAPI.Controllers
         public async Task<IActionResult> UploadFile(int id, [FromForm] FileDto file) 
             => Ok(await _subscriptionService.UploadFile(id, file));*/
         [HttpGet("{id:int}/fileById")]
-        public async Task<IActionResult> GetFileById(Guid id)
-            => Ok(await _service.GetFileById(id));
+        public async Task<IActionResult> GetFileById(string id) => Ok(await _service.GetFileById(Guid.Parse(id)));
 
         [HttpPut("{id:int}/update")]
-        public async Task<IActionResult> Update(Guid id,UpdateSubscriptionRequestDto request)
-           => Ok(await _service.Update(id,request));
+        public async Task<IActionResult> Update(string id,UpdateSubscriptionRequestDto request)
+           => Ok(await _service.Update(Guid.Parse(id),request));
         [HttpPut("{id:int}/updateFile")]
-        public async Task<IActionResult> UpdateFile(Guid id, [FromForm] FileRequestDto request)
-           => Ok(await _service.UpdateFile(id, request));
+        public async Task<IActionResult> UpdateFile(string id, [FromForm] FileRequestDto request)
+           => Ok(await _service.UpdateFile(Guid.Parse(id), request));
         [HttpGet("Download")]
-        public async Task<IActionResult> Download(Guid id)
-            => Ok(await _service.Download(id));
+        public async Task<IActionResult> Download(string id) => Ok(await _service.Download(Guid.Parse(id)));
     }
 }

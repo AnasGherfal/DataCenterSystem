@@ -11,8 +11,7 @@ public class UserMapperProfile:Profile
     {
         CreateMap<User, CreateUserRequestDto>().ReverseMap()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(x => GeneralStatus.Active))
-            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.UtcNow))
-            .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => 1));
+            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.UtcNow));
         CreateMap<User, UserResponseDto>().ReverseMap();
         CreateMap<User,UpdateUserRequestDto> ().ReverseMap();
     }

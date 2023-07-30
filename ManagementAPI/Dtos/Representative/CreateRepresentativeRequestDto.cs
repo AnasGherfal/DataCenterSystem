@@ -1,6 +1,7 @@
 ﻿using Common.Helpers;
 using FluentValidation;
 using ManagementAPI.Dtos.Customer;
+using Shared.Dtos;
 
 namespace ManagementAPI.Dtos.Representative;
 

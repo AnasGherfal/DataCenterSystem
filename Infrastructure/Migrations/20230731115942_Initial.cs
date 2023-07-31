@@ -554,11 +554,10 @@ namespace Infrastructure.Migrations
                     Price = table.Column<decimal>(type: "decimal(6,2)", precision: 6, scale: 2, nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
                     Status = table.Column<short>(type: "smallint", nullable: false),
-                    VisitTypeId = table.Column<short>(type: "smallint", nullable: false),
+                    VisitTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SubscriptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TimeShiftId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     InvoiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    VisitTypeId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -588,8 +587,8 @@ namespace Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Visits_VisitTypes_VisitTypeId1",
-                        column: x => x.VisitTypeId1,
+                        name: "FK_Visits_VisitTypes_VisitTypeId",
+                        column: x => x.VisitTypeId,
                         principalTable: "VisitTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -825,9 +824,9 @@ namespace Infrastructure.Migrations
                 column: "TimeShiftId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Visits_VisitTypeId1",
+                name: "IX_Visits_VisitTypeId",
                 table: "Visits",
-                column: "VisitTypeId1");
+                column: "VisitTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_VisitTimeShifts_CreatedById",

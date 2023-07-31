@@ -768,10 +768,7 @@ namespace Infrastructure.Migrations
                     b.Property<TimeSpan?>("TotalMin")
                         .HasColumnType("time");
 
-                    b.Property<short>("VisitTypeId")
-                        .HasColumnType("smallint");
-
-                    b.Property<Guid>("VisitTypeId1")
+                    b.Property<Guid>("VisitTypeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -784,7 +781,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("TimeShiftId");
 
-                    b.HasIndex("VisitTypeId1");
+                    b.HasIndex("VisitTypeId");
 
                     b.ToTable("Visits");
                 });
@@ -1259,7 +1256,7 @@ namespace Infrastructure.Migrations
 
                     b.HasOne("Infrastructure.Models.VisitType", "VisitType")
                         .WithMany()
-                        .HasForeignKey("VisitTypeId1")
+                        .HasForeignKey("VisitTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

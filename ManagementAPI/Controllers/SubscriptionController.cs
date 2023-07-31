@@ -28,16 +28,16 @@ namespace ManagementAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id) => Ok(await _service.GetById(Guid.Parse(id)));
 
-        [HttpPut("{id:int}/Renew")]
+        [HttpPut("{id}/Renew")]
         public async Task<IActionResult> Renew(string id) => Ok(await _service.Renew(Guid.Parse(id)));
 
-        [HttpPut("{id:int}/lock")]
+        [HttpPut("{id}/lock")]
         public async Task<IActionResult> Lock(string id) => Ok(await _service.Lock(Guid.Parse(id)));
         
-        [HttpPut("{id:int}/unlock")]
+        [HttpPut("{id}/unlock")]
         public async Task<IActionResult> Unlock(string id) => Ok(await _service.Unlock(Guid.Parse(id)));
         
-        [HttpDelete("{id:int}/delete")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id) => Ok(await _service.Delete(Guid.Parse(id)));
         [HttpDelete("{id:int}/deleteFile")]
         public async Task<IActionResult> DeleteFile(string id) => Ok(await _service.DeleteFile(Guid.Parse(id)));

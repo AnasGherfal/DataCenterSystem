@@ -5,6 +5,7 @@ namespace ManagementAPI.Services;
 public interface IServiceServices
 {
     public Task<MessageResponse> Create(CreateServiceDto request);
+    public Task<ServiceResponseDto> GetById(Guid id);
     public Task<FetchServicesResponseDto> GetAll(FetchServicesRequestDto request);
     public Task<MessageResponse> Update(Guid id, UpdateServiceDto request);
     public Task<MessageResponse> Delete(Guid id);

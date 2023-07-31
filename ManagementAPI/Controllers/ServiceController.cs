@@ -15,14 +15,14 @@ namespace ManagementAPI.Controllers;
 [ApiController]
 public class ServiceController : ControllerBase
 {
-    private readonly ServiceServices _service;
-    public ServiceController(ServiceServices service)
+    private readonly IServiceServices _service;
+    public ServiceController(IServiceServices service)
     {
         _service = service;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromForm] CreateServiceDto request)
+    public async Task<IActionResult> Create([FromBody] CreateServiceDto request)
          => Ok(await _service.Create(request));
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(string id) => Ok(await _service.GetById(Guid.Parse(id)));

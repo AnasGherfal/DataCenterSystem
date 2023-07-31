@@ -13,9 +13,9 @@ public class VisitProfileMapper:Profile
     {
         CreateMap<CreateVisitRequestDto, Visit>()
            .ForMember(dest => dest.Id, opt => opt.Ignore())
-           .ForMember(dest => dest.InvoiceId, opt => opt.MapFrom(x => 0))
            .ForMember(dest => dest.TotalMin, opt => opt.MapFrom(x => x.EndTime.TimeOfDay - x.StartTime.TimeOfDay))
            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.Now))
+           .ForMember(dest=> dest.VisitTypeId, opt=>opt.MapFrom(x=>Guid.Parse(x.VisitTypeId)))
            .ForMember(dest => dest.Status, opt => opt.MapFrom(x => GeneralStatus.Active));
 
 

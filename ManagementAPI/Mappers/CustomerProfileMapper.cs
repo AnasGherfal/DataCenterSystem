@@ -14,8 +14,7 @@ public class CustomerProfileMapper : Profile
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.Files, opt => opt.Ignore())
             .ForMember(dest => dest.Status, opt => opt.MapFrom(x => Status.Active))
-            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.Now))
-            .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(x => "a9865faf-2339-4f39-12f4-08db85e40bb5"));
+            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.Now));
 
 
 
@@ -28,7 +27,6 @@ public class CustomerProfileMapper : Profile
             .ForMember(dest => dest.Id, src => src.Ignore())
              .ForMember(dest => dest.Filename, src => src.Ignore())
             .ForMember(dest => dest.FileType, src => src.Ignore())
-            .ForMember(dest => dest.CreatedById, src => src.MapFrom(x => 1))
             .ForMember(dest => dest.CreatedOn, src => src.MapFrom(x => DateTime.UtcNow));
     }
 }

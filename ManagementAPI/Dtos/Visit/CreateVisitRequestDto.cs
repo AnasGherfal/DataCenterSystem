@@ -7,8 +7,8 @@ public class CreateVisitRequestDto
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public string? Notes { get; set; }
-    public Guid VisitTypeId { get; set; }
-    public Guid SubscriptionId { get; set; }
+    public string VisitTypeId { get; set; }
+    public string SubscriptionId { get; set; }
     public IList<CreateCompanionRequestDto> Companions { get; set; } = new List<CreateCompanionRequestDto>();
     public IList<Guid> Representatives { get; set; } = new List<Guid>();
 }

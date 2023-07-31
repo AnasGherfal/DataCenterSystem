@@ -13,7 +13,7 @@ public class Visit : BaseModel
     public decimal Price { get; set; }
     public string? Notes { get; set; } 
     public GeneralStatus Status { get; set; }
-    public short VisitTypeId { get; set; }
+    public Guid VisitTypeId { get; set; }
     public Guid SubscriptionId { get; set; }
     public Guid TimeShiftId { get; set; }
     public Guid? InvoiceId { get; set; }

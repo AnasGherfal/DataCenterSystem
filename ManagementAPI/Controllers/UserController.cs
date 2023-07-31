@@ -26,32 +26,32 @@ namespace ManagementAPI.Controllers
         {
             return Ok(await _userService.GetAll(request));
         }
-        [HttpGet("{id:int}/Get")]
+        [HttpGet("{id}/Get")]
         public async Task<IActionResult> GetById(string id)
         {
             return Ok(await _userService.GetById(Guid.Parse(id)));
         }
-        [HttpPut("{id:int}/Reset")]
+        [HttpPut("{id}/Reset")]
         public async Task<IActionResult> Reset(string id)
         {
             return Ok(await _userService.Reset(Guid.Parse(id)));
         }
-        [HttpDelete("{id:int}/Delete")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
             return Ok(await _userService.Delete(Guid.Parse(id)));
         }
-        [HttpPut("{id:int}/Edit")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Edit(string id,[FromBody]UpdateUserRequestDto request)
         {
             return Ok(await _userService.Edit(Guid.Parse(id), request));
         }
-        [HttpPut("{id:int}/Lock")]
+        [HttpPut("{id}/Lock")]
         public async Task<IActionResult> Lock(string id)
         {
             return Ok(await _userService.Lock(Guid.Parse(id)));
         }
-        [HttpPut("{id:int}/Unlock")]
+        [HttpPut("{id}/Unlock")]
         public async Task<IActionResult> UnLock(string id)
         {
             return Ok(await _userService.Unlock(Guid.Parse(id)));

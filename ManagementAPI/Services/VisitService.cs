@@ -24,7 +24,7 @@ public class VisitService : IVisitService
     public async Task<MessageResponse> Create(CreateVisitRequestDto request)
     {
         var timeShifts = await _dbContext.VisitTimeShifts.Where(p => p.Status == GeneralStatus.Active).ToListAsync();
-        var subscription = await _dbContext.Subscriptions.Where(p => p.Id == request.SubscriptionId && p.Status == GeneralStatus.Active).Include(p => p.Customer).ThenInclude(p=>p.Representatives).SingleOrDefaultAsync() ?? throw new BadRequestException("عذرًا يرجى التأكد من الإشتراك الخاص بالزبون!"); 
+        var subscription = await _dbContext.Subscriptions.Where(p => p.Id == Guid.Parse(request.SubscriptionId) && p.Status == GeneralStatus.Active).Include(p => p.Customer).ThenInclude(p=>p.Representatives).SingleOrDefaultAsync() ?? throw new BadRequestException("عذرًا يرجى التأكد من الإشتراك الخاص بالزبون!"); 
         var visitStartTime = request.StartTime.TimeOfDay;
         var visitEndTime = request.EndTime.TimeOfDay;
         foreach (var shift in timeShifts)
@@ -32,7 +32,7 @@ public class VisitService : IVisitService
             if (visitStartTime >= shift.StartTime && visitStartTime <= shift.EndTime)
             {
 
-                if (visitEndTime >= shift.EndTime)
+                if (visitEndTime > shift.EndTime)
                 {
                     var totalTime = request.EndTime - request.StartTime;
                     var timeInThisShift = shift.EndTime - visitStartTime;

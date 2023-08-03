@@ -23,11 +23,11 @@ public class UploadFileService : IUploadFileService
     }
     public async Task<MessageResponse> Upload(FileRequestDto request, EntityType type, Object objct)
     {
-       //TODO:["Important!"] File Model Should Have A FilePath with FileNAme Prop
-            
-            var path = GetFilePath(type,objct);
+        //TODO:["Important!"] File Model Should Have A FilePath with FileNAme Prop
+       
+            var path = GetFilePath(type, objct);
             var ext = Path.GetExtension(request.File.FileName);
-            var fullFileName = ToTrustedFileName(ext);
+            var fullFileName = ToTrustedFileName(type,objct,request.DocType.ToString(),ext);
 
             if (!System.IO.Directory.Exists(path))
             {
@@ -36,51 +36,54 @@ public class UploadFileService : IUploadFileService
             string fullPath = Path.Combine(path, fullFileName);
             if (System.IO.File.Exists(fullPath))
             {
-                
+
             }
             using (FileStream stream = System.IO.File.Create(fullPath))
             {
-            switch(type)
-            {
-                case EntityType.CustomerFile:
-                    {
-                        await request.File.CopyToAsync(stream);
-                        var dataFile = _mapper.Map<CustomerFile>(request.File);
-                        dataFile.Filename = fullPath;
-                        dataFile.FileType = request.DocType.ToString();
-                        dataFile.Customer = (Customer)objct;
-                        _dbContext.CustomerFiles.Add(dataFile);
-                        await _dbContext.SaveChangesAsync();
-                        break;
-                    }
-                case EntityType.SubscriptionFile:
-                    {
-                        await request.File.CopyToAsync(stream);
-                        var dataFile = _mapper.Map<SubscriptionFile>(request.File);
-                        dataFile.FileName = fullPath;
-                        dataFile.FileType = request.DocType.ToString();
-                        dataFile.Subscription = (Subscription)objct;
-                        _dbContext.SubscriptionFiles.Add(dataFile);
-                        await _dbContext.SaveChangesAsync();
-                        break;
-                    }
-                case EntityType.RepresentativeFile:
-                    {
-                        await request.File.CopyToAsync(stream);
-                        var dataFile = _mapper.Map<RepresentativeFile>(request.File);
-                        dataFile.Filename = fullPath;
-                        dataFile.FileType = request.DocType.ToString();
-                        dataFile.Representative = (Representative)objct;
-                        _dbContext.RepresentativeFiles.Add(dataFile);
-                        await _dbContext.SaveChangesAsync();
-                        break;
-                    }
-                default:
-                    throw new BadRequestException("عذرًا هناك خطأ في إضافة الملف, يرجى الإتصال بالدعم الفني");
-            }
+                switch (type)
+                {
+                    case EntityType.CustomerFile:
+                        {
+                            await request.File.CopyToAsync(stream);
+                            var dataFile = _mapper.Map<CustomerFile>(request.File);
+                            dataFile.Filename = fullFileName;
+                            dataFile.FilePath = fullPath;
+                            dataFile.DocType = request.DocType;
+                            dataFile.Customer = (Customer)objct;
+                            _dbContext.CustomerFiles.Add(dataFile);
+                            await _dbContext.SaveChangesAsync();
+                            break;
+                        }
+                    case EntityType.SubscriptionFile:
+                        {
+                            await request.File.CopyToAsync(stream);
+                            var dataFile = _mapper.Map<SubscriptionFile>(request.File);
+                            dataFile.FileName = fullFileName;
+                            dataFile.FilePath = fullPath;
+                            dataFile.Subscription = (Subscription)objct;
+                            _dbContext.SubscriptionFiles.Add(dataFile);
+                            await _dbContext.SaveChangesAsync();
+                            break;
+                        }
+                    case EntityType.RepresentativeFile:
+                        {
+                            await request.File.CopyToAsync(stream);
+                            var dataFile = _mapper.Map<RepresentativeFile>(request.File);
+                            dataFile.Filename = fullFileName;
+                            dataFile.FilePath = fullPath;
+                            dataFile.DocType = request.DocType;
+                            dataFile.Representative = (Representative)objct;
+                            _dbContext.RepresentativeFiles.Add(dataFile);
+                            await _dbContext.SaveChangesAsync();
+                            break;
+                        }
+                    default:
+                        throw new BadRequestException("عذرًا هناك خطأ في إضافة الملف, يرجى الإتصال بالدعم الفني");
+                }
 
-                
+
             }
+       
         return new MessageResponse() { Msg = "تمت إضافة الملف بنجاح" };
            
         }
@@ -96,7 +99,7 @@ public class UploadFileService : IUploadFileService
                 break;
                 case EntityType.SubscriptionFile:
                 var subscription = (Subscription)obj;
-                name = "Subcription "+subscription.Id.ToString()+" Files";
+                name = subscription.Id + "Subcriptions Files";
                 break;
                 case EntityType.RepresentativeFile:
                 var representative = (Representative)obj;
@@ -106,11 +109,30 @@ public class UploadFileService : IUploadFileService
                 name = "Unknown Files";
                 break;
         }
-        return _config.GetValue<string>("Storage:Customer") + "\\" + DateOnly.FromDateTime(DateTime.UtcNow).Year.ToString() + "\\" + $"\\{name}\\";
+        return _config.GetValue<string>("Storage:Customer") + "\\" + DateOnly.FromDateTime(DateTime.UtcNow).Year.ToString() + "\\" + $"{name}\\";
 
     }
-    private static string ToTrustedFileName(string ext)
+    private static string ToTrustedFileName(EntityType type, object obj, string docType, string ext)
     {
-        return Guid.NewGuid().ToString() + ext;
+        string name = string.Empty;
+        switch (type)
+        {
+            case EntityType.CustomerFile:
+                var customer = (Customer)obj;
+                name = customer.Name + $" {docType}";
+                break;
+            case EntityType.SubscriptionFile:
+                var subscription = (Subscription)obj;
+                name = subscription.Id.ToString();
+                break;
+            case EntityType.RepresentativeFile:
+                var representative = (Representative)obj;
+                name = representative.FullName + $" {docType}" ;
+                break;
+            default:
+                name = "Unknown Files";
+                break;
+        }
+        return name + ext;
     }
 }

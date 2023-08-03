@@ -33,7 +33,7 @@ public class RepresentativeProfileMapper : Profile
         CreateMap<FormFile, RepresentativeFile>()
             .ForMember(dest => dest.Id, src => src.Ignore())
              .ForMember(dest => dest.Filename, src => src.Ignore())
-            .ForMember(dest => dest.FileType, src => src.Ignore())
+            .ForMember(dest => dest.FilePath, src => src.Ignore())
             .ForMember(dest => dest.CreatedOn, src => src.MapFrom(x => DateTime.UtcNow));
 
     }

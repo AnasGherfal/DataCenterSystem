@@ -332,7 +332,7 @@ namespace Infrastructure.Migrations
                     b.Property<short>("DocType")
                         .HasColumnType("smallint");
 
-                    b.Property<string>("FileType")
+                    b.Property<string>("FilePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -482,13 +482,16 @@ namespace Infrastructure.Migrations
                     b.Property<short>("DocType")
                         .HasColumnType("smallint");
 
-                    b.Property<string>("FileType")
+                    b.Property<string>("FilePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Filename")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<short>("IsActive")
+                        .HasColumnType("smallint");
 
                     b.Property<Guid>("RepresentativeId")
                         .HasColumnType("uniqueidentifier");
@@ -627,11 +630,11 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FileType")
+                    b.Property<string>("FilePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<short>("Status")
+                    b.Property<short>("IsActive")
                         .HasColumnType("smallint");
 
                     b.Property<Guid>("SubscriptionId")

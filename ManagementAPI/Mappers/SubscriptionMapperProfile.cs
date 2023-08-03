@@ -16,17 +16,17 @@ public class SubscriptionMapperProfile:Profile
             .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.UtcNow));
         
         CreateMap<FileRequestDto, SubscriptionFile>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(x => GeneralStatus.Active))
+            .ForMember(dest => dest.IsActive, opt => opt.MapFrom(x => GeneralStatus.Active))
             .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.UtcNow))
             .ForMember(dest => dest.FileName,opt => opt.Ignore())
-            .ForMember(dest => dest.FileType, opt => opt.Ignore())
+            .ForMember(dest => dest.FilePath, opt => opt.Ignore())
             .ForMember(dest => dest.Id, opt => opt.Ignore());
         CreateMap<FormFile, SubscriptionFile>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.FileName, opt => opt.Ignore())
-            .ForMember(dest => dest.FileType, opt => opt.Ignore())
+            .ForMember(dest => dest.FilePath, opt => opt.Ignore())
             .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(x => DateTime.UtcNow))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(x => GeneralStatus.Active));
+            .ForMember(dest => dest.IsActive, opt => opt.MapFrom(x => GeneralStatus.Active));
        
 
         CreateMap<Subscription,SubscriptionRsponseDto > ()

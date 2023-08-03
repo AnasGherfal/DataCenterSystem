@@ -12,6 +12,7 @@ namespace ManagementAPI.Dtos.Service
         public string Dns { get; set; } = string.Empty;
         public int MonthlyVisits { get; set; }
         public decimal Price { get; set; }
+        public IFormFile File { get; set; } = default!;
     }
 
     public class CreateServiceDtoValidator : AbstractValidator<CreateServiceDto>

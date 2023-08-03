@@ -1,5 +1,6 @@
 ﻿using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace ManagementAPI.DI;
 
@@ -13,6 +14,8 @@ public static class SwaggerExtension
             Type = "string",
             Example = new OpenApiString("00:00:00")
         }));
+        
+        
     }
     
     

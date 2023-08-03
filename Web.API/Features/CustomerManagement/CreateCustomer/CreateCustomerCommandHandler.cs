@@ -39,35 +39,8 @@ public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustom
         if (isNotUnique) throw new NotFoundException("الاسم موجود مسبقًا");
         await _dbContext.Customers.AddAsync(data);
         await _dbContext.SaveChangesAsync();
-        int counter = 0;
-        foreach (var item in request.Files)
-        {
-            var file = item.File;
-            var path = GetFilePath(request.Name);
-            var ext = Path.GetExtension(file.FileName);
-            var fullFileName = ToTrustedFileName(ext);
-
-            if (!System.IO.Directory.Exists(path))
-            {
-                System.IO.Directory.CreateDirectory(path);
-            }
-            string fullPath = Path.Combine(path, fullFileName);
-            if (System.IO.File.Exists(fullPath))
-            {
-
-            }
-            using (FileStream stream = System.IO.File.Create(fullPath))
-            {
-                await file.CopyToAsync(stream);
-                var customerFile = _mapper.Map<CustomerFile>(file);
-                customerFile.Filename = fullPath;
-                customerFile.DocType = item.DocType;
-                customerFile.Customer = data;
-                _dbContext.CustomerFiles.Add(customerFile);
-                await _dbContext.SaveChangesAsync();
-            }
-            counter++;
-        }
+    
+       
 
 
         return new MessageResponse()
@@ -78,7 +51,7 @@ public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustom
 
     private string GetFilePath(string customerName)
     {
-        return _config.GetValue<string>("Storage:Customer") + "\\" + DateOnly.FromDateTime(DateTime.UtcNow).Year.ToString() + "\\" + $"\\{customerName}\\";
+        return _config.GetValue<string>("Storage:Customer") + "\\" + DateOnly.FromDateTime(DateTime.UtcNow).Year.ToString() + "\\" + $"{customerName}\\";
 
     }
     private static string ToTrustedFileName(string ext)

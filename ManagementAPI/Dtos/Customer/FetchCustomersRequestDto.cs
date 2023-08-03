@@ -2,7 +2,7 @@
 
 namespace ManagementAPI.Dtos.Customer;
 
-public record FetchCustomersRequestDto(int PageNumber=1, int PageSize = 10);
+public record FetchCustomersRequestDto(string? CustomerName, int PageNumber = 1, int PageSize = 10);
 
 public class FetchCustomersRequestDtoValidator : AbstractValidator<FetchCustomersRequestDto>
 {

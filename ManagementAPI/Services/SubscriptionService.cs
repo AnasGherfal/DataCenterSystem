@@ -85,7 +85,7 @@ public class SubscriptionService:ISubscriptionService
         if (!IsExpired(data))
             if (duration > data.EndDate)
                 throw new BadRequestException("عذرًا لا يمكنك تجديد هذا الإشتراك! التجديد يتم عند انتهاء الإشتراك أو قبل إنتهاءه بمدة 30 يومًا! ");
-        //TODO:["Review | Qustion"]Is started With new StartDate Or Create NEw Subscription???
+        //TODO:["Review | Qustion"]Is started With new StartDate Or Create NEw Subscription??? create new Subscriptiont
         data.EndDate = data.EndDate.AddYears(1);
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
@@ -93,61 +93,19 @@ public class SubscriptionService:ISubscriptionService
             Msg = "لقد تم تجديد هذا الإشتراك بنجاح !"
         };
     }
-    
-   /* public async Task<MessageResponse> UploadFile(int id, IFormFile file)
-    {
-
-        //TODO: REVIEW [Error]: Change Model to allow Multiple Files
-        //TODO: REVIEW [Warning]: Upon making changes to Model, you no longer need to fetch the Subscription
-        // Use require only only check it exists!
-        if (id < 0) throw new BadRequestException("! incorrect  id ");
-        var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(a => a.Id == id) ?? throw new BadRequestException("thear is no subscription with this number");
-        var fileType = "." + file.FileName.Split('.')[file.FileName.Split('.').Length - 1];
-        var fileName = id + "_" + DateTime.UtcNow.Ticks + file.FileName;
-        //TODO: REVIEW [Recommendation]: Create a service responsible for File Uploads to make it managable
-        var pathBuild = Path.Combine(Directory.GetCurrentDirectory(), "Upload\\Files");
-        if (!Directory.Exists(pathBuild))
-        {
-            Directory.CreateDirectory(pathBuild);
-        }
-        var path = Path.Combine(Directory.GetCurrentDirectory(), "Upload\\Files\\" + fileName);
-        await using (var stream = new FileStream(path, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
-
-
-        var newFile = new SubscriptionFile()
-        {
-            //TODO: REVIEW [Warning]: CreatedById should be the current user (After Identity Completed)
-            CreatedOn = DateTime.UtcNow,
-            FileName = path,
-            FileType = fileType,
-            SubscriptionId = id,
-            CreatedById = 3,
-            Status = GeneralStatus.Active
-        };
-        await _dbContext.SubscriptionFiles.AddAsync(newFile);
-        await _dbContext.SaveChangesAsync();
-        *//*data.SubscriptionFileId = newFile.Id;*//*
-        await _dbContext.SaveChangesAsync();
-        return new MessageResponse()
-        {
-            Msg = "file uploaded"
-        };
-    }*/
 
     public async Task<FetchSubscriptionFileResponseDto> GetFiles(FetchSubscriptionRequestDto request)
     {
-        var queryResult = await _dbContext.SubscriptionFiles
-            .Where(p => p.Status != GeneralStatus.Deleted)
-            .OrderBy(p => p.Id)
+        var query =_dbContext.SubscriptionFiles
+            .Where(p => p.IsActive == (short)GeneralStatus.Active)
+            .OrderBy(p => p.CreatedOn);
+       
+        var result=await query.ProjectTo<SubscriptionFileResponsDto>(_mapper.ConfigurationProvider)
             .Skip(request.PageSize * (request.PageNumber - 1))
             .Take(request.PageSize)
             .ToListAsync();
-        var result = _mapper.Map<List<SubscriptionFileResponsDto>>(queryResult);
         //TODO: REVIEW [Fatal]: Count will only return the requested page
-        var totalCount = queryResult.Count;
+        var totalCount = query.Count();
         var totalpages = (int)Math.Ceiling(totalCount / (decimal)request.PageSize);
         //TODO: REVIEW [Fatal]: Return List of Objects containing: FileUrl, Date Added, Document Type
         return new FetchSubscriptionFileResponseDto()
@@ -161,9 +119,9 @@ public class SubscriptionService:ISubscriptionService
     public async Task<MessageResponse> UpdateFile(Guid id , FileRequestDto request)
     {
        
-        var query = await _dbContext.SubscriptionFiles.Where(a => a.SubscriptionId == id && a.Status != GeneralStatus.Deleted).Include(p=>p.Subscription).ToListAsync() ?? throw new NotFoundException("عذرًا لا وجود لملف لهذا الإشتراك..يرجى مراجعة الطلب!");
+        var query = await _dbContext.SubscriptionFiles.Where(a => a.SubscriptionId == id && a.IsActive == (short)GeneralStatus.Active).Include(p=>p.Subscription).ToListAsync() ?? throw new NotFoundException("عذرًا لا وجود لملف لهذا الإشتراك..يرجى مراجعة الطلب!");
         foreach ( var item in query)
-            item.Status = GeneralStatus.Deleted;
+            item.IsActive = (short)GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         await _uploadFile.Upload(request, EntityType.SubscriptionFile, query.Select(p => p.Subscription).Single());
         await _dbContext.SaveChangesAsync();
@@ -186,13 +144,13 @@ public class SubscriptionService:ISubscriptionService
     public async Task<List<SubscriptionFileResponsDto>> GetFileById(Guid id)
     {
        
-        var data = await _dbContext.SubscriptionFiles.Where(a => a.SubscriptionId == id && a.Status != GeneralStatus.Deleted).
+        var data = await _dbContext.SubscriptionFiles.Where(a => a.SubscriptionId == id && a.IsActive == (short)GeneralStatus.Active).
             ProjectTo<SubscriptionFileResponsDto>(_mapper.ConfigurationProvider).ToListAsync() ?? throw new BadRequestException("no file with this subs number");
         return data;
     }
     public async Task<FileStream> Download(Guid id)
     {
-        var data = await  _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.SubscriptionId == id && a.Status != GeneralStatus.Deleted) ?? throw new BadRequestException("no file with this subs number");
+        var data = await  _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.SubscriptionId == id && a.IsActive == (short)GeneralStatus.Active) ?? throw new BadRequestException("no file with this subs number");
         var path = data.FileName;
         // Check if the file exists.
         if (!File.Exists(path))
@@ -247,10 +205,10 @@ public class SubscriptionService:ISubscriptionService
     }
     public async Task<MessageResponse> DeleteFile(Guid id)
     {
-        var data = await _dbContext.SubscriptionFiles.FirstOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription file with this id ");
-        if (IsLocked(data.Status))
-            throw new BadRequestException("this subscription file is locked by user you cannot Removed");
-        data.Status = GeneralStatus.Deleted;
+        var data = await _dbContext.SubscriptionFiles.FirstOrDefaultAsync(a => a.Id == id && a.IsActive == (short)GeneralStatus.Active) ?? throw new NotFoundException("thear is no subscription file with this id ");
+        if (IsLocked(data.Subscription.Status))
+            throw new BadRequestException("this subscription is locked by user you cannot Removed");
+        data.IsActive = (short)GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {

@@ -337,7 +337,7 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Filename = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DocType = table.Column<short>(type: "smallint", nullable: false),
                     IsActive = table.Column<short>(type: "smallint", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -435,8 +435,9 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Filename = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DocType = table.Column<short>(type: "smallint", nullable: false),
+                    IsActive = table.Column<short>(type: "smallint", nullable: false),
                     RepresentativeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -520,8 +521,8 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<short>(type: "smallint", nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<short>(type: "smallint", nullable: false),
                     SubscriptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: false)

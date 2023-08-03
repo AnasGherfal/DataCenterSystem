@@ -10,7 +10,6 @@ public enum DocType : short
     PersonalId = 1,
     CompanyLicense = 2,
     CompanyPermit = 3
-
 }
 
 public enum EntityType : short

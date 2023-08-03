@@ -14,7 +14,7 @@ public class CreateRepresentativeRequestDto
     public string Email { get; set; } = string.Empty;
     public string PhoneNo { get; set; } = string.Empty;
     public Guid CustomerId { get; set; }
-    public IList<FileRequestDto> Files { get; set; } = default!;
+    public FileRequestDto FilesHandler { get; set; } = default!;
 }
 public class CreateRepresentativeDtoValidator : AbstractValidator<CreateRepresentativeRequestDto>
 {

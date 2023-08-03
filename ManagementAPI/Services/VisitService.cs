@@ -27,84 +27,111 @@ public class VisitService : IVisitService
         var subscription = await _dbContext.Subscriptions.Where(p => p.Id == Guid.Parse(request.SubscriptionId) && p.Status == GeneralStatus.Active).Include(p => p.Customer).ThenInclude(p=>p.Representatives).SingleOrDefaultAsync() ?? throw new BadRequestException("عذرًا يرجى التأكد من الإشتراك الخاص بالزبون!"); 
         var visitStartTime = request.StartTime.TimeOfDay;
         var visitEndTime = request.EndTime.TimeOfDay;
-        foreach (var shift in timeShifts)
+        var visitTimeSpan = visitStartTime - visitEndTime;
+        if (visitTimeSpan.TotalMinutes <= 60)
         {
-            if (visitStartTime >= shift.StartTime && visitStartTime <= shift.EndTime)
+            var shift = timeShifts.Where(p => visitStartTime <= p.EndTime && visitStartTime > p.StartTime).FirstOrDefault();
+            var data = _mapper.Map<Visit>(request) ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
+            data.TimeShiftId = shift.Id;
+            data.TimeShift = shift;
+            var companion = _mapper.Map<IList<Companion>>(request.Companions);
+            data.Companions = companion;
+            var representatives = request.Representatives
+                .Select(p => new RepresentativeVisit() { RepresentativeId = p }).ToList();
+            foreach (var representative in representatives)
             {
+                if (!subscription.Customer.Representatives.Select(p => p.Id)
+                        .Contains(representative.RepresentativeId))
+                    throw new BadHttpRequestException(
+                        $"عذرًا المخول {representative.RepresentativeId}  {subscription.Customer.Name} ليس مخولًا للزبون ");
+            }
 
-                if (visitEndTime > shift.EndTime)
+            data.RepresentativesVisits = representatives;
+            data.Price = shift.PriceForFirstHour;
+            await _dbContext.Visits.AddAsync(data);
+            await _dbContext.SaveChangesAsync();
+        }
+        else
+        {
+            foreach (var shift in timeShifts)
+            {
+                if (visitStartTime >= shift.StartTime && visitStartTime <= shift.EndTime)
                 {
-                    var totalTime = request.EndTime - request.StartTime;
-                    var timeInThisShift = shift.EndTime - visitStartTime;
-                    var firstEndTime = TimeOnly.FromTimeSpan(shift.EndTime);
-                    var lastEndTime = TimeOnly.FromTimeSpan(request.EndTime.TimeOfDay);
-                    var timeInAnotherShift = totalTime - timeInThisShift;
-                    var anotherTimeShift = timeShifts.Where(p => p.EndTime >= lastEndTime.ToTimeSpan()).Single();
-                    var newVisit = new CreateVisitRequestDto()
-                    {
-                        Companions = request.Companions,
-                        Representatives = request.Representatives,
-                        StartTime = DateOnly.FromDateTime(request.StartTime).ToDateTime(firstEndTime),
-                        EndTime = DateOnly.FromDateTime(request.EndTime).ToDateTime(lastEndTime),
-                        ExpectedEndTime = request.ExpectedEndTime,
-                        ExpectedStartTime = request.ExpectedStartTime,
-                        Notes = "تم أنشاء هذه الزيارة تلقائيًا نظرًا لدخولها في توقيت مختلف",
-                        SubscriptionId = request.SubscriptionId,
-                        VisitTypeId = request.VisitTypeId
-                    };
-                    var partVisit = _mapper.Map<Visit>(newVisit) ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
-                    partVisit.TimeShift = anotherTimeShift;
-                    partVisit.TimeShiftId = anotherTimeShift.Id;
-                    partVisit.TotalMin = timeInAnotherShift;
-                    partVisit.Price = CalculatePrice(partVisit);
 
-                    request.EndTime = DateOnly.FromDateTime(request.StartTime).ToDateTime(firstEndTime);
-                    var data = _mapper.Map<Visit>(request) ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
-                    data.TimeShift = shift;
-                    data.TimeShiftId = shift.Id;
-                    var companion = _mapper.Map<IList<Companion>>(request.Companions);
-                    data.Companions = companion;
-                    var representatives = request.Representatives
-                        .Select(p => new RepresentativeVisit() { RepresentativeId = p }).ToList();
-                    foreach (var representative in representatives)
+                    if (visitEndTime > shift.EndTime)
                     {
-                        if (representative.Representative.CustomerId != subscription.CustomerId)
-                            throw new BadHttpRequestException(
-                                $"عذرًا المخول {representative.Representative.FullName} ليس مخولًا للزبون {subscription.Customer.Name}");
+                        var totalTime = request.EndTime - request.StartTime;
+                        var timeInThisShift = shift.EndTime - visitStartTime;
+                        var firstEndTime = TimeOnly.FromTimeSpan(shift.EndTime);
+                        var lastEndTime = TimeOnly.FromTimeSpan(request.EndTime.TimeOfDay);
+                        var timeInAnotherShift = totalTime - timeInThisShift;
+                        var anotherTimeShift = timeShifts.Where(p => p.EndTime >= lastEndTime.ToTimeSpan()).Single();
+                        var newVisit = new CreateVisitRequestDto()
+                        {
+                            Companions = request.Companions,
+                            Representatives = request.Representatives,
+                            StartTime = DateOnly.FromDateTime(request.StartTime).ToDateTime(firstEndTime),
+                            EndTime = DateOnly.FromDateTime(request.EndTime).ToDateTime(lastEndTime),
+                            ExpectedEndTime = request.ExpectedEndTime,
+                            ExpectedStartTime = request.ExpectedStartTime,
+                            Notes = "تم أنشاء هذه الزيارة تلقائيًا نظرًا لدخولها في توقيت مختلف",
+                            SubscriptionId = request.SubscriptionId,
+                            VisitTypeId = request.VisitTypeId
+                        };
+                        var partVisit = _mapper.Map<Visit>(newVisit) ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
+                        partVisit.TimeShift = anotherTimeShift;
+                        partVisit.TimeShiftId = anotherTimeShift.Id;
+                        partVisit.TotalMin = timeInAnotherShift;
+                        partVisit.Price = CalculatePrice(partVisit);
+
+                        request.EndTime = DateOnly.FromDateTime(request.StartTime).ToDateTime(firstEndTime);
+                        var data = _mapper.Map<Visit>(request) ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
+                        data.TimeShift = shift;
+                        data.TimeShiftId = shift.Id;
+                        var companion = _mapper.Map<IList<Companion>>(request.Companions);
+                        data.Companions = companion;
+                        var representatives = request.Representatives
+                            .Select(p => new RepresentativeVisit() { RepresentativeId = p }).ToList();
+                        foreach (var representative in representatives)
+                        {
+                            if (representative.Representative.CustomerId != subscription.CustomerId)
+                                throw new BadHttpRequestException(
+                                    $"عذرًا المخول {representative.Representative.FullName} ليس مخولًا للزبون {subscription.Customer.Name}");
+                        }
+
+                        data.RepresentativesVisits = representatives;
+                        data.TotalMin = timeInThisShift;
+                        data.Price = CalculatePrice(data);
+                        //TODO: Declare Subscription to Decrease Monthly Visit if there a Visit in "While Work" Time Shift.
+                        await _dbContext.Visits.AddAsync(data);
+                        await _dbContext.Visits.AddAsync(partVisit);
+                        await _dbContext.SaveChangesAsync();
+
+                    }
+                    else
+                    {
+                        var data = _mapper.Map<Visit>(request) ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
+                        data.TimeShiftId = shift.Id;
+                        data.TimeShift = shift;
+                        var companion = _mapper.Map<IList<Companion>>(request.Companions);
+                        data.Companions = companion;
+                        var representatives = request.Representatives
+                            .Select(p => new RepresentativeVisit() { RepresentativeId = p }).ToList();
+                        foreach (var representative in representatives)
+                        {
+                            if (!subscription.Customer.Representatives.Select(p => p.Id)
+                                    .Contains(representative.RepresentativeId))
+                                throw new BadHttpRequestException(
+                                    $"عذرًا المخول {representative.RepresentativeId}  {subscription.Customer.Name} ليس مخولًا للزبون ");
+                        }
+
+                        data.RepresentativesVisits = representatives;
+                        data.Price = CalculatePrice(data);
+                        await _dbContext.Visits.AddAsync(data);
+                        await _dbContext.SaveChangesAsync();
                     }
 
-                    data.RepresentativesVisits = representatives;
-                    data.TotalMin = timeInThisShift;
-                    data.Price = CalculatePrice(data);
-                    //TODO: Declare Subscription to Decrease Monthly Visit if there a Visit in "While Work" Time Shift.
-                    await _dbContext.Visits.AddAsync(data);
-                    await _dbContext.Visits.AddAsync(partVisit);
-                    await _dbContext.SaveChangesAsync();
-
                 }
-                else
-                {
-                    var data = _mapper.Map<Visit>(request) ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
-                    data.TimeShiftId = shift.Id;
-                    data.TimeShift = shift;
-                    var companion = _mapper.Map<IList<Companion>>(request.Companions);
-                    data.Companions = companion;
-                    var representatives = request.Representatives
-                        .Select(p => new RepresentativeVisit() { RepresentativeId = p }).ToList();
-                    foreach (var representative in representatives)
-                    {
-                        if (!subscription.Customer.Representatives.Select(p => p.Id)
-                                .Contains(representative.RepresentativeId))
-                            throw new BadHttpRequestException(
-                                $"عذرًا المخول {representative.RepresentativeId}  {subscription.Customer.Name} ليس مخولًا للزبون ");
-                    }
-
-                    data.RepresentativesVisits = representatives;
-                    data.Price = CalculatePrice(data);
-                    await _dbContext.Visits.AddAsync(data);
-                    await _dbContext.SaveChangesAsync();
-                }
-
             }
         }
         return new MessageResponse() 
@@ -265,7 +292,10 @@ public class VisitService : IVisitService
         {
             var timeAfterFirstHour = x.TotalMin.Value.TotalMinutes - 60;
             var priceByMin=(double) x.TimeShift.PriceForRemainingHour/60;
-            result =(decimal)(timeAfterFirstHour * priceByMin) + x.TimeShift.PriceForFirstHour;
+            if (timeAfterFirstHour <= 30.00)
+                result = (decimal)(timeAfterFirstHour * priceByMin) + x.TimeShift.PriceForFirstHour;
+            else
+                result = (decimal)(timeAfterFirstHour * priceByMin);
         }
         return result;
     }

@@ -3,12 +3,7 @@ using ManagementAPI.Dtos.Customer;
 
 namespace ManagementAPI.Dtos.Representative;
 
-public class FetchRepresentativeRequestDto
-{
-    public int PageNumber { get; set; } = 1;
-    public int PageSize { get; set; } = 25;
-
-}
+public record FetchRepresentativeRequestDto(int PageNumber=1, int PageSize=10);
 
 public class FetchRepresentativeRequestDtoValidator : AbstractValidator<FetchRepresentativeRequestDto>
 {

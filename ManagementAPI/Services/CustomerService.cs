@@ -17,14 +17,16 @@ namespace ManagementAPI.Services;
 public class CustomerService : ICustomerService
 {
     private readonly DataCenterContext _dbContext;
+    private readonly IUploadFileService _uploadFile;
     private readonly IMapper _mapper;
     private readonly IConfiguration _config;
 
-    public CustomerService(DataCenterContext dbContext, IMapper mapper, IConfiguration config)
+    public CustomerService(DataCenterContext dbContext, IMapper mapper, IConfiguration config, IUploadFileService uploadFile)
     {
         _dbContext = dbContext;
         _mapper = mapper;
         _config = config;
+        _uploadFile = uploadFile;
     }
 
     public async Task<MessageResponse> Create(CreateCustomerRequestDto request)
@@ -36,34 +38,10 @@ public class CustomerService : ICustomerService
         if (isNotUnique) throw new NotFoundException("الاسم موجود مسبقًا");
         await _dbContext.Customers.AddAsync(data);
         await _dbContext.SaveChangesAsync();
-        int counter = 0;
-       foreach (var item in request.Files)
+       foreach (var file in request.FilesHandler)
        {
-            var file = item.File;
-            var path = GetFilePath(request.Name);
-            var ext = Path.GetExtension(file.FileName);
-            var fullFileName = ToTrustedFileName(ext);
-
-            if (!System.IO.Directory.Exists(path))
-            {
-                System.IO.Directory.CreateDirectory(path);
-            }
-            string fullPath = Path.Combine(path, fullFileName);
-            if (System.IO.File.Exists(fullPath))
-            {
-
-            }
-            using (FileStream stream = System.IO.File.Create(fullPath))
-            {
-                await file.CopyToAsync(stream);
-            var customerFile =_mapper.Map<CustomerFile>(file);
-            customerFile.Filename = fullPath;
-            customerFile.DocType = item.DocType;
-            customerFile.Customer = data;
-            _dbContext.CustomerFiles.Add(customerFile);
-            await _dbContext.SaveChangesAsync();
-            }
-            counter++;
+            
+           await _uploadFile.Upload(file,EntityType.Customer,data);
         }
              
         
@@ -77,15 +55,19 @@ public class CustomerService : ICustomerService
     {
          
         var data = await _dbContext.Customers.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+                                       .Include(p =>p.Representatives)
+                                       .Include(p=> p.Subscriptions)
+                                       .ThenInclude(p=> p.Visits)
                                        .ProjectTo<CustomerResponseDto>(_mapper.ConfigurationProvider)
                                        .SingleOrDefaultAsync() ?? throw new NotFoundException("عذرًا لا وجود لعميل بهذا الرقم يرجى التأكد!");
         return data;
     }
     public async Task<FetchCustomersResponseDto> GetAll(FetchCustomersRequestDto request)
     {
+        //TODO: Check Customer Name if its null.
         var query = _dbContext.Customers
             .Include(p => p.Files)
-            .Where(p => p.Status != GeneralStatus.Deleted);
+            .Where(p => p.Status != GeneralStatus.Deleted && p.Name.Contains(request.CustomerName));
         
         var files = query.Select(p => p.Files.Select(x => x.Filename)).ToList();
         
@@ -117,7 +99,7 @@ public class CustomerService : ICustomerService
         if (request.Files != null)
            foreach (var file in oldFiles)
                 file.IsActive = 0;
-              
+        //TODO: Upload new File to CustomerFile DBSET.      
 
         _mapper.Map(request, data);
         await _dbContext.SaveChangesAsync();

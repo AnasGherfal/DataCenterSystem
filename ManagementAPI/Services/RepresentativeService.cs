@@ -87,7 +87,7 @@ public class RepresentativeService : IRepresentativeService
                                            .FirstOrDefaultAsync()?? throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
         if (!IsLocked(data.Status))
         {
-            data.Status = GeneralStatus.LockedByUser;
+            data.Status = GeneralStatus.Locked;
             await _dbContext.SaveChangesAsync();
             return new MessageResponse()
             {
@@ -135,7 +135,7 @@ public class RepresentativeService : IRepresentativeService
         return status switch
         {
             GeneralStatus.Active => false,
-            GeneralStatus.LockedByUser => true,
+            GeneralStatus.Locked => true,
             _ => true,
         };
     }

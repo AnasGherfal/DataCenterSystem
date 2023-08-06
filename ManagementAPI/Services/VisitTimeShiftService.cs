@@ -90,7 +90,7 @@ public class VisitTimeShiftService : IVisitTimeShiftService
 
         if (!IsLocked(data.Status))
         {
-            data.Status = GeneralStatus.LockedByUser;
+            data.Status = GeneralStatus.Locked;
             await _dbContext.SaveChangesAsync();
 
             return new OperationResponse()
@@ -175,7 +175,7 @@ public class VisitTimeShiftService : IVisitTimeShiftService
         {
             case GeneralStatus.Active:
                 return false;
-            case GeneralStatus.LockedByUser:
+            case GeneralStatus.Locked:
                 return true;
             default:
                 return false;

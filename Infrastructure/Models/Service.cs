@@ -1,4 +1,5 @@
-﻿using Infrastructure.Constants;
+﻿using Infrastructure.Audits.Service;
+using Infrastructure.Constants;
 
 namespace Infrastructure.Models;
 
@@ -14,4 +15,47 @@ public class Service : BaseModel
     public GeneralStatus Status { get; set; }
     //------------Ralation
     public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+    
+    
+    public static Service Create(ServiceCreatedAudit @event)
+    {
+        return new Service()
+        {
+            Id = @event.AggregateId,
+            Name = @event.Data.Name,
+            AmountOfPower = @event.Data.AmountOfPower,
+            AcpPort = @event.Data.AcpPort,
+            Dns = @event.Data.Dns,
+            MonthlyVisits = @event.Data.MonthlyVisits,
+            Price = @event.Data.Price,
+            Status = GeneralStatus.Active,
+            CreatedOn = @event.DateTime,
+            // CreatedById = @event.UserId,
+        };
+    }
+    
+    public void Apply(ServiceUpdatedAudit @event)
+    {
+        Name = @event.Data.Name;
+        AmountOfPower = @event.Data.AmountOfPower;
+        AcpPort = @event.Data.AcpPort;
+        Dns = @event.Data.Dns;
+        MonthlyVisits = @event.Data.MonthlyVisits;
+        Price = @event.Data.Price;
+    }
+    
+    public void Apply(ServiceLockedAudit @event)
+    {
+        Status = GeneralStatus.Locked;
+    }
+    
+    public void Apply(ServiceUnlockedAudit @event)
+    {
+        Status = GeneralStatus.Active;
+    }
+    
+    public void Apply(ServiceDeletedAudit @event)
+    {
+        Status = GeneralStatus.Deleted;
+    }
 }

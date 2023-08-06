@@ -191,7 +191,7 @@ public class VisitService : IVisitService
         var data = await _dbContext.Visits
            .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
            .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لزيارة بهذا الرقم او هذه الزيارة مقيدة مسبقًا");
-        data.Status = GeneralStatus.LockedByUser;
+        data.Status = GeneralStatus.Locked;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -217,7 +217,7 @@ public class VisitService : IVisitService
     public async Task<MessageResponse> Unlock(Guid id)
     {
         var data = await _dbContext.Visits
-           .Where(p => p.Id == id && p.Status == GeneralStatus.LockedByUser)
+           .Where(p => p.Id == id && p.Status == GeneralStatus.Locked)
            .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لزيارة بهذا الرقم أو أن هذه الزيارة غير مقيدة ");
         data.Status = GeneralStatus.Active;
         await _dbContext.SaveChangesAsync();
@@ -275,7 +275,7 @@ public class VisitService : IVisitService
         return status switch
         {
             GeneralStatus.Active => false,
-            GeneralStatus.LockedByUser => true,
+            GeneralStatus.Locked => true,
             _ => true,
         };
     }

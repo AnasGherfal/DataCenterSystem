@@ -106,7 +106,7 @@ public class ServiceServices : IServiceServices
         if(IsLocked(data.Status))
             throw new BadRequestException($"! {data.Id}: عذرًا هذه الباقة مقيدة مسبقًا"); 
         
-        data.Status = GeneralStatus.LockedByUser;
+        data.Status = GeneralStatus.Locked;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -139,7 +139,7 @@ public class ServiceServices : IServiceServices
         return status switch
         {
             GeneralStatus.Active => false,
-            GeneralStatus.LockedByUser => true,
+            GeneralStatus.Locked => true,
             _ => true,
         };
     }

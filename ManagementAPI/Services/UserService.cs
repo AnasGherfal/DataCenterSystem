@@ -100,7 +100,7 @@ public class UserService
     {
         
         var query = await _dbContext.Users.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("there is no user with this number");
-        if (query.Status == GeneralStatus.LockedByUser) throw new BadRequestException("user is locked ");
+        if (query.Status == GeneralStatus.Locked) throw new BadRequestException("user is locked ");
         var generatedPassword = GeneratePassword();
         query.Password = HashPassword(await generatedPassword);
         await _dbContext.SaveChangesAsync();
@@ -115,7 +115,7 @@ public class UserService
     {
        
         var query = await _dbContext.Users.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("there is no user with this number");
-        if (query.Status == GeneralStatus.LockedByUser) throw new BadRequestException("user is locked ");
+        if (query.Status == GeneralStatus.Locked) throw new BadRequestException("user is locked ");
         query.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
@@ -129,7 +129,7 @@ public class UserService
     {
         
         var query = await _dbContext.Users.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("there is no user with this number");
-        if (query.Status == GeneralStatus.LockedByUser) throw new BadRequestException("user is locked ");
+        if (query.Status == GeneralStatus.Locked) throw new BadRequestException("user is locked ");
         var data = _mapper.Map<User>(request);
         await _dbContext.AddAsync(data);
         await _dbContext.SaveChangesAsync();
@@ -145,11 +145,11 @@ public class UserService
         var data = await _dbContext.Users.FirstOrDefaultAsync(b => b.Id == id && b.Status != GeneralStatus.Deleted)?? throw new NotFoundException("thear is no user with this number");
 
         
-        if (data.Status == GeneralStatus.LockedByUser)
+        if (data.Status == GeneralStatus.Locked)
         {
             throw new BadRequestException("عفوًا المستخدم مقفل مسبقًا !");
         }
-        data.Status = GeneralStatus.LockedByUser;
+        data.Status = GeneralStatus.Locked;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {

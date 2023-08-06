@@ -14,5 +14,12 @@ public enum AuditType
     CustomerLocked=9,
     CustomerUnlocked=10,
     CustomerDeleted=11,
+    
+    
+    ServiceCreated = 1001,
+    ServiceUpdated = 1002,
+    ServiceLocked = 1003,
+    ServiceUnlocked = 1004,
+    ServiceDeleted = 1005,
 
 }

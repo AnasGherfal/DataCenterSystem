@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Common.Constants;
+using Microsoft.AspNetCore.Mvc;
 using Shared.Dtos;
 using Web.API.Abstracts;
 using Web.API.Features.AdminsManagement.CreateAdmin;
@@ -8,10 +9,11 @@ using Web.API.Features.AdminsManagement.FetchAdmins;
 using Web.API.Features.AdminsManagement.LockAdminById;
 using Web.API.Features.AdminsManagement.UnlockAdminById;
 using Web.API.Features.AdminsManagement.UpdateAdmin;
+using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;
 
-
+[RoleBasedPermission(SystemPermissions.SuperAdmin)]
 [ApiController]
 public class AdminsController : ManagementController
 {

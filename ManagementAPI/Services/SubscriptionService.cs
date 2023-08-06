@@ -46,7 +46,7 @@ public class SubscriptionService:ISubscriptionService
     {
        
         var query = await _dbContext.Subscriptions.SingleOrDefaultAsync(x => x.Id == id && x.Status != GeneralStatus.Deleted) ?? throw new BadRequestException("thear is no subscription with this number");
-        if (query.Status == GeneralStatus.LockedByUser) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
+        if (query.Status == GeneralStatus.Locked) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
         var data = _mapper.Map<Subscription>(request);
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
@@ -80,7 +80,7 @@ public class SubscriptionService:ISubscriptionService
     public async Task<MessageResponse> Renew(Guid id)
     {
         var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("عذرًا لا وجود لإشتراك مفعل بهذا الرقم");
-        if (data.Status == GeneralStatus.LockedByUser) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
+        if (data.Status == GeneralStatus.Locked) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
         var duration = DateTime.Now.AddDays(29);
         if (!IsExpired(data))
             if (duration > data.EndDate)
@@ -166,11 +166,11 @@ public class SubscriptionService:ISubscriptionService
     {
         
         var data = await _dbContext.Subscriptions.FirstOrDefaultAsync(b => b.Id == id && b.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription with this number");
-        if (data.Status == GeneralStatus.LockedByUser)
+        if (data.Status == GeneralStatus.Locked)
         {
             throw new BadRequestException("عفوًا الاشتراك مقفل مسبقًا !");
         }
-        data.Status = GeneralStatus.LockedByUser;
+        data.Status = GeneralStatus.Locked;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -240,7 +240,7 @@ public class SubscriptionService:ISubscriptionService
         return status switch
         {
             GeneralStatus.Active => false,
-            GeneralStatus.LockedByUser => true,
+            GeneralStatus.Locked => true,
             _ => true,
         };
     }

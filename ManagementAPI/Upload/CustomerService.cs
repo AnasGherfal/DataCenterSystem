@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿/*using AutoMapper;
 using Infrastructure;
 using Infrastructure.Models;
 using ManagementAPI.Dtos.Customer;
@@ -20,11 +20,13 @@ public class CustomerService : ICustomerService
     private readonly DataCenterContext _dbContext;
     private readonly IUploadFileService _uploadFile;
     private readonly IMapper _mapper;
+    private readonly IConfiguration _config;
 
-    public CustomerService(DataCenterContext dbContext, IMapper mapper, IUploadFileService uploadFile)
+    public CustomerService(DataCenterContext dbContext, IMapper mapper, IConfiguration config, IUploadFileService uploadFile)
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _config = config;
         _uploadFile = uploadFile;
     }
 
@@ -170,12 +172,12 @@ public class CustomerService : ICustomerService
             .Include(p => p.Files)
             .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
             .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لعميل بهذا الرقم او هذا العميل مقيد مسبقًا");
-        data.Status = GeneralStatus.Locked;
+        data.Status = GeneralStatus.LockedByUser;
         if(data.Representatives != null)
         foreach(var Representative in data.Representatives)
-            Representative.Status = GeneralStatus.Locked;
+            Representative.Status = GeneralStatus.LockedByUser;
         foreach (var file in data.Files)
-            file.IsActive = (short)GeneralStatus.Locked;
+            file.IsActive = (short)GeneralStatus.LockedByUser;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -188,7 +190,7 @@ public class CustomerService : ICustomerService
         var data = await _dbContext.Customers
             .Include(p => p.Representatives)
             .Include(p => p.Files)
-            .Where(p => p.Id == id && p.Status == GeneralStatus.Locked)
+            .Where(p => p.Id == id && p.Status == GeneralStatus.LockedByUser)
             .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لعميل بهذا الرقم او هذا العميل غير مقيد");
         data.Status = GeneralStatus.Active;
         if(data.Representatives != null)
@@ -207,3 +209,4 @@ public class CustomerService : ICustomerService
 
 }
 
+*/

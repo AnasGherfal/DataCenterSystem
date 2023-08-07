@@ -403,6 +403,7 @@ namespace Infrastructure.Migrations
                     StartDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     Status = table.Column<short>(type: "smallint", nullable: false),
+                    MonthlyVisits = table.Column<int>(type: "int", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: false)

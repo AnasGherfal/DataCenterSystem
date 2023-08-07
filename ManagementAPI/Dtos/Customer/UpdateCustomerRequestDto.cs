@@ -4,7 +4,7 @@ using Shared.Dtos;
 
 namespace ManagementAPI.Dtos.Customer;
 
-public record UpdateCustomerRequestDto(string Name, string? Address, string PrimaryPhone, string? SecondaryPhone,string Email,IList<FileRequestDto>? Files);
+public record UpdateCustomerRequestDto(string Name, string? Address, string PrimaryPhone, string? SecondaryPhone,string Email,FileRequestDto FirstFile,FileRequestDto SecondFile);
 public class EditCustomerDtoValidator : AbstractValidator<UpdateCustomerRequestDto>
 {
     [Obsolete]

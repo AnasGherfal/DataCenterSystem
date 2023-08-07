@@ -67,11 +67,5 @@ public class CreateSubscriptionRequestDtoValidator : AbstractValidator<CreateSub
         // The date time string is in the right format.
              return true;
     }*/
-    private static bool IsPdf(FormFile file)
-    {
-        if (file.ContentType == "application/pdf")
-            return true;
-        else
-            return false;
-    }
+
 }

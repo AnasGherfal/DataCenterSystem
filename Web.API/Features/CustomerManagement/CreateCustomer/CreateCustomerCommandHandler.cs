@@ -12,12 +12,10 @@ namespace Web.API.Features.CustomerManagement.CreateCustomer;
 public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, MessageResponse>
 {
     private readonly DataCenterContext _dbContext;
-    private readonly IMapper _mapper;
     private readonly IConfiguration _config;
-    public CreateCustomerCommandHandler(DataCenterContext dbContext,IMapper mapper,IConfiguration config)
+    public CreateCustomerCommandHandler(DataCenterContext dbContext, IConfiguration config)
     {
         _dbContext = dbContext;
-        _mapper = mapper;
         _config = config;
         
     }

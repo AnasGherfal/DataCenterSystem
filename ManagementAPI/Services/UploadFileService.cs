@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure.Core;
 using Infrastructure;
+using Infrastructure.Constants;
 using Infrastructure.Models;
 using ManagementAPI.Dtos;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,7 @@ public class UploadFileService : IUploadFileService
        
             var path = GetFilePath(type, objct);
             var ext = Path.GetExtension(request.File.FileName);
-            var fullFileName = ToTrustedFileName(type,objct,request.DocType.ToString(),ext);
+            var fullFileName = ToTrustedFileName(type,objct,(DocType)request.DocType,ext);
 
             if (!System.IO.Directory.Exists(path))
             {
@@ -48,6 +49,7 @@ public class UploadFileService : IUploadFileService
                             var dataFile = _mapper.Map<CustomerFile>(request.File);
                             dataFile.Filename = fullFileName;
                             dataFile.FilePath = fullPath;
+                        dataFile.IsActive = (short)GeneralStatus.Active;
                             dataFile.DocType = request.DocType;
                             dataFile.Customer = (Customer)objct;
                             _dbContext.CustomerFiles.Add(dataFile);
@@ -60,7 +62,8 @@ public class UploadFileService : IUploadFileService
                             var dataFile = _mapper.Map<SubscriptionFile>(request.File);
                             dataFile.FileName = fullFileName;
                             dataFile.FilePath = fullPath;
-                            dataFile.Subscription = (Subscription)objct;
+                        dataFile.IsActive = (short)GeneralStatus.Active;
+                        dataFile.Subscription = (Subscription)objct;
                             _dbContext.SubscriptionFiles.Add(dataFile);
                             await _dbContext.SaveChangesAsync();
                             break;
@@ -71,7 +74,8 @@ public class UploadFileService : IUploadFileService
                             var dataFile = _mapper.Map<RepresentativeFile>(request.File);
                             dataFile.Filename = fullFileName;
                             dataFile.FilePath = fullPath;
-                            dataFile.DocType = request.DocType;
+                        dataFile.IsActive = (short)GeneralStatus.Active;
+                        dataFile.DocType = request.DocType;
                             dataFile.Representative = (Representative)objct;
                             _dbContext.RepresentativeFiles.Add(dataFile);
                             await _dbContext.SaveChangesAsync();
@@ -90,7 +94,7 @@ public class UploadFileService : IUploadFileService
     
     private string GetFilePath(EntityType type,object obj)
     {
-        string name=string.Empty;
+        string name="";
         switch(type)
         {
                 case EntityType.CustomerFile:
@@ -112,9 +116,9 @@ public class UploadFileService : IUploadFileService
         return _config.GetValue<string>("Storage:Customer") + "\\" + DateOnly.FromDateTime(DateTime.UtcNow).Year.ToString() + "\\" + $"{name}\\";
 
     }
-    private static string ToTrustedFileName(EntityType type, object obj, string docType, string ext)
+    private static string ToTrustedFileName(EntityType type, object obj, DocType docType, string ext)
     {
-        string name = string.Empty;
+        string name = "";
         switch (type)
         {
             case EntityType.CustomerFile:

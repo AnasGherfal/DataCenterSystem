@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Infrastructure.Constants;
 using Common.Helpers;
+using Shared.Dtos;
 
 namespace ManagementAPI.Dtos.Subscriptions
 {
@@ -11,6 +12,7 @@ namespace ManagementAPI.Dtos.Subscriptions
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public decimal? TotalPrice { get; set; }
+        public FileRequestDto File { get; set; } = default!;
     }
     public class UpdateSubscriptionRequestDtoValidator:AbstractValidator<UpdateSubscriptionRequestDto>
     {

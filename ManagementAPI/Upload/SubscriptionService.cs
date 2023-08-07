@@ -1,9 +1,14 @@
-﻿using AutoMapper;
+﻿/*
+
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Azure.Core;
 using Infrastructure;
 using Infrastructure.Constants;
 using Infrastructure.Models;
+using ManagementAPI.Dtos;
+using ManagementAPI.Dtos.Invoice;
+using ManagementAPI.Dtos.Service;
 using ManagementAPI.Dtos.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 using Shared.Constants;
@@ -30,7 +35,6 @@ public class SubscriptionService:ISubscriptionService
     {
         var data = _mapper.Map<Subscription>(request) ?? throw new BadRequestException("! طلبك غير صالح يرجى إعادة المحاولة");
         var service = _dbContext.Services.Where(p => p.Id == data.ServiceId).SingleOrDefault()?? throw new BadRequestException("هنالك مشكلة في الباقة..يرجى مراجعة الدعم الفني");
-        data.TotalPrice = service.Price;
         data.MonthlyVisits = service.MonthlyVisits;
         _dbContext.Subscriptions.Add(data);
         _dbContext.SaveChanges();
@@ -47,7 +51,7 @@ public class SubscriptionService:ISubscriptionService
             Include(p => p.SubscriptionFile)
             .SingleOrDefaultAsync(x => x.Id == id && x.Status != GeneralStatus.Deleted)
             ?? throw new BadRequestException("عذرًا لايوجد إشتراك بهذا الرقم..");
-        if (data.Status == GeneralStatus.Locked) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
+        if (data.Status == GeneralStatus.LockedByUser) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
         _mapper.Map(data, request);
         if (request.File != null) {
             data.SubscriptionFile.IsActive = (short)GeneralStatus.Deleted;
@@ -66,10 +70,12 @@ public class SubscriptionService:ISubscriptionService
         var query = _dbContext.Subscriptions.Include(p => p.Customer).Include(p => p.SubscriptionFile)
                                                 .Include(p => p.Visits).Include(p => p.Service).Where(p => p.Status != GeneralStatus.Deleted)
                                                 .ProjectTo<SubscriptionRsponseDto>(_mapper.ConfigurationProvider);
+        var x = "";
             var data= await query.OrderBy(p => p.StartDate)
             .Skip(request.PageSize * (request.PageNumber - 1))
             .Take(request.PageSize)
             .ToListAsync();
+        var xx = "";
         var totalCount = query.Count();
         var totalpages = (int)Math.Ceiling(totalCount /(decimal)request.PageSize);
         return new FetchSubscriptionResponseDto()
@@ -83,12 +89,12 @@ public class SubscriptionService:ISubscriptionService
     public async Task<MessageResponse> Renew(FileRequestDto file, Guid id)
     {
         var data = await _dbContext.Subscriptions.Include(p => p.SubscriptionFile).SingleOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("عذرًا لا وجود لإشتراك مفعل بهذا الرقم");
-        if (data.Status == GeneralStatus.Locked) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
-        var duration = DateTime.Now.AddDays(29);
+        if (data.Status == GeneralStatus.LockedByUser) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
+        *//* var duration = DateTime.Now.AddDays(29);
          if (!IsExpired(data))
              if (duration > data.EndDate)
-                 throw new BadRequestException("عذرًا لا يمكنك تجديد هذا الإشتراك! التجديد يتم عند انتهاء الإشتراك أو قبل إنتهاءه بمدة 30 يومًا! ");
-        Subscription reNewSubcription = new()
+                 throw new BadRequestException("عذرًا لا يمكنك تجديد هذا الإشتراك! التجديد يتم عند انتهاء الإشتراك أو قبل إنتهاءه بمدة 30 يومًا! ");*//*
+        Subscription reNewSubcription = new Subscription()
         {
             StartDate = data.EndDate,
             EndDate = data.EndDate.AddYears(1),
@@ -121,7 +127,7 @@ public class SubscriptionService:ISubscriptionService
         // Check if the file exists.
         if (!File.Exists(path))
         {
-            throw new FileNotFoundException("عذرًا لا وجود لملف.. ");
+            throw new FileNotFoundException("File not found: ");
         }
 
         // Open the file for reading.
@@ -132,11 +138,11 @@ public class SubscriptionService:ISubscriptionService
     {
         
         var data = await _dbContext.Subscriptions.Include(p=>p.SubscriptionFile).FirstOrDefaultAsync(b => b.Id == id && b.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription with this number");
-        if (data.Status == GeneralStatus.Locked)
+        if (data.Status == GeneralStatus.LockedByUser)
         {
             throw new BadRequestException("عفوًا الاشتراك مقفل مسبقًا !");
         }
-        data.Status = GeneralStatus.Locked;
+        data.Status = GeneralStatus.LockedByUser;
         data.SubscriptionFile.IsActive = (short)GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
@@ -199,9 +205,10 @@ public class SubscriptionService:ISubscriptionService
         return status switch
         {
             GeneralStatus.Active => false,
-            GeneralStatus.Locked => true,
+            GeneralStatus.LockedByUser => true,
             _ => true,
         };
     }
 }
  
+*/

@@ -5,7 +5,7 @@ using Shared.Dtos;
 
 namespace ManagementAPI.Dtos.Customer;
 
-public record CreateCustomerRequestDto(string Name, string? Address, string PrimaryPhone, string? SecondaryPhone, string Email, IList<FileRequestDto> FilesHandler);
+public record CreateCustomerRequestDto(string Name, string? Address, string PrimaryPhone, string? SecondaryPhone, string Email, FileRequestDto FirstFile,FileRequestDto SecondFile);
 public class CreateCustomerDtoValidator : AbstractValidator<CreateCustomerRequestDto>
 {
     [Obsolete("CreateCustomerDto")]

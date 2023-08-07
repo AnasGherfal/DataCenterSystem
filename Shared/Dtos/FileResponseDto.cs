@@ -1,5 +1,8 @@
 ﻿namespace Shared.Dtos;
 
-public record FileResponseDto(Guid Id, string FileName, string DocType)
+public class FileResponseDto 
 {
+    public Guid Id { set; get; }
+    public string FileName { set; get; }=string.Empty;
+    public string DocType { set; get; } = string.Empty;
 }

@@ -29,7 +29,7 @@ namespace ManagementAPI.Controllers
         public async Task<IActionResult> GetById(string id) => Ok(await _service.GetById(Guid.Parse(id)));
 
         [HttpPut("{id}/Renew")]
-        public async Task<IActionResult> Renew(string id) => Ok(await _service.Renew(Guid.Parse(id)));
+        public async Task<IActionResult> Renew([FromForm]FileRequestDto file, string id) => Ok(await _service.Renew(file, Guid.Parse(id)));
 
         [HttpPut("{id}/lock")]
         public async Task<IActionResult> Lock(string id) => Ok(await _service.Lock(Guid.Parse(id)));
@@ -39,25 +39,12 @@ namespace ManagementAPI.Controllers
         
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id) => Ok(await _service.Delete(Guid.Parse(id)));
-        [HttpDelete("{id:int}/deleteFile")]
-        public async Task<IActionResult> DeleteFile(string id) => Ok(await _service.DeleteFile(Guid.Parse(id)));
 
-        [HttpGet("files")]
-        public async Task<IActionResult> GetFiles([FromQuery]FetchSubscriptionRequestDto request) 
-            => Ok(await _service.GetFiles(request));
-        
-       /* [HttpPost("{id:int}/files")]
-        public async Task<IActionResult> UploadFile(int id, [FromForm] FileDto file) 
-            => Ok(await _subscriptionService.UploadFile(id, file));*/
-        [HttpGet("{id:int}/fileById")]
-        public async Task<IActionResult> GetFileById(string id) => Ok(await _service.GetFileById(Guid.Parse(id)));
 
         [HttpPut("{id:int}/update")]
         public async Task<IActionResult> Update(string id,UpdateSubscriptionRequestDto request)
            => Ok(await _service.Update(Guid.Parse(id),request));
-        [HttpPut("{id:int}/updateFile")]
-        public async Task<IActionResult> UpdateFile(string id, [FromForm] FileRequestDto request)
-           => Ok(await _service.UpdateFile(Guid.Parse(id), request));
+       
         [HttpGet("Download")]
         public async Task<IActionResult> Download(string id) => Ok(await _service.Download(Guid.Parse(id)));
     }

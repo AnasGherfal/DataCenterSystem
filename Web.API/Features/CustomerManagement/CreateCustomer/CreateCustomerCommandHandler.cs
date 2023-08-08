@@ -4,6 +4,7 @@ using Infrastructure.Constants;
 using Infrastructure.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Shared.Constants;
 using Shared.Dtos;
 using Shared.Exceptions;
 
@@ -36,6 +37,33 @@ public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustom
             .AnyAsync();
         if (isNotUnique) throw new NotFoundException("الاسم موجود مسبقًا");
         await _dbContext.Customers.AddAsync(data);
+        var customerFiles = new List<CustomerFile>()
+        {
+            new CustomerFile()
+            {
+                DocType=request.FirstFile.DocType,
+                Filename=ToTrustedFileName(data.Name,(DocType)request.FirstFile.DocType,Path.GetExtension(request.FirstFile.File.FileName)),
+                FilePath=GetFilePath(data.Name),
+                CustomerId=data.Id,
+                Customer=data,
+                 IsActive=GeneralStatus.Active,
+                CreatedOn=DateTime.UtcNow
+            },
+              new CustomerFile()
+            {
+                DocType=request.SecondFile.DocType,
+                Filename=ToTrustedFileName(data.Name,(DocType)request.SecondFile.DocType,Path.GetExtension(request.SecondFile.File.FileName)),
+                FilePath=GetFilePath(data.Name),
+                CustomerId=data.Id,
+                Customer=data,
+                IsActive=GeneralStatus.Active,
+                CreatedOn=DateTime.UtcNow
+            }
+        };
+        foreach (var file in customerFiles)
+        {
+            _dbContext.CustomerFiles.Add(file);
+        }
         await _dbContext.SaveChangesAsync();
     
        
@@ -47,14 +75,13 @@ public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustom
         };
     }
 
-    private string GetFilePath(string customerName)
+    private string GetFilePath(string name)
     {
-        return _config.GetValue<string>("Storage:Customer") + "\\" + DateOnly.FromDateTime(DateTime.UtcNow).Year.ToString() + "\\" + $"{customerName}\\";
-
+        return _config.GetValue<string>("Storage:Customer") + "\\" + DateOnly.FromDateTime(DateTime.UtcNow).Year.ToString() + "\\" + $"{name}\\";
     }
-    private static string ToTrustedFileName(string ext)
+    private static string ToTrustedFileName(string name,DocType type,string ext)
     {
-        return Guid.NewGuid().ToString() + ext;
+        return name + $" {type}" + ext;
     }
 }
 

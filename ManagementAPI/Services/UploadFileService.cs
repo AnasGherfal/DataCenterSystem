@@ -49,7 +49,7 @@ public class UploadFileService : IUploadFileService
                             var dataFile = _mapper.Map<CustomerFile>(request.File);
                             dataFile.Filename = fullFileName;
                             dataFile.FilePath = fullPath;
-                        dataFile.IsActive = (short)GeneralStatus.Active;
+                        dataFile.IsActive = GeneralStatus.Active;
                             dataFile.DocType = request.DocType;
                             dataFile.Customer = (Customer)objct;
                             _dbContext.CustomerFiles.Add(dataFile);

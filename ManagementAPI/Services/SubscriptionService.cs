@@ -90,7 +90,7 @@ public class SubscriptionService:ISubscriptionService
                  throw new BadRequestException("عذرًا لا يمكنك تجديد هذا الإشتراك! التجديد يتم عند انتهاء الإشتراك أو قبل إنتهاءه بمدة 30 يومًا! ");
         Subscription reNewSubcription = new()
         {
-            StartDate = data.EndDate,
+            StartDate = DateTime.UtcNow,
             EndDate = data.EndDate.AddYears(1),
             Status = GeneralStatus.Active,
             AdditionalPowers = data.AdditionalPowers,

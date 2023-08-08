@@ -23,8 +23,8 @@ public class CustomersController : ControllerBase
        => Ok(await _service.GetById(Guid.Parse(id)));
 
     [HttpGet("{id}/Download")]
-    public async Task<IActionResult> Download(string id,short type)
-     => Ok(await _service.Download(Guid.Parse(id),type));
+    public async Task<IActionResult> Download(string id)
+     => Ok(await _service.Download(Guid.Parse(id)));
     [HttpGet]
     
     public async Task<IActionResult> GetAll([FromQuery] FetchCustomersRequestDto filter)

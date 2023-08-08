@@ -50,7 +50,7 @@ public class SubscriptionService:ISubscriptionService
         if (data.Status == GeneralStatus.Locked) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
         _mapper.Map(data, request);
         if (request.File != null) {
-            data.SubscriptionFile.IsActive = (short)GeneralStatus.Deleted;
+            data.SubscriptionFile.IsActive = GeneralStatus.Deleted;
             await _uploadFile.Upload(request.File, EntityType.SubscriptionFile, data);
                 }
         await _dbContext.SaveChangesAsync();
@@ -104,7 +104,7 @@ public class SubscriptionService:ISubscriptionService
 
         };
         data.Status = GeneralStatus.Deleted;
-        data.SubscriptionFile.IsActive = (short)GeneralStatus.Deleted;
+        data.SubscriptionFile.IsActive = GeneralStatus.Deleted;
         _dbContext.Subscriptions.Add(reNewSubcription);
         await _dbContext.SaveChangesAsync();
         await _uploadFile.Upload(file, EntityType.SubscriptionFile, reNewSubcription);
@@ -116,7 +116,7 @@ public class SubscriptionService:ISubscriptionService
 
     public async Task<FileStream> Download(Guid id)
     {
-        var data = await  _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.SubscriptionId == id && a.IsActive == (short)GeneralStatus.Active) ?? throw new BadRequestException("no file with this subs number");
+        var data = await  _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.SubscriptionId == id && a.IsActive == GeneralStatus.Active) ?? throw new BadRequestException("no file with this subs number");
         var path = data.FilePath;
         // Check if the file exists.
         if (!File.Exists(path))
@@ -137,7 +137,7 @@ public class SubscriptionService:ISubscriptionService
             throw new BadRequestException("عفوًا الاشتراك مقفل مسبقًا !");
         }
         data.Status = GeneralStatus.Locked;
-        data.SubscriptionFile.IsActive = (short)GeneralStatus.Deleted;
+        data.SubscriptionFile.IsActive = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -146,13 +146,13 @@ public class SubscriptionService:ISubscriptionService
     }
     public async Task<MessageResponse> Unlock(Guid id)
     {
-        var data = await _dbContext.Subscriptions.Include(x=>x.SubscriptionFile).FirstOrDefaultAsync(b => b.Id == id &&b.SubscriptionFile.IsActive!= (short)GeneralStatus.Deleted && b.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription with this number");
+        var data = await _dbContext.Subscriptions.Include(x=>x.SubscriptionFile).FirstOrDefaultAsync(b => b.Id == id &&b.SubscriptionFile.IsActive!= GeneralStatus.Deleted && b.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription with this number");
         if (IsLocked(data.Status))
         {
             throw new BadRequestException("عفوًا الاشتراك غير مقفل مسبقًا !");
         }
         data.Status = GeneralStatus.Active;
-        data.SubscriptionFile.IsActive = (short) GeneralStatus.Active;
+        data.SubscriptionFile.IsActive = GeneralStatus.Active;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -161,11 +161,11 @@ public class SubscriptionService:ISubscriptionService
     }
     public async Task<MessageResponse> Delete(Guid id)
     {
-        var data = await _dbContext.Subscriptions.Include(x=>x.SubscriptionFile).FirstOrDefaultAsync(a => a.Id == id && a.SubscriptionFile.IsActive!=(short)GeneralStatus.Deleted && a.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription with this id ");
+        var data = await _dbContext.Subscriptions.Include(x=>x.SubscriptionFile).FirstOrDefaultAsync(a => a.Id == id && a.SubscriptionFile.IsActive!=GeneralStatus.Deleted && a.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription with this id ");
         if (IsLocked(data.Status))
             throw new BadRequestException("عذرًا هذا الإشتراك مقيد !");
         data.Status = GeneralStatus.Deleted;
-        data.SubscriptionFile.IsActive = (short)GeneralStatus.Deleted;
+        data.SubscriptionFile.IsActive = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {

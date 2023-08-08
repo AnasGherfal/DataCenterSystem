@@ -8,7 +8,7 @@ public interface ICustomerService
 {
     public Task<MessageResponse> Create(CreateCustomerRequestDto request);
     public Task<CustomerResponseDto> GetById(Guid id);
-    public Task<FileStream> Download(Guid id, short type);
+    public Task<FileStream> Download(Guid id);
     public Task<FetchCustomersResponseDto> GetAll(FetchCustomersRequestDto request);
     public Task<MessageResponse> Update(Guid id , UpdateCustomerRequestDto request);
     public Task<MessageResponse> Lock(Guid id);

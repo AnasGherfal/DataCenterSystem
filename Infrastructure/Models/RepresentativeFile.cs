@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.Models;
+﻿using Infrastructure.Constants;
+
+namespace Infrastructure.Models;
 
 public class RepresentativeFile : BaseModel
 {
@@ -6,7 +8,7 @@ public class RepresentativeFile : BaseModel
     public string Filename { get; set; } = string.Empty;
     public string FilePath { get; set; } = string.Empty;
     public short DocType { get; set; }
-    public short IsActive { get; set; }
+    public GeneralStatus IsActive { get; set; }
     public Guid RepresentativeId { get; set; }
     public Representative Representative { get; set; } = default!;
 }

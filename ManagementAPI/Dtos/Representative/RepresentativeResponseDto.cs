@@ -2,6 +2,7 @@
 using Infrastructure.Models;
 using ManagementAPI.Dtos.Customer;
 using Shared.Constants;
+using Shared.Dtos;
 
 namespace ManagementAPI.Dtos.Representative;
 
@@ -15,5 +16,6 @@ public class RepresentativeResponseDto
     public string Email { get; set; } = string.Empty;
     public string PhoneNo { get; set; } = string.Empty;
     public GeneralStatus Status { get; set; }
-    public string CustomerName { get; set; } = default!;   
+    public string CustomerName { get; set; } = default!;
+    public IList<FileResponseDto> Files { get; set; }= new List<FileResponseDto>();
 }

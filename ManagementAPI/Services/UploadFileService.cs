@@ -62,7 +62,7 @@ public class UploadFileService : IUploadFileService
                             var dataFile = _mapper.Map<SubscriptionFile>(request.File);
                             dataFile.FileName = fullFileName;
                             dataFile.FilePath = fullPath;
-                        dataFile.IsActive = (short)GeneralStatus.Active;
+                        dataFile.IsActive = GeneralStatus.Active;
                         dataFile.Subscription = (Subscription)objct;
                             _dbContext.SubscriptionFiles.Add(dataFile);
                             await _dbContext.SaveChangesAsync();
@@ -74,7 +74,7 @@ public class UploadFileService : IUploadFileService
                             var dataFile = _mapper.Map<RepresentativeFile>(request.File);
                             dataFile.Filename = fullFileName;
                             dataFile.FilePath = fullPath;
-                        dataFile.IsActive = (short)GeneralStatus.Active;
+                        dataFile.IsActive = GeneralStatus.Active;
                         dataFile.DocType = request.DocType;
                             dataFile.Representative = (Representative)objct;
                             _dbContext.RepresentativeFiles.Add(dataFile);

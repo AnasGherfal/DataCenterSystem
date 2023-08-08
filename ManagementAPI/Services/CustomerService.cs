@@ -60,9 +60,9 @@ public class CustomerService : ICustomerService
                                        .SingleOrDefaultAsync() ?? throw new NotFoundException("عذرًا لا وجود لعميل بهذا الرقم يرجى التأكد!");
         return data;
     }
-    public async Task<FileStream> Download(Guid id,short type)
+    public async Task<FileStream> Download(Guid id)
     {
-        var data = await _dbContext.CustomerFiles.SingleOrDefaultAsync(a => a.CustomerId == id && a.DocType==(short)type && a.IsActive == GeneralStatus.Active) ?? throw new BadRequestException("عذرًا لا وجود لملفات لهذا العميل..");
+        var data = await _dbContext.CustomerFiles.SingleOrDefaultAsync(a => a.Id == id && a.IsActive == GeneralStatus.Active) ?? throw new BadRequestException("عذرًا لا وجود لملفات لهذا العميل..");
         var path = data.FilePath;
         // Check if the file exists.
         if (!File.Exists(path))

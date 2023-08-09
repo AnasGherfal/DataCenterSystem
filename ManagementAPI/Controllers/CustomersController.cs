@@ -21,13 +21,17 @@ public class CustomersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(string id)
        => Ok(await _service.GetById(Guid.Parse(id)));
+
+    [HttpGet("{id}/Download")]
+    public async Task<IActionResult> Download(string id)
+     => Ok(await _service.Download(Guid.Parse(id)));
     [HttpGet]
     
     public async Task<IActionResult> GetAll([FromQuery] FetchCustomersRequestDto filter)
         => Ok(await _service.GetAll(filter));
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, [FromBody] UpdateCustomerRequestDto request)
+    public async Task<IActionResult> Update(string id, [FromForm] UpdateCustomerRequestDto request)
         => Ok(await _service.Update(Guid.Parse(id), request));
 
     [HttpDelete("{id}")]

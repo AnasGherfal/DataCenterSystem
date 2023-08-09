@@ -589,6 +589,9 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime");
 
+                    b.Property<int>("MonthlyVisits")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("ServiceId")
                         .HasColumnType("uniqueidentifier");
 

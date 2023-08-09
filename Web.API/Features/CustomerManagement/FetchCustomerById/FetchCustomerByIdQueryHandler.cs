@@ -34,7 +34,7 @@ public sealed record FetchCustomerByIdQueryHandler : IRequestHandler<FetchCustom
             Status = data.Status,
             Subsicrptions = data.Subscriptions.Select(p => p.Id).ToList(),
             Representative = data.Representatives.Select(p => p.Id).ToList(),
-            FileName = data.Files.Select(p => p.Filename).ToList()
+    
         });
     }
 }

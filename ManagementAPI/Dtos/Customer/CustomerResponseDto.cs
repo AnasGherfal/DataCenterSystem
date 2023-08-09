@@ -1,4 +1,7 @@
 ﻿using Infrastructure.Constants;
+using ManagementAPI.Dtos.Representative;
+using ManagementAPI.Dtos.Subscriptions;
+using ManagementAPI.Dtos.Visit;
 using Shared.Dtos;
 
 namespace ManagementAPI.Dtos.Customer;
@@ -12,14 +15,7 @@ public class CustomerResponseDto {
     public string? SecondaryPhone { get; set; }
     public string Email { get; set; } = default!;
     public GeneralStatus Status { get; set; }
-    public IList<CustomerSub> Subsicrptions { get; set; } = new List<CustomerSub>();
-    public IList<Guid> Representative { get; set; }= new List<Guid>();
-    public IList<Guid> Visits { get; set; } = new List<Guid>();
-    //public IList<FileResponseDto> Files { get; set; } = new List<FileResponseDto>();
+    public IList<SubscriptionRsponseDto> Subsicrptions { get; set; } = new List<SubscriptionRsponseDto>();
+    public IList<RepresentativeResponseDto> Representative { get; set; }= new List<RepresentativeResponseDto>();
+    public IList<FileResponseDto> Files { get; set; } = new List<FileResponseDto>();
    }
-
-public class CustomerSub
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-}

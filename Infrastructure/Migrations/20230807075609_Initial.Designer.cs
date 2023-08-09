@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DataCenterContext))]
-    [Migration("20230801132536_Initial")]
+    [Migration("20230807075609_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -591,6 +591,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime");
+
+                    b.Property<int>("MonthlyVisits")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("ServiceId")
                         .HasColumnType("uniqueidentifier");

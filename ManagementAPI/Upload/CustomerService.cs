@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿/*using AutoMapper;
 using Infrastructure;
 using Infrastructure.Models;
 using ManagementAPI.Dtos.Customer;
@@ -20,11 +20,13 @@ public class CustomerService : ICustomerService
     private readonly DataCenterContext _dbContext;
     private readonly IUploadFileService _uploadFile;
     private readonly IMapper _mapper;
+    private readonly IConfiguration _config;
 
-    public CustomerService(DataCenterContext dbContext, IMapper mapper, IUploadFileService uploadFile)
+    public CustomerService(DataCenterContext dbContext, IMapper mapper, IConfiguration config, IUploadFileService uploadFile)
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _config = config;
         _uploadFile = uploadFile;
     }
 
@@ -60,9 +62,9 @@ public class CustomerService : ICustomerService
                                        .SingleOrDefaultAsync() ?? throw new NotFoundException("عذرًا لا وجود لعميل بهذا الرقم يرجى التأكد!");
         return data;
     }
-    public async Task<FileStream> Download(Guid id)
+    public async Task<FileStream> Download(Guid id,short type)
     {
-        var data = await _dbContext.CustomerFiles.SingleOrDefaultAsync(a => a.Id == id && a.IsActive == GeneralStatus.Active) ?? throw new BadRequestException("عذرًا لا وجود لملفات لهذا العميل..");
+        var data = await _dbContext.CustomerFiles.SingleOrDefaultAsync(a => a.CustomerId == id && a.DocType==(short)type && a.IsActive == (short)GeneralStatus.Active) ?? throw new BadRequestException("عذرًا لا وجود لملفات لهذا العميل..");
         var path = data.FilePath;
         // Check if the file exists.
         if (!File.Exists(path))
@@ -76,7 +78,7 @@ public class CustomerService : ICustomerService
     public async Task<FetchCustomersResponseDto> GetAll(FetchCustomersRequestDto request)
     {
        var query = _dbContext.Customers
-            .Include(p => p.Files.Where(c=>c.IsActive!=GeneralStatus.Deleted))
+            .Include(p => p.Files.Where(c=>c.IsActive!=(short)GeneralStatus.Deleted))
             .Where(p => p.Status  != GeneralStatus.Deleted);
         if (request.CustomerName != null)
             query = _dbContext.Customers
@@ -123,7 +125,7 @@ public class CustomerService : ICustomerService
                 {
                     if (file.DocType == request.FirstFile.DocType)
                     {
-                        file.IsActive = GeneralStatus.Deleted;
+                        file.IsActive = (short)GeneralStatus.Deleted;
                         await _uploadFile.Upload(request.FirstFile, EntityType.CustomerFile, data);
                     }
 
@@ -133,7 +135,7 @@ public class CustomerService : ICustomerService
                 {
                     if (file.DocType == request.SecondFile.DocType)
                     {
-                        file.IsActive = GeneralStatus.Deleted;
+                        file.IsActive = (short)GeneralStatus.Deleted;
                         await _uploadFile.Upload(request.SecondFile, EntityType.CustomerFile, data);
                     }
 
@@ -155,7 +157,7 @@ public class CustomerService : ICustomerService
             .FirstOrDefaultAsync() ?? throw new NotFoundException("عفوًا لا وجود لعميل بهذا الرقم");
         data.Status = GeneralStatus.Deleted;
         foreach(var file in data.Files)
-            file.IsActive=GeneralStatus.Deleted;
+            file.IsActive=(short)GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -170,12 +172,12 @@ public class CustomerService : ICustomerService
             .Include(p => p.Files)
             .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
             .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لعميل بهذا الرقم او هذا العميل مقيد مسبقًا");
-        data.Status = GeneralStatus.Locked;
+        data.Status = GeneralStatus.LockedByUser;
         if(data.Representatives != null)
         foreach(var Representative in data.Representatives)
-            Representative.Status = GeneralStatus.Locked;
+            Representative.Status = GeneralStatus.LockedByUser;
         foreach (var file in data.Files)
-            file.IsActive = GeneralStatus.Locked;
+            file.IsActive = (short)GeneralStatus.LockedByUser;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -188,14 +190,14 @@ public class CustomerService : ICustomerService
         var data = await _dbContext.Customers
             .Include(p => p.Representatives)
             .Include(p => p.Files)
-            .Where(p => p.Id == id && p.Status == GeneralStatus.Locked)
+            .Where(p => p.Id == id && p.Status == GeneralStatus.LockedByUser)
             .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لعميل بهذا الرقم او هذا العميل غير مقيد");
         data.Status = GeneralStatus.Active;
         if(data.Representatives != null)
         foreach(var Representative in data.Representatives)
         Representative.Status= GeneralStatus.Active;
         foreach (var file in data.Files)
-            file.IsActive = GeneralStatus.Active;
+            file.IsActive = (short)GeneralStatus.Active;
         await _dbContext.SaveChangesAsync();
         return new OperationResponse()
         {
@@ -207,3 +209,4 @@ public class CustomerService : ICustomerService
 
 }
 
+*/

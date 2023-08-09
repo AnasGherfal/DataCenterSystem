@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿/*
+
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Infrastructure;
 using Infrastructure.Constants;
@@ -28,7 +30,7 @@ public class VisitService : IVisitService
         var visitTimeSpan = visitStartTime - visitEndTime;
         if (visitTimeSpan.TotalMinutes <= 60)
         {
-            var shift = timeShifts.Where(p => visitStartTime <= p.EndTime && visitStartTime > p.StartTime).FirstOrDefault() ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة"); ;
+            var shift = timeShifts.Where(p => visitStartTime <= p.EndTime && visitStartTime > p.StartTime).FirstOrDefault();
             var data = _mapper.Map<Visit>(request) ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
             data.TimeShiftId = shift.Id;
             data.TimeShift = shift;
@@ -53,7 +55,6 @@ public class VisitService : IVisitService
             }else
             {
                 data.Price = shift.PriceForFirstHour;
-                subscription.TotalPrice += data.Price;
             }
             await _dbContext.Visits.AddAsync(data);
             await _dbContext.SaveChangesAsync();
@@ -118,7 +119,7 @@ public class VisitService : IVisitService
                         else
                         {
                             data.Price = CalculatePrice(data);
-                            subscription.TotalPrice += data.Price;
+
                         }
                         if (IsFree(partVisit, subscription))
                         {
@@ -128,7 +129,6 @@ public class VisitService : IVisitService
                         else
                         {
                             partVisit.Price = CalculatePrice(partVisit);
-                            subscription.TotalPrice += partVisit.Price;
                         }
                         await _dbContext.Visits.AddAsync(data);
                         await _dbContext.Visits.AddAsync(partVisit);
@@ -162,7 +162,6 @@ public class VisitService : IVisitService
                         else
                         {
                             data.Price = CalculatePrice(data);
-                            subscription.TotalPrice += data.Price;
                         }
                         await _dbContext.Visits.AddAsync(data);
                         await _dbContext.SaveChangesAsync();
@@ -228,7 +227,7 @@ public class VisitService : IVisitService
         var data = await _dbContext.Visits
            .Where(p => p.Id == id && p.Status == GeneralStatus.Active)
            .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لزيارة بهذا الرقم او هذه الزيارة مقيدة مسبقًا");
-        data.Status = GeneralStatus.Locked;
+        data.Status = GeneralStatus.LockedByUser;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -254,7 +253,7 @@ public class VisitService : IVisitService
     public async Task<MessageResponse> Unlock(Guid id)
     {
         var data = await _dbContext.Visits
-           .Where(p => p.Id == id && p.Status == GeneralStatus.Locked)
+           .Where(p => p.Id == id && p.Status == GeneralStatus.LockedByUser)
            .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لزيارة بهذا الرقم أو أن هذه الزيارة غير مقيدة ");
         data.Status = GeneralStatus.Active;
         await _dbContext.SaveChangesAsync();
@@ -289,7 +288,7 @@ public class VisitService : IVisitService
         };
 
     }
-    /*public async Task<OperationResponse> UpdateCompanion(int visitid, int companionId, UpdateCompanionRequestDto request)
+    *//*public async Task<OperationResponse> UpdateCompanion(int visitid, int companionId, UpdateCompanionRequestDto request)
     {
         var data = _dbContext.Companions.Where(p => p.Id == companionId && p.VisitId == visitid).SingleOrDefault();
         if (data == null) throw new BadRequestException(" يرجى التأكد من صحة البيانات المدخلة !");
@@ -306,13 +305,13 @@ public class VisitService : IVisitService
             StatusCode = HttpStatusCode.OK
         };
 
-    }*/
+    }*//*
         private static bool IsLocked(GeneralStatus status)
         {
         return status switch
         {
             GeneralStatus.Active => false,
-            GeneralStatus.Locked => true,
+            GeneralStatus.LockedByUser => true,
             _ => true,
         };
     }
@@ -346,3 +345,4 @@ public class VisitService : IVisitService
         return result;
     }
 }
+*/

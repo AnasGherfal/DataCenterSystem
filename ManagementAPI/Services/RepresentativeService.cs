@@ -22,21 +22,25 @@ public class RepresentativeService : IRepresentativeService
 {
     private readonly DataCenterContext _dbContext;
     private readonly IMapper _mapper;
-    public RepresentativeService(DataCenterContext dbcontext, IMapper mapper)
+    private readonly IUploadFileService _upload;
+    public RepresentativeService(DataCenterContext dbcontext, IMapper mapper, IUploadFileService upload)
     {
         _dbContext = dbcontext;
         _mapper = mapper;
+        _upload = upload;
     }
     public async Task<MessageResponse> Create(CreateRepresentativeRequestDto request)
     {
-        var NewRepresentative = _mapper.Map<Representative>(request);
+        var data = _mapper.Map<Representative>(request);
         var customer =await _dbContext.Customers.Include(p => p.Representatives)
                             .Where(p => p.Id == request.CustomerId).SingleOrDefaultAsync()
                               ?? throw new BadRequestException("عذرًا رقم العميل الذي أدخلته غير صحيح يرجى إعادة المحاولة");
-        var RepresentativeCount = customer.Representatives.Count;
-        if (RepresentativeCount == 2)
+        var representativeCount = customer.Representatives.Count;
+        if (representativeCount == 2)
             throw new BadRequestException("عذرًا هذا العميل لديه الحد الأقصى من عدد المخوليين");
-        _dbContext.Representatives.Add(NewRepresentative);
+        _dbContext.Representatives.Add(data);
+        await _upload.Upload(request.FirstFile, EntityType.RepresentativeFile, data);
+        await _upload.Upload(request.SecondFile, EntityType.RepresentativeFile, data);
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -46,14 +50,27 @@ public class RepresentativeService : IRepresentativeService
 
     public async Task<RepresentativeResponseDto> GetById(Guid id)
     {
-        var data =await _dbContext.Representatives.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)   
+        var data =await _dbContext.Representatives.Include(p=>p.Files.Where(x=>x.IsActive!=GeneralStatus.Deleted)).Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)   
             .ProjectTo<RepresentativeResponseDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync()?? throw new NotFoundException("عذرًا لا وجود لعميل أو مخول بهذا الرقم يرجى التأكد وإعادة المحاولة");
         return data;
     }
+    public async Task<FileStream> Download(Guid id)
+    {
+        var data = await _dbContext.RepresentativeFiles.SingleOrDefaultAsync(a => a.Id == id && a.IsActive == GeneralStatus.Active) ?? throw new BadRequestException("عذرًا لا وجود لملفات لهذا العميل..");
+        var path = data.FilePath;
+        // Check if the file exists.
+        if (!File.Exists(path))
+        {
+            throw new FileNotFoundException("لم يتم العثور على الملف.. ");
+        }
+
+        // Open the file for reading.
+        return File.OpenRead(path);
+    }
     public async Task<FetchRepresentativeResponseDto> GetAll(FetchRepresentativeRequestDto request)
     {
-        var query = _dbContext.Representatives
+        var query = _dbContext.Representatives.Include(p => p.Files.Where(x=>x.IsActive!=GeneralStatus.Deleted))
                        .ProjectTo<RepresentativeResponseDto>(_mapper.ConfigurationProvider)
                        .Where(p => p.Status != GeneralStatus.Deleted);
         var resultQuery = await query.Skip(request.PageSize * (request.PageNumber - 1))
@@ -70,10 +87,14 @@ public class RepresentativeService : IRepresentativeService
     }
     public async Task<MessageResponse> Delete(Guid id)
     {   
-        var data = _dbContext.Representatives
+        var data = _dbContext.Representatives.Include(p=> p.Files.Where(x=>x.IsActive==GeneralStatus.Active))
                                       .Where(p => p.Id == id && p.Status == GeneralStatus.Active && p.Customer.Status==GeneralStatus.Active)
                                       .FirstOrDefault()?? throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");     
         data.Status = GeneralStatus.Deleted;
+        foreach(var file in data.Files)
+        {
+            file.IsActive = GeneralStatus.Deleted;
+        }
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -82,12 +103,16 @@ public class RepresentativeService : IRepresentativeService
     }
     public async Task<MessageResponse> Lock(Guid id)
     {
-        var data = await _dbContext.Representatives
+        var data = await _dbContext.Representatives.Include(p=> p.Files.Where(x=>x.IsActive!=GeneralStatus.Deleted))
                                            .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
                                            .FirstOrDefaultAsync()?? throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
         if (!IsLocked(data.Status))
         {
             data.Status = GeneralStatus.Locked;
+            foreach(var file in data.Files)
+            {
+                file.IsActive= GeneralStatus.Locked;
+            }
             await _dbContext.SaveChangesAsync();
             return new MessageResponse()
             {
@@ -99,11 +124,16 @@ public class RepresentativeService : IRepresentativeService
     }
     public async Task<MessageResponse> Unlock(Guid id)
     {
-        var data= await _dbContext.Representatives.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
-                                                         .FirstOrDefaultAsync()?? throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
+        var data= await _dbContext.Representatives.Include(p => p.Files.Where(x => x.IsActive != GeneralStatus.Deleted))
+                                                  .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+                                                  .FirstOrDefaultAsync()?? throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
         if (IsLocked(data.Status))
         {
             data.Status = GeneralStatus.Active;
+            foreach (var file in data.Files)
+            {
+                file.IsActive = GeneralStatus.Active;
+            }
             await _dbContext.SaveChangesAsync();
             return new MessageResponse()
             {
@@ -121,7 +151,37 @@ public class RepresentativeService : IRepresentativeService
                                            .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
         if (IsLocked(data.Status))
             throw new BadRequestException("! عذرًا..هذا المخول مقيد لا يمكنك تعديل بياناته ");
+        var oldFiles = data.Files.ToList();
+        if (oldFiles.Count == 0)
+        {
+            await _upload.Upload(request.FirstFile, EntityType.CustomerFile, data);
+            await _upload.Upload(request.SecondFile, EntityType.CustomerFile, data);
+        }
+        else
+        {
+            if (request.FirstFile != null)
+                foreach (var file in oldFiles)
+                {
+                    if (file.DocType == request.FirstFile.DocType)
+                    {
+                        file.IsActive = GeneralStatus.Deleted;
+                        await _upload.Upload(request.FirstFile, EntityType.CustomerFile, data);
+                    }
+
+                }
+            if (request.SecondFile != null)
+                foreach (var file in oldFiles)
+                {
+                    if (file.DocType == request.SecondFile.DocType)
+                    {
+                        file.IsActive = GeneralStatus.Deleted;
+                        await _upload.Upload(request.SecondFile, EntityType.CustomerFile, data);
+                    }
+
+                }
+        }
         _mapper.Map(request, data);
+
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {

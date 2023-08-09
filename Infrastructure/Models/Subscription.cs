@@ -12,6 +12,7 @@ namespace Infrastructure.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public GeneralStatus Status { get; set; }
+        public int MonthlyVisits{ get; set; }
         public decimal? TotalPrice { get; set; }
         //----------relations
         public Service Service { get; set; } = default!;

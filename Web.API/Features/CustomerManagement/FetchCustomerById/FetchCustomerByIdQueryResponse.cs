@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Constants;
+using Shared.Dtos;
 
 namespace Web.API.Features.CustomerManagement.FetchCustomerById;
 
@@ -13,5 +14,5 @@ public class FetchCustomerByIdQueryResponse
     public GeneralStatus Status { get; set; }
     public IList<Guid> Subsicrptions { get; set; } = new List<Guid>();
     public IList<Guid> Representative { get; set; } = new List<Guid>();
-    public IList<string> FileName { get; set; } = new List<string>();
+    public IList<FileResponseDto> Files { get; set; } = new List<FileResponseDto>();
 }

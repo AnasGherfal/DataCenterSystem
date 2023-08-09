@@ -24,10 +24,12 @@ public sealed record DeleteCustomerByIdCommandHandler :IRequestHandler<DeleteCus
 
     public async Task<MessageResponse> Handle(DeleteCustomerByIdCommand request, CancellationToken cancellationToken)
     {
-        var data = await _dbContext.Customers
+        var data = await _dbContext.Customers.Include(p=>p.Files.Where(x=> x.IsActive != GeneralStatus.Deleted))
             .Where(p => p.Id == Guid.Parse(request.Id!) && p.Status == GeneralStatus.Active)
             .FirstOrDefaultAsync(cancellationToken:cancellationToken) ?? throw new NotFoundException("عفوًا لا وجود لعميل بهذا الرقم");
         data.Status = GeneralStatus.Deleted;
+        foreach (var file in data.Files)
+            file.IsActive = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {

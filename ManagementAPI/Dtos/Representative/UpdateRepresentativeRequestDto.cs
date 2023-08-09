@@ -10,7 +10,8 @@ public class UpdateRepresentativeRequestDto
     public string Email { get; set; } = string.Empty;
     public string PhoneNo { get; set; } = string.Empty;
     public Guid CustomerId { get; set; }
-    public IList<FileRequestDto> Files { get; set; } = default!;
+    public FileRequestDto FirstFile { get; set; } = default!;
+    public FileRequestDto SecondFile { get; set; }= default!;
 }
 public class EditRepresentativeValidator : AbstractValidator<UpdateRepresentativeRequestDto>
 {

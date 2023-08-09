@@ -30,6 +30,10 @@ public class RepresentativesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id) => Ok(await _service.Delete(Guid.Parse(id)));
 
+    [HttpGet("{id}/Download")]
+    public async Task<IActionResult> Download(string id)
+     => Ok(await _service.Download(Guid.Parse(id)));
+
     [HttpPut("{id}/lock")]
     public async Task<IActionResult> Lock(string id) => Ok(await _service.Lock(Guid.Parse(id)));
 

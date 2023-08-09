@@ -21,5 +21,12 @@ public enum AuditType
     ServiceLocked = 1003,
     ServiceUnlocked = 1004,
     ServiceDeleted = 1005,
+    
+    SubscriptionCreated = 2001,
+    SubscriptionRenewed = 2002,
+    SubscriptionLocked = 2003,
+    SubscriptionUnlocked = 2004,
+    SubscriptionDeleted = 2005,
+    SubscriptionFileUpdated = 2006,
 
 }

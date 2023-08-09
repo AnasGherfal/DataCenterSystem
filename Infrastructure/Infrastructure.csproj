@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Audits\Subscription\" />
       <Folder Include="Seeds" />
     </ItemGroup>
 

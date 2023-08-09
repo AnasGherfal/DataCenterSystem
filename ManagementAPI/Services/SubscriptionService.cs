@@ -85,7 +85,8 @@ public class SubscriptionService:ISubscriptionService
         if (!IsExpired(data))
             if (duration > data.EndDate)
                 throw new BadRequestException("عذرًا لا يمكنك تجديد هذا الإشتراك! التجديد يتم عند انتهاء الإشتراك أو قبل إنتهاءه بمدة 30 يومًا! ");
-        //TODO:["Review | Qustion"]Is started With new StartDate Or Create NEw Subscription??? create new Subscriptiont
+        // TODO:["Review | Qustion"] Is started With new StartDate
+        // Or Create NEw Subscription ?? create new Subscription
         data.EndDate = data.EndDate.AddYears(1);
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
@@ -97,7 +98,7 @@ public class SubscriptionService:ISubscriptionService
     public async Task<FetchSubscriptionFileResponseDto> GetFiles(FetchSubscriptionRequestDto request)
     {
         var query =_dbContext.SubscriptionFiles
-            .Where(p => p.IsActive == (short)GeneralStatus.Active)
+            .Where(p => p.IsActive == GeneralStatus.Active)
             .OrderBy(p => p.CreatedOn);
        
         var result=await query.ProjectTo<SubscriptionFileResponsDto>(_mapper.ConfigurationProvider)
@@ -119,9 +120,9 @@ public class SubscriptionService:ISubscriptionService
     public async Task<MessageResponse> UpdateFile(Guid id , FileRequestDto request)
     {
        
-        var query = await _dbContext.SubscriptionFiles.Where(a => a.SubscriptionId == id && a.IsActive == (short)GeneralStatus.Active).Include(p=>p.Subscription).ToListAsync() ?? throw new NotFoundException("عذرًا لا وجود لملف لهذا الإشتراك..يرجى مراجعة الطلب!");
+        var query = await _dbContext.SubscriptionFiles.Where(a => a.SubscriptionId == id && a.IsActive == GeneralStatus.Active).Include(p=>p.Subscription).ToListAsync() ?? throw new NotFoundException("عذرًا لا وجود لملف لهذا الإشتراك..يرجى مراجعة الطلب!");
         foreach ( var item in query)
-            item.IsActive = (short)GeneralStatus.Deleted;
+            item.IsActive = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         await _uploadFile.Upload(request, EntityType.SubscriptionFile, query.Select(p => p.Subscription).Single());
         await _dbContext.SaveChangesAsync();
@@ -144,13 +145,13 @@ public class SubscriptionService:ISubscriptionService
     public async Task<List<SubscriptionFileResponsDto>> GetFileById(Guid id)
     {
        
-        var data = await _dbContext.SubscriptionFiles.Where(a => a.SubscriptionId == id && a.IsActive == (short)GeneralStatus.Active).
+        var data = await _dbContext.SubscriptionFiles.Where(a => a.SubscriptionId == id && a.IsActive == GeneralStatus.Active).
             ProjectTo<SubscriptionFileResponsDto>(_mapper.ConfigurationProvider).ToListAsync() ?? throw new BadRequestException("no file with this subs number");
         return data;
     }
     public async Task<FileStream> Download(Guid id)
     {
-        var data = await  _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.SubscriptionId == id && a.IsActive == (short)GeneralStatus.Active) ?? throw new BadRequestException("no file with this subs number");
+        var data = await  _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.SubscriptionId == id && a.IsActive == GeneralStatus.Active) ?? throw new BadRequestException("no file with this subs number");
         var path = data.FileName;
         // Check if the file exists.
         if (!File.Exists(path))
@@ -205,10 +206,10 @@ public class SubscriptionService:ISubscriptionService
     }
     public async Task<MessageResponse> DeleteFile(Guid id)
     {
-        var data = await _dbContext.SubscriptionFiles.FirstOrDefaultAsync(a => a.Id == id && a.IsActive == (short)GeneralStatus.Active) ?? throw new NotFoundException("thear is no subscription file with this id ");
+        var data = await _dbContext.SubscriptionFiles.FirstOrDefaultAsync(a => a.Id == id && a.IsActive == GeneralStatus.Active) ?? throw new NotFoundException("thear is no subscription file with this id ");
         if (IsLocked(data.Subscription.Status))
             throw new BadRequestException("this subscription is locked by user you cannot Removed");
-        data.IsActive = (short)GeneralStatus.Deleted;
+        data.IsActive = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {

@@ -1,5 +1,7 @@
 using Infrastructure.Audits.Abstracts;
 using Infrastructure.Audits.Admin;
+using Infrastructure.Audits.Service;
+using Infrastructure.Audits.Subscription;
 using Infrastructure.Constants;
 using Newtonsoft.Json;
 
@@ -22,7 +24,19 @@ public static class AuditBuilder
                 .HasValue<AdminDeletedAudit>(AuditType.AdminDeleted)
                 .HasValue<AdminLockedAudit>(AuditType.AdminLocked)
                 .HasValue<AdminUnlockedAudit>(AuditType.AdminUnlocked)
-                .HasValue<AdminPasswordResetAudit>(AuditType.AdminPasswordReset);
+                .HasValue<AdminPasswordResetAudit>(AuditType.AdminPasswordReset)
+                .HasValue<ServiceCreatedAudit>(AuditType.ServiceCreated)
+                .HasValue<ServiceUpdatedAudit>(AuditType.ServiceUpdated)
+                .HasValue<ServiceDeletedAudit>(AuditType.ServiceDeleted)
+                .HasValue<ServiceLockedAudit>(AuditType.ServiceLocked)
+                .HasValue<ServiceUnlockedAudit>(AuditType.ServiceUnlocked)
+                .HasValue<SubscriptionCreatedAudit>(AuditType.SubscriptionCreated)
+                .HasValue<SubscriptionRenewedAudit>(AuditType.SubscriptionRenewed)
+                .HasValue<SubscriptionDeletedAudit>(AuditType.SubscriptionDeleted)
+                .HasValue<SubscriptionLockedAudit>(AuditType.SubscriptionLocked)
+                .HasValue<SubscriptionUnlockedAudit>(AuditType.SubscriptionUnlocked)
+                
+                ;
             b.ToTable("AuditStore");
         });
         builder.ApplyConfiguration(new EventStoreConfiguration<AdminCreatedAudit, AdminCreatedAuditData>());
@@ -31,6 +45,19 @@ public static class AuditBuilder
         builder.ApplyConfiguration(new EventStoreConfiguration<AdminLockedAudit, AdminLockedAuditData>());
         builder.ApplyConfiguration(new EventStoreConfiguration<AdminUnlockedAudit, AdminUnlockedAuditData>());
         builder.ApplyConfiguration(new EventStoreConfiguration<AdminPasswordResetAudit, AdminPasswordResetAuditData>());
+        
+        builder.ApplyConfiguration(new EventStoreConfiguration<ServiceCreatedAudit, ServiceCreatedAuditData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<ServiceUpdatedAudit, ServiceUpdatedAuditData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<ServiceDeletedAudit, ServiceDeletedAuditData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<ServiceLockedAudit, ServiceLockedAuditData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<ServiceUnlockedAudit, ServiceUnlockedAuditData>());
+        
+        builder.ApplyConfiguration(new EventStoreConfiguration<SubscriptionCreatedAudit, SubscriptionCreatedAuditData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<SubscriptionRenewedAudit, SubscriptionRenewedAuditData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<SubscriptionDeletedAudit, SubscriptionDeletedAuditData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<SubscriptionLockedAudit, SubscriptionLockedAuditData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<SubscriptionUnlockedAudit, SubscriptionUnlockedAuditData>());
+        
     }
 }
 

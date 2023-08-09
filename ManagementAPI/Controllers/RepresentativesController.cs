@@ -17,7 +17,7 @@ public class RepresentativesController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateRepresentativeRequestDto request)
+    public async Task<IActionResult> Create([FromForm] CreateRepresentativeRequestDto request)
         => Ok(await _service.Create(request));
 
     [HttpGet]
@@ -42,7 +42,7 @@ public class RepresentativesController : ControllerBase
         =>  Ok(await _service.Unlock(Guid.Parse(id)));
        
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, [FromBody] UpdateRepresentativeRequestDto request)
+    public async Task<IActionResult> Update(string id, [FromForm] UpdateRepresentativeRequestDto request)
     => Ok(await _service.Update(Guid.Parse(id), request));
 
 }

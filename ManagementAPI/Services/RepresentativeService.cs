@@ -32,7 +32,7 @@ public class RepresentativeService : IRepresentativeService
     public async Task<MessageResponse> Create(CreateRepresentativeRequestDto request)
     {
         var data = _mapper.Map<Representative>(request);
-        var customer =await _dbContext.Customers.Include(p => p.Representatives)
+        var customer =await _dbContext.Customers.Include(p => p.Representatives.Where(p=>p.Status!=GeneralStatus.Deleted))
                             .Where(p => p.Id == request.CustomerId).SingleOrDefaultAsync()
                               ?? throw new BadRequestException("عذرًا رقم العميل الذي أدخلته غير صحيح يرجى إعادة المحاولة");
         var representativeCount = customer.Representatives.Count;
@@ -151,11 +151,12 @@ public class RepresentativeService : IRepresentativeService
                                            .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
         if (IsLocked(data.Status))
             throw new BadRequestException("! عذرًا..هذا المخول مقيد لا يمكنك تعديل بياناته ");
+        var newRepresentative = _mapper.Map<Representative>(request);
         var oldFiles = data.Files.ToList();
         if (oldFiles.Count == 0)
         {
-            await _upload.Upload(request.FirstFile, EntityType.CustomerFile, data);
-            await _upload.Upload(request.SecondFile, EntityType.CustomerFile, data);
+            await _upload.Upload(request.FirstFile, EntityType.RepresentativeFile, newRepresentative);
+            await _upload.Upload(request.SecondFile, EntityType.RepresentativeFile, newRepresentative);
         }
         else
         {
@@ -165,7 +166,7 @@ public class RepresentativeService : IRepresentativeService
                     if (file.DocType == request.FirstFile.DocType)
                     {
                         file.IsActive = GeneralStatus.Deleted;
-                        await _upload.Upload(request.FirstFile, EntityType.CustomerFile, data);
+                        await _upload.Upload(request.FirstFile, EntityType.RepresentativeFile, newRepresentative);
                     }
 
                 }
@@ -175,7 +176,7 @@ public class RepresentativeService : IRepresentativeService
                     if (file.DocType == request.SecondFile.DocType)
                     {
                         file.IsActive = GeneralStatus.Deleted;
-                        await _upload.Upload(request.SecondFile, EntityType.CustomerFile, data);
+                        await _upload.Upload(request.SecondFile, EntityType.RepresentativeFile, newRepresentative);
                     }
 
                 }

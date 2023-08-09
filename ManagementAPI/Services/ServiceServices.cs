@@ -110,7 +110,7 @@ public class ServiceServices : IServiceServices
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
-            Msg = data.Name + " لقد تم تقييد الخدمة: " + " بنجاح! ",
+            Msg = data.Name + " لقد تم تقييد الباقة: " + " بنجاح! ",
             
         };
 
@@ -125,6 +125,7 @@ public class ServiceServices : IServiceServices
         if (!IsLocked(data.Status))
             throw new BadRequestException("! عذرًا ولكن هذه الباقة ليست مقيدة");
         data.Status = GeneralStatus.Active;
+        await _dbContext.SaveChangesAsync();
           return new MessageResponse()
           {
               Msg = "تم إلفاء التقييد عن هذه الباقة بنجاح ",

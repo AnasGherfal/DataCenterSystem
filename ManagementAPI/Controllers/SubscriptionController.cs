@@ -42,7 +42,7 @@ namespace ManagementAPI.Controllers
 
 
         [HttpPut("{id:int}/update")]
-        public async Task<IActionResult> Update(string id,UpdateSubscriptionRequestDto request)
+        public async Task<IActionResult> Update([FromForm]string id, [FromForm] UpdateSubscriptionRequestDto request)
            => Ok(await _service.Update(Guid.Parse(id),request));
        
         [HttpGet("Download")]

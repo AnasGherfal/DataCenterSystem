@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using Infrastructure;
 using Infrastructure.Constants;
 using Infrastructure.Models;
@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Constants;
 using Shared.Dtos;
 using Shared.Exceptions;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace ManagementAPI.Services;
 
@@ -30,8 +31,10 @@ public class SubscriptionService:ISubscriptionService
     {
         var data = _mapper.Map<Subscription>(request) ?? throw new BadRequestException("! طلبك غير صالح يرجى إعادة المحاولة");
         var service = _dbContext.Services.Where(p => p.Id == data.ServiceId).SingleOrDefault()?? throw new BadRequestException("هنالك مشكلة في الباقة..يرجى مراجعة الدعم الفني");
+        var customer = _dbContext.Customers.Where(p => p.Id == data.CustomerId).SingleOrDefault() ?? throw new BadRequestException("هنالك مشكلة في حساب الزبون..يرجى مراجعة الدعم الفني");
         data.TotalPrice = service.Price;
         data.MonthlyVisits = service.MonthlyVisits;
+        data.Customer=customer;
         _dbContext.Subscriptions.Add(data);
         _dbContext.SaveChanges();
         await _uploadFile.Upload(request.File,EntityType.SubscriptionFile,data);
@@ -82,7 +85,9 @@ public class SubscriptionService:ISubscriptionService
     }
     public async Task<MessageResponse> Renew(FileRequestDto file, Guid id)
     {
-        var data = await _dbContext.Subscriptions.Include(p => p.SubscriptionFile).SingleOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("عذرًا لا وجود لإشتراك مفعل بهذا الرقم");
+        var data = await _dbContext.Subscriptions.Include(p => p.SubscriptionFile)
+                                                 .SingleOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted) 
+                                                 ?? throw new NotFoundException("عذرًا لا وجود لإشتراك مفعل بهذا الرقم");
         if (data.Status == GeneralStatus.Locked) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
         var duration = DateTime.Now.AddDays(29);
          if (!IsExpired(data))
@@ -123,9 +128,23 @@ public class SubscriptionService:ISubscriptionService
         {
             throw new FileNotFoundException("عذرًا لا وجود لملف.. ");
         }
-
+        var provider = new FileExtensionContentTypeProvider();
+        if(!provider.TryGetContentType(path,out var contentType))
+        {
+            contentType = "application/octet-stream";
+        }
+        var bytes= await File.ReadAllBytesAsync(path);
+        
         // Open the file for reading.
         return File.OpenRead(path);
+    }
+    public async Task<string> GetPageContent(string url)
+    {
+        using var client = new HttpClient();
+        var response = await client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadAsStringAsync();
+        return content;
     }
 
     public async Task<MessageResponse> Lock(Guid id)
@@ -146,8 +165,8 @@ public class SubscriptionService:ISubscriptionService
     }
     public async Task<MessageResponse> Unlock(Guid id)
     {
-        var data = await _dbContext.Subscriptions.Include(x=>x.SubscriptionFile).FirstOrDefaultAsync(b => b.Id == id &&b.SubscriptionFile.IsActive!= GeneralStatus.Deleted && b.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription with this number");
-        if (IsLocked(data.Status))
+        var data = await _dbContext.Subscriptions.Include(x=>x.SubscriptionFile).FirstOrDefaultAsync(b => b.Id == id && b.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription with this number");
+        if (!IsLocked(data.Status))
         {
             throw new BadRequestException("عفوًا الاشتراك غير مقفل مسبقًا !");
         }
@@ -161,7 +180,7 @@ public class SubscriptionService:ISubscriptionService
     }
     public async Task<MessageResponse> Delete(Guid id)
     {
-        var data = await _dbContext.Subscriptions.Include(x=>x.SubscriptionFile).FirstOrDefaultAsync(a => a.Id == id && a.SubscriptionFile.IsActive!=GeneralStatus.Deleted && a.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription with this id ");
+        var data = await _dbContext.Subscriptions.Include(x=>x.SubscriptionFile).Where(p=>p.SubscriptionFile.IsActive!=GeneralStatus.Deleted).FirstOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted) ?? throw new NotFoundException("thear is no subscription with this id ");
         if (IsLocked(data.Status))
             throw new BadRequestException("عذرًا هذا الإشتراك مقيد !");
         data.Status = GeneralStatus.Deleted;

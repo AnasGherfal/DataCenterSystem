@@ -37,7 +37,7 @@ public class UploadFileService : IUploadFileService
             string fullPath = Path.Combine(path, fullFileName);
             if (System.IO.File.Exists(fullPath))
             {
-
+                
             }
             using (FileStream stream = System.IO.File.Create(fullPath))
             {
@@ -103,11 +103,11 @@ public class UploadFileService : IUploadFileService
                 break;
                 case EntityType.SubscriptionFile:
                 var subscription = (Subscription)obj;
-                name = subscription.Id + "Subcriptions Files";
+                name = subscription.Customer.Name+"\\Subscriptions\\"+ subscription.Id;
                 break;
                 case EntityType.RepresentativeFile:
                 var representative = (Representative)obj;
-                name = representative.FullName + " Files";
+                name = representative.Customer.Name+"\\Representatives\\"+ representative.FirstName+representative.LastName + " Files";
                 break;
             default:
                 name = "Unknown Files";
@@ -123,18 +123,18 @@ public class UploadFileService : IUploadFileService
         {
             case EntityType.CustomerFile:
                 var customer = (Customer)obj;
-                name = customer.Name + $" {docType}";
+                name =$"{docType}"+DateTime.UtcNow.ToString("dd-mm-yyyy,H,m,ss");
                 break;
             case EntityType.SubscriptionFile:
                 var subscription = (Subscription)obj;
-                name = subscription.Id.ToString();
+                name = DateTime.UtcNow.ToString("dd-mm-yyyy,H,m,ss");
                 break;
             case EntityType.RepresentativeFile:
                 var representative = (Representative)obj;
-                name = representative.FullName + $" {docType}" ;
+                name = $"{docType}"+DateTime.UtcNow.ToString("dd-mm-yyyy,H,m,ss");
                 break;
             default:
-                name = "Unknown Files";
+                name = "UnknownFile"+$"{DateTime.UtcNow}";
                 break;
         }
         return name + ext;

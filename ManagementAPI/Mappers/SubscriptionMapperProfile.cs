@@ -29,7 +29,7 @@ public class SubscriptionMapperProfile:Profile
             .ForMember(dest=> dest.CustomerName, opt=> opt.MapFrom(x=>x.Customer.Name))
             .ForMember(dest=> dest.MonthlyVisits, opt => opt.MapFrom(x=> x.MonthlyVisits))
             .ForMember(dest=> dest.DaysRemaining,opt=>opt.MapFrom(x=>(x.EndDate-DateTime.UtcNow).Days))
-           .ForMember(dest => dest.Visits, opt => opt.MapFrom(x => x.Visits.Select(c => new VisitResponseDto()
+           .ForMember(dest => dest.Visits, opt => opt.MapFrom(x => x.Visits.Where(p=>p.Status!=GeneralStatus.Deleted).Select(c => new VisitResponseDto()
             {
                 Id = c.Id,
                 StartTime = c.StartTime,

@@ -25,49 +25,18 @@ public class CustomerProfileMapper : Profile
 
 
         CreateMap<Customer, CustomerResponseDto>()
-            .ForMember(dest => dest.Files, opt => opt.MapFrom(x => x.Files.Select(p => new FileResponseDto() { Id = p.Id, FileName = p.Filename, DocType = p.DocType.ToString() }).ToList()))
-            .ForMember(dest => dest.Subsicrptions, opt => opt.MapFrom(x => x.Subscriptions.Select(p => new SubscriptionRsponseDto()
+            .ForMember(dest => dest.Files, opt => opt.MapFrom(x => x.Files.Where(p=>p.IsActive!=GeneralStatus.Deleted).Select(p => new FileResponseDto() { Id = p.Id, FileName = p.Filename, DocType = p.DocType.ToString() }).ToList()))
+            .ForMember(dest => dest.Subsicrptions, opt => opt.MapFrom(x => x.Subscriptions.Where(s=>s.Status!=GeneralStatus.Deleted).Select(p => new CustomerSubscriptionRsponseDto()
             {
-                Id = p.Id,
-                EndDate = p.EndDate,
-                StartDate = p.StartDate,
-                ServiceName = p.Service.Name,
-                Status = (short)p.Status,
-                Visits = p.Visits.Select(x => new VisitResponseDto() {
-                    Id = x.Id,
-                    StartTime = x.StartTime,
-                    EndTime = x.EndTime,
-                    Status = x.Status,
-                    TimeShift = x.TimeShift.Name,
-                    TotalMin = x.TotalMin,
-                    InvoiceId = x.InvoiceId,
-                    Notes = x.Notes,
-                    Price = x.Price,
-                    VisitType = x.VisitType.Name??"null",
-                    Companions = x.Companions.Select(c => new CompanionResponseDto()
-                    {
-                        Id = c.Id,
-                        FirstName = c.FirstName,
-                        LastName = c.LastName,
-                        FullName = c.FullName,
-                        IdentityNo = c.IdentityNo,
-                        IdentityType = c.IdentityType,
-                        JobTitle = c.JobTitle??"null"
-                    }).ToList(),
-                    Representatives = x.RepresentativesVisits.Select(c => new RepresentativeResponseDto()
-                    {
-                        Id = c.Representative.Id,
-                        FirstName = c.Representative.FirstName,
-                        LastName = c.Representative.LastName,
-                        Email = c.Representative.Email,
-                        Status = c.Representative.Status,
-                        IdentityNo = c.Representative.IdentityNo,
-                        IdentityType = c.Representative.IdentityType,
-                        PhoneNo = c.Representative.PhoneNo
-                    }).ToList()
-                }).ToList()
-            }).ToList()))
-            .ForMember(dest => dest.Representative, opt => opt.MapFrom(x => x.Representatives.Select(p => new RepresentativeResponseDto()
+                Id=p.Id,
+                CustomerName=x.Name,
+                ServiceName=p.Service.Name,
+                StartDate=p.StartDate,    
+                EndDate=p.EndDate,
+                DaysRemainig=(p.EndDate-DateTime.UtcNow).Days,
+                Status=p.Status
+            })))
+            .ForMember(dest => dest.Representative, opt => opt.MapFrom(x => x.Representatives.Where(p=>p.Status!=GeneralStatus.Deleted).Select(p => new RepresentativeResponseDto()
             {
                 Id = p.Id,
                 FirstName = p.FirstName,
@@ -79,7 +48,8 @@ public class CustomerProfileMapper : Profile
                 Status = p.Status
             }).ToList()));
            
-        CreateMap<UpdateCustomerRequestDto, Customer>();
+        CreateMap<UpdateCustomerRequestDto, Customer>()
+            .ForMember(dest => dest.Files, opt => opt.Ignore());
         CreateMap<FormFile, CustomerFile>()
             .ForMember(dest => dest.Id, src => src.Ignore())
              .ForMember(dest => dest.Filename, src => src.Ignore())

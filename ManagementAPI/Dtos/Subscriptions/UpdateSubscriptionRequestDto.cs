@@ -11,7 +11,6 @@ namespace ManagementAPI.Dtos.Subscriptions
         public Guid CustomerId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public decimal? TotalPrice { get; set; }
         public FileRequestDto File { get; set; } = default!;
     }
     public class UpdateSubscriptionRequestDtoValidator:AbstractValidator<UpdateSubscriptionRequestDto>

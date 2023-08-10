@@ -41,8 +41,8 @@ namespace ManagementAPI.Controllers
         public async Task<IActionResult> Delete(string id) => Ok(await _service.Delete(Guid.Parse(id)));
 
 
-        [HttpPut("{id:int}/update")]
-        public async Task<IActionResult> Update([FromForm]string id, [FromForm] UpdateSubscriptionRequestDto request)
+        [HttpPut("{id}/update")]
+        public async Task<IActionResult> Update(string id, [FromForm] UpdateSubscriptionRequestDto request)
            => Ok(await _service.Update(Guid.Parse(id),request));
        
         [HttpGet("Download")]

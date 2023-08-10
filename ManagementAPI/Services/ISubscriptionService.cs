@@ -16,5 +16,5 @@ public interface ISubscriptionService
     public Task<MessageResponse> Lock(Guid id);
     public Task<MessageResponse> Unlock(Guid id);
     public Task<MessageResponse> Delete(Guid id);
-    public Task<FileStream> Download(Guid id);
+    public Task<FileStreamResult> Download(Guid id);
 }

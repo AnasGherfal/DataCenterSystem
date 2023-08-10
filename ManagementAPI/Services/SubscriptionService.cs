@@ -10,6 +10,8 @@ using Shared.Constants;
 using Shared.Dtos;
 using Shared.Exceptions;
 using Microsoft.AspNetCore.StaticFiles;
+using System.Threading;
+using System.Net.Http.Headers;
 
 namespace ManagementAPI.Services;
 
@@ -51,11 +53,12 @@ public class SubscriptionService:ISubscriptionService
             .SingleOrDefaultAsync(x => x.Id == id && x.Status != GeneralStatus.Deleted)
             ?? throw new BadRequestException("عذرًا لايوجد إشتراك بهذا الرقم..");
         if (data.Status == GeneralStatus.Locked) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
-        _mapper.Map(data, request);
+       
         if (request.File != null) {
             data.SubscriptionFile.IsActive = GeneralStatus.Deleted;
             await _uploadFile.Upload(request.File, EntityType.SubscriptionFile, data);
                 }
+        _mapper.Map(data, request);
         await _dbContext.SaveChangesAsync();
         return new MessageResponse()
         {
@@ -119,24 +122,25 @@ public class SubscriptionService:ISubscriptionService
         };
     }
 
-    public async Task<FileStream> Download(Guid id)
+    public async Task<FileStreamResult> Download(Guid Id)
     {
-        var data = await  _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.SubscriptionId == id && a.IsActive == GeneralStatus.Active) ?? throw new BadRequestException("no file with this subs number");
+        var data = await  _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.SubscriptionId == Id && a.IsActive != GeneralStatus.Deleted) ?? throw new BadRequestException("no file with this subs number");
         var path = data.FilePath;
         // Check if the file exists.
-        if (!File.Exists(path))
+     
+        if (data.IsActive != GeneralStatus.Active) throw new NotFoundException("FILE_NOT_ACTIVE");
+        if (!File.Exists(data.FilePath)) throw new NotFoundException("File not found: ");
+        var fileContents = await File.ReadAllBytesAsync(data.FilePath);
+        var stream = new MemoryStream(fileContents);
+        var contentType = new FileExtensionContentTypeProvider();
+        if(!contentType.TryGetContentType(data.FilePath, out var fileType))
         {
-            throw new FileNotFoundException("عذرًا لا وجود لملف.. ");
+            fileType = "application/octet-stream";
         }
-        var provider = new FileExtensionContentTypeProvider();
-        if(!provider.TryGetContentType(path,out var contentType))
+        return new FileStreamResult(stream, new MediaTypeHeaderValue(fileType).ToString())
         {
-            contentType = "application/octet-stream";
-        }
-        var bytes= await File.ReadAllBytesAsync(path);
-        
-        // Open the file for reading.
-        return File.OpenRead(path);
+            FileDownloadName = Path.GetFileName(data.FilePath)
+        };
     }
     public async Task<string> GetPageContent(string url)
     {

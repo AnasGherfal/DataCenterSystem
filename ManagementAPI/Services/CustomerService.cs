@@ -56,9 +56,10 @@ public class CustomerService : ICustomerService
         var data = await _dbContext.Customers.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
                                        .Include(p => p.Representatives)
                                        .Include(p => p.Subscriptions)
+                                       .Include(p => p.Files.Where(c=>c.IsActive!=GeneralStatus.Deleted))
                                        .ProjectTo<CustomerResponseDto>(_mapper.ConfigurationProvider)
                                        .SingleOrDefaultAsync() ?? throw new NotFoundException("عذرًا لا وجود لعميل بهذا الرقم يرجى التأكد!");
-        return data;
+        return data ;
     }
     public async Task<FileStream> Download(Guid id)
     {
@@ -76,25 +77,24 @@ public class CustomerService : ICustomerService
     public async Task<FetchCustomersResponseDto> GetAll(FetchCustomersRequestDto request)
     {
        var query = _dbContext.Customers
+            .Include(p=>p.Representatives.Where(c => c.Status != GeneralStatus.Deleted))
+            .Include(p=>p.Subscriptions.Where(c => c.Status != GeneralStatus.Deleted))
             .Include(p => p.Files.Where(c=>c.IsActive!=GeneralStatus.Deleted))
             .Where(p => p.Status  != GeneralStatus.Deleted);
         if (request.CustomerName != null)
             query = _dbContext.Customers
-                .Include(p => p.Files)
-                .Where(p => p.Status != GeneralStatus.Deleted && p.Name.Contains(request.CustomerName));
-      
-        
- 
-        
+                .Include(p => p.Representatives.Where(c => c.Status != GeneralStatus.Deleted))
+                .Include(p => p.Subscriptions.Where(c => c.Status != GeneralStatus.Deleted))
+                .Include(p => p.Files.Where(c => c.IsActive != GeneralStatus.Deleted))
+                .Where(p => p.Status != GeneralStatus.Deleted && p.Name.Contains(request.CustomerName)); 
         var queryResult = await query.OrderBy(p => p.Id)
             .Skip(request.PageSize * (request.PageNumber - 1))
             .Take(request.PageSize)
             .ProjectTo<CustomerResponseDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
-        
         var totalCount = query.Count();
         var totalPages = Math.Ceiling(totalCount / (double)request.PageSize);
-        return new FetchCustomersResponseDto(request.PageNumber, (int)totalPages, queryResult);
+        return new FetchCustomersResponseDto(request.PageNumber, (int)totalPages,queryResult);
     }
 
     public async Task<MessageResponse> Update(Guid id, UpdateCustomerRequestDto request)

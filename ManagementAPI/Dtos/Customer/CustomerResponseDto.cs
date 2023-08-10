@@ -15,7 +15,17 @@ public class CustomerResponseDto {
     public string? SecondaryPhone { get; set; }
     public string Email { get; set; } = default!;
     public GeneralStatus Status { get; set; }
-    public IList<SubscriptionRsponseDto> Subsicrptions { get; set; } = new List<SubscriptionRsponseDto>();
+    public IList<CustomerSubscriptionRsponseDto> Subsicrptions { get; set; } = new List<CustomerSubscriptionRsponseDto>();
     public IList<RepresentativeResponseDto> Representative { get; set; }= new List<RepresentativeResponseDto>();
     public IList<FileResponseDto> Files { get; set; } = new List<FileResponseDto>();
    }
+public class CustomerSubscriptionRsponseDto
+{
+    public Guid Id { get; set; }
+    public string CustomerName { get; set; }=string.Empty;
+    public string ServiceName { get; set; } = string.Empty;
+    public GeneralStatus Status { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public int DaysRemainig { get; set; }
+}

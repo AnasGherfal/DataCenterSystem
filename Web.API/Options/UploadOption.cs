@@ -3,5 +3,5 @@
 public class UploadOption
 {
     public const string Section = "FileStorage";
-    public int MaximumFileSizeInMb { get; set; } = 5;
+    public decimal MaximumFileSizeInMb { get; set; } = 5;
 }

@@ -13,6 +13,7 @@ services.AddSwagger();
 services.AddFeatures();
 services.AddIdentity(configuration.GetRequiredSection(AuthenticationOption.Section));
 services.AddPersistence(configuration.GetRequiredSection(PersistenceOption.Section));
+services.AddFileStorage(configuration.GetRequiredSection(UploadOption.Section));
 services.Configure<ApiBehaviorOptions>(o =>
 {
     o.SuppressModelStateInvalidFilter = true;

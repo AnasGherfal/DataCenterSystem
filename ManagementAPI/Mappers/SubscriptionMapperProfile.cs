@@ -40,7 +40,7 @@ public class SubscriptionMapperProfile:Profile
                 Notes = c.Notes,
                 Price = c.Price,
                 TotalMin = c.TotalMin,
-               VisitType=c.VisitType.Name,
+               VisitType=c.VisitType.Id,
                 Companions = c.Companions.Select(x => new CompanionResponseDto()
                 {
                     Id = x.Id,

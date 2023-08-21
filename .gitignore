@@ -665,3 +665,6 @@ SecretFirebase.json
 /ManagementAPI/appsettings.json
 /ManagementAPI/appsettings.Development.json
 /Infrastructure/Models/BaseModel.cs
+Infrastructure/Models/BaseModel.cs
+ManagementAPI/appsettings.Development.json
+ManagementAPI/appsettings.json

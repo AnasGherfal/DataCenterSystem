@@ -59,12 +59,16 @@ public class InvoiceService : IInvoiceService
 
     public async Task<FetchInvoicesResponseDto> GetAll(FetchInvoicesRequestDto request)
     {
-        var query = _dbContext.Invoices
-            .Include(p => p.Subscription)
-            .Include(p => p.Visits)
-            .ThenInclude(p => p.TimeShift)
-            .Where(p => p.Status != GeneralStatus.Deleted);
 
+
+        var query = _dbContext.Invoices
+       .Include(p => p.Subscription)
+       .ThenInclude(p => p.Customer)
+       .Include(p => p.Visits)
+       .ThenInclude(p => p.TimeShift)
+       .Where(p => p.Status != GeneralStatus.Deleted && p.Subscription.Customer.Name == request.CustomerName);
+        if(request.StartDate != null && request.EndDate != null)
+            query=query.Where(p => p.Date >= request.StartDate && p.Date <= request.EndDate);
         var queryResult = await query.OrderBy(p => p.Id)
             .Skip(request.PageSize * (request.PageNumber - 1))
             .Take(request.PageSize)

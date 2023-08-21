@@ -16,7 +16,7 @@ public class VisitResponseDto
     public string TimeShift { get; set; } = default!;
     public IList<RepresentativeResponseDto> Representatives { get; set; } = new List<RepresentativeResponseDto>();
     public IList<CompanionResponseDto> Companions { get; set; } = new List<CompanionResponseDto>();
-    public string VisitType { get; set; } = default!;
+    public Guid VisitType { get; set; } = default!;
     public Guid? InvoiceId { get; set; }
     
 }

@@ -3,5 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Shared.Dtos;
 
-public record FileRequestDto(IFormFile File, short DocType);
+public class FileRequestDto
+{
+    public IFormFile File { set; get; } = default!;
+    public short DocType { get; set; }
 
+}

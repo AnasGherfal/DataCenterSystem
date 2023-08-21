@@ -39,7 +39,8 @@ public class SubscriptionService:ISubscriptionService
         data.Customer=customer;
         _dbContext.Subscriptions.Add(data);
         _dbContext.SaveChanges();
-        await _uploadFile.Upload(request.File,EntityType.SubscriptionFile,data);
+        var subFile = new FileRequestDto() { File = request.File, DocType = 4 };
+        await _uploadFile.Upload(subFile,EntityType.SubscriptionFile,data);
         return new MessageResponse()
         {
             Msg = "تم اضافة الإشتراك بنجاح!"

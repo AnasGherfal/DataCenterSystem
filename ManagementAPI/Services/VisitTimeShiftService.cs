@@ -9,6 +9,7 @@ using Shared.Constants;
 using Shared.Dtos;
 using System.Net;
 using Infrastructure.Constants;
+using Shared.Exceptions;
 
 namespace ManagementAPI.Services;
 
@@ -21,38 +22,29 @@ public class VisitTimeShiftService : IVisitTimeShiftService
         _dbContext = dbContext;     
         _mapper = mapper;
     }
-    public async Task<OperationResponse> Create(CreateVisitTimeShiftRequestDto request)
+    public async Task<MessageResponse> Create(CreateVisitTimeShiftRequestDto request)
     {
         var data = _mapper.Map<VisitTimeShift>(request);
         if (data == null)
-            return new OperationResponse()
-            {
-                Msg = "يرجى التأكد من إدخال البيانات كاملة",
-                StatusCode=HttpStatusCode.BadRequest
-            };
+            throw new BadRequestException("يرجى التأكد من إدخال البيانات كاملة");
+             
         _dbContext.VisitTimeShifts.Add(data);
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        return new MessageResponse()
         {
-            Msg="! تمت إضافة التوقيت بنجاح",
-            StatusCode=HttpStatusCode.OK
+            Msg = "! تمت إضافة التوقيت بنجاح"
         };
     }
 
-    public async Task<OperationResponse> Delete(Guid id)
+    public async Task<MessageResponse> Delete(Guid id)
     {
-        var query = await _dbContext.VisitTimeShifts.SingleOrDefaultAsync(p => p.Id == id && p.Status == GeneralStatus.Active);
-        if (query == null) return new OperationResponse()
-        {
-            Msg = "يرجى التأكد من إدخال رقم توقيت صحيح",
-            StatusCode = HttpStatusCode.BadRequest
-        };
+        var query = await _dbContext.VisitTimeShifts.SingleOrDefaultAsync(p => p.Id == id && p.Status == GeneralStatus.Active)??
+            throw new NotFoundException( "يرجى التأكد من إدخال رقم توقيت صحيح");
         query.Status = GeneralStatus.Deleted;
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
+        return new MessageResponse()
         {
-            Msg = "تم حذف التوقيت",
-            StatusCode = HttpStatusCode.BadRequest
+            Msg = "تم حذف التوقيت بنجاح"
         };
     }
 
@@ -75,99 +67,60 @@ public class VisitTimeShiftService : IVisitTimeShiftService
         };
     }
 
-    public async Task<OperationResponse> Lock(Guid id)
+    public async Task<MessageResponse> Lock(Guid id)
     {
        
 
         var data = await _dbContext.VisitTimeShifts.Where(p => p.Id == id && p.Status == GeneralStatus.Active)
-                                                 .FirstOrDefaultAsync();
-        if (data == null)
-            return new OperationResponse()
-            {
-                Msg = "! عذرًا..لا وجود لتوقيت زيارة بهذا الرقم",
-                StatusCode = HttpStatusCode.BadRequest
-            };
+                                                 .FirstOrDefaultAsync()?? throw new NotFoundException( "! عذرًا..لا وجود لتوقيت زيارة بهذا الرقم" );
 
         if (!IsLocked(data.Status))
         {
             data.Status = GeneralStatus.Locked;
             await _dbContext.SaveChangesAsync();
 
-            return new OperationResponse()
+            return new MessageResponse()
             {
                 Msg = "! بنجاح " + data.Name + " : لقد تم تقييد هذا التوقيت",
-                StatusCode = HttpStatusCode.OK
             };
         }
         else
-            return new OperationResponse()
-            {
-                Msg = " ! عذرًا .. هذا التوقيت مقيد مسبقًا",
-                StatusCode = HttpStatusCode.BadRequest
-            };
+            throw new BadRequestException(" ! عذرًا .. هذا التوقيت مقيد مسبقًا");
     }
 
-    public async Task<OperationResponse> Unlock(Guid id)
+    public async Task<MessageResponse> Unlock(Guid id)
     {
-        
+
 
         var data = await _dbContext.VisitTimeShifts
                          .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
-                         .FirstOrDefaultAsync();
-        if (data == null)
-            return new OperationResponse()
-            {
-                Msg = "! عذرًا..لا وجود لتوقيت زيارة بهذا الرقم",
-                StatusCode = HttpStatusCode.BadRequest
-            };
+                         .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لتوقيت زيارة بهذا الرقم");
 
         if (!IsLocked(data.Status))
-            return new OperationResponse()
-            {
-                Msg = " ! عذرًا .. هذا التوقيت غير مقيد",
-                StatusCode = HttpStatusCode.BadRequest
-            };
+            throw new BadRequestException(" ! عذرًا .. هذا التوقيت غير مقيد");
 
         data.Status = GeneralStatus.Active;
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
-        {
-            Msg = "بنجاح " + data.Name + " :  تم إلغاء التقييد عن التوقيت",
-            StatusCode = HttpStatusCode.OK
-        };
+        return new MessageResponse() { Msg = "بنجاح " + data.Name + " :  تم إلغاء التقييد عن التوقيت" };
 
     }
-    public async Task<OperationResponse> Update(Guid id, UpdateVisitTimeShiftRequestDto request)
+    public async Task<MessageResponse> Update(Guid id, UpdateVisitTimeShiftRequestDto request)
     {
        
         var data = await _dbContext.VisitTimeShifts
                          .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
-                         .FirstOrDefaultAsync();
-        if (data == null)
-            return new OperationResponse()
-            {
-                Msg = " يرجى التأكد من صحة رقم التوقيت",
-                StatusCode = HttpStatusCode.BadRequest
-            };
+                         .FirstOrDefaultAsync()?? throw new NotFoundException("يرجى التأكد من صحة رقم التوقيت");
         if (data.Name != request.Name)
         {
             var isNotUnique = await _dbContext.VisitTimeShifts
                                     .Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted)
                                     .AnyAsync();
             if (isNotUnique)
-                return new OperationResponse()
-                {
-                    Msg = "هذا الاسم موجود مسبقًا",
-                    StatusCode = HttpStatusCode.BadRequest
-                };
+               throw new BadRequestException("هذا الاسم موجود مسبقًا");
         }
         _mapper.Map(request, data);
         await _dbContext.SaveChangesAsync();
-        return new OperationResponse()
-        {
-            Msg = "! تم تعديل التوقيت بنجاح",
-            StatusCode = HttpStatusCode.OK
-        };
+        return new MessageResponse() {  Msg = "! تم تعديل التوقيت بنجاح" };
     }
     private bool IsLocked(GeneralStatus status)
     {

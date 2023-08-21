@@ -15,8 +15,7 @@ public class CreateSubscriptionRequestDto
     public Guid CustomerId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public FileRequestDto File { get; set; } = default!;
-
+    public IFormFile File { get; set; } = default!;
 }
 
 public class CreateSubscriptionRequestDtoValidator : AbstractValidator<CreateSubscriptionRequestDto>

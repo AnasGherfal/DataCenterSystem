@@ -38,7 +38,6 @@ namespace Infrastructure.Models
                 SubscriptionFile = new SubscriptionFile()
                 {
                     Id = @event.Data.FileIdentifier,
-                    FileType = @event.Data.FileType,
                     FilePath = @event.Data.File,
                     IsActive = GeneralStatus.Active,
                     CreatedOn = @event.DateTime,
@@ -70,7 +69,7 @@ namespace Infrastructure.Models
         
         public void Apply(SubscriptionFileUpdatedAudit @event)
         {
-            SubscriptionFile.FileType = @event.Data.FileType;
+          //  SubscriptionFile.FileType = @event.Data.FileType;
             SubscriptionFile.FilePath = @event.Data.File;
             SubscriptionFile.IsActive = GeneralStatus.Active;
             SubscriptionFile.CreatedOn = @event.DateTime;

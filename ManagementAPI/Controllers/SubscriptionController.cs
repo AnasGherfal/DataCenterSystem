@@ -45,7 +45,7 @@ namespace ManagementAPI.Controllers
         public async Task<IActionResult> Update(string id, [FromForm] UpdateSubscriptionRequestDto request)
            => Ok(await _service.Update(Guid.Parse(id),request));
        
-        [HttpGet("Download")]
+        [HttpGet("{id}/Download")]
         public async Task<IActionResult> Download(string id) => Ok(await _service.Download(Guid.Parse(id)));
     }
 }

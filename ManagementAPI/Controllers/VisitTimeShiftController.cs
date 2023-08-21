@@ -17,7 +17,7 @@ public class VisitTimeShiftController : ControllerBase
         _service = service;
     }
     [HttpPost]
-    public async Task<OperationResponse> Create([FromBody] CreateVisitTimeShiftRequestDto request)
+    public async Task<MessageResponse> Create([FromBody] CreateVisitTimeShiftRequestDto request)
     {
         return await _service.Create(request);
     }
@@ -28,23 +28,23 @@ public class VisitTimeShiftController : ControllerBase
         return await _service.GetAll(filter);
     }
     [HttpPut("{id}")]
-    public async Task<OperationResponse> Update(string id, [FromBody] UpdateVisitTimeShiftRequestDto request)
+    public async Task<MessageResponse> Update(string id, [FromBody] UpdateVisitTimeShiftRequestDto request)
     {
         return await _service.Update(Guid.Parse(id), request);
     }
     [HttpDelete("{id}")]
-    public async Task<OperationResponse> Delete(string id)
+    public async Task<MessageResponse> Delete(string id)
     {
         return await _service.Delete(Guid.Parse(id));
     }
 
     [HttpPut("{id}/lock")]
-    public async Task<OperationResponse> Lock(string id)
+    public async Task<MessageResponse> Lock(string id)
     {
         return await _service.Lock(Guid.Parse(id));
     }
     [HttpPut("{id}/unlock")]
-    public async Task<OperationResponse> Unlock(string id)
+    public async Task<MessageResponse> Unlock(string id)
     {
         return await _service.Unlock(Guid.Parse(id));
     }

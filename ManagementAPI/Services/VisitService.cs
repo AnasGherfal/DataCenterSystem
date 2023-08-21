@@ -25,8 +25,8 @@ public class VisitService : IVisitService
         var subscription = await _dbContext.Subscriptions.Where(p => p.Id == Guid.Parse(request.SubscriptionId) && p.Status == GeneralStatus.Active).Include(p => p.Customer).ThenInclude(p=>p.Representatives).SingleOrDefaultAsync() ?? throw new BadRequestException("عذرًا يرجى التأكد من الإشتراك الخاص بالزبون!"); 
         var visitStartTime = request.StartTime.TimeOfDay;
         var visitEndTime = request.EndTime.TimeOfDay;
-        var visitTimeSpan = visitStartTime - visitEndTime;
-        if (visitTimeSpan.TotalMinutes <= 60)
+        var visitTimeSpan =visitStartTime - visitEndTime;
+        if (Math.Abs(visitTimeSpan.TotalMinutes) <= 60)
         {
             var shift = timeShifts.Where(p => visitStartTime <= p.EndTime && visitStartTime > p.StartTime).FirstOrDefault() ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة"); ;
             var data = _mapper.Map<Visit>(request) ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");

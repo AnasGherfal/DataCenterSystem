@@ -662,3 +662,6 @@ FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/aspnetcore,dotnetcore,intellij,visualstudio,visualstudiocode
 SecretFirebase.json
+/ManagementAPI/appsettings.json
+/ManagementAPI/appsettings.Development.json
+/Infrastructure/Models/BaseModel.cs

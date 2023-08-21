@@ -66,7 +66,7 @@ public class InvoiceService : IInvoiceService
        .ThenInclude(p => p.Customer)
        .Include(p => p.Visits)
        .ThenInclude(p => p.TimeShift)
-       .Where(p => p.Status != GeneralStatus.Deleted && p.Subscription.Customer.Name == request.CustomerName);
+       .Where(p => p.Status != GeneralStatus.Deleted && p.Subscription.Customer.Name.Contains(request.CustomerName));
         if(request.StartDate != null && request.EndDate != null)
             query=query.Where(p => p.Date >= request.StartDate && p.Date <= request.EndDate);
         var queryResult = await query.OrderBy(p => p.Id)

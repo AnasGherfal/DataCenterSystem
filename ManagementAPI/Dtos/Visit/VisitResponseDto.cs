@@ -17,6 +17,7 @@ public class VisitResponseDto
     public IList<RepresentativeResponseDto> Representatives { get; set; } = new List<RepresentativeResponseDto>();
     public IList<CompanionResponseDto> Companions { get; set; } = new List<CompanionResponseDto>();
     public Guid VisitType { get; set; } = default!;
+    public string CustomerName { get; set; } = string.Empty;
     public Guid? InvoiceId { get; set; }
     
 }

@@ -181,9 +181,13 @@ public class VisitService : IVisitService
     public async Task<VisitResponseDto> GetById(Guid id)
     {
         
-        var data = await _dbContext.Visits.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+        var data = await _dbContext.Visits.Include(p => p.Subscription)
+                                          .Include(p => p.RepresentativesVisits)
+                                          .ThenInclude(p => p.Representative)
+                                          .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
             .ProjectTo<VisitResponseDto>(_mapper.ConfigurationProvider).SingleOrDefaultAsync() ??
             throw new BadHttpRequestException("عذرًا لا وجود لفاتورة بهذا الرقم");
+        
         return data;
     }
     public async Task<MessageResponse> Delete(Guid id)
@@ -202,6 +206,7 @@ public class VisitService : IVisitService
     public async Task<FetchVisitResponseDto> GetAll(FetchVisitRequestDto request)
     {
         var query = _dbContext.Visits
+                .Include(p => p.Subscription)
                 .Include(p => p.RepresentativesVisits)
                 .ThenInclude(p => p.Representative)
                 .Include(p => p.TimeShift)

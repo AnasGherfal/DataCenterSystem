@@ -22,7 +22,8 @@ public class VisitProfileMapper:Profile
         CreateMap<Visit, VisitResponseDto>()
             .ForMember(p => p.Representatives, opt => opt.MapFrom(x => x.RepresentativesVisits))
             .ForMember(dest => dest.TimeShift, opt => opt.MapFrom(x => x.TimeShift.Name))
-            .ForMember(dest => dest.VisitType, opt => opt.MapFrom(x => x.VisitType.Id));
+            .ForMember(dest => dest.VisitType, opt => opt.MapFrom(x => x.VisitType.Id))
+            .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(x => x.Subscription.Customer.Name));
 
 
         CreateMap<UpdateVisitRequestDto, Visit>();

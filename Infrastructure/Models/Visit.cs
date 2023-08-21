@@ -22,6 +22,7 @@ public class Visit : BaseModel
     //---------------Relations
 
     public VisitType VisitType { get; set; } =default!;
+    public Subscription Subscription { get; set; } = default!;
     public ICollection<Companion> Companions { get; set; }=new List<Companion>();
     public Invoice? Invoice { get; set; }
     public ICollection<RepresentativeVisit> RepresentativesVisits { get; set; } = new List<RepresentativeVisit>();

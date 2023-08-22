@@ -87,6 +87,42 @@ public class SubscriptionService:ISubscriptionService
         };
 
     }
+    public async Task<FetchSubscriptionFilterResponseDto> SubscriptionsFilter(FetchSubscriptionRequestDto request)
+    {
+        var query = await _dbContext.Subscriptions.Include(p => p.Customer).Include(p => p.SubscriptionFile)
+                                               .Include(p => p.Visits).Include(p => p.Service).Where(p => p.Status != GeneralStatus.Deleted)
+                                               .ProjectTo<SubscriptionRsponseDto>(_mapper.ConfigurationProvider).ToListAsync();
+        var activeSubscriptions =query.Where(p => p.DaysRemaining > 30).ToList();
+        var aboutToExpierdSubs = query.Where(p => p.DaysRemaining <= 30).ToList();
+        var expiredSubs = query.Where(p => p.DaysRemaining <= 0).ToList();
+        return new FetchSubscriptionFilterResponseDto()
+        {
+            FilteredContent = new List<FilterSubscriptionResponseDto>()
+           {
+            new FilterSubscriptionResponseDto()
+            {
+                Content=activeSubscriptions,
+                Count=activeSubscriptions.Count(),
+                CurrentPage=request.PageNumber,
+                TotalPages=(int)Math.Ceiling(activeSubscriptions.Count() /(decimal)request.PageSize)
+            },
+            new FilterSubscriptionResponseDto()
+            {
+                Content=aboutToExpierdSubs,
+                Count=aboutToExpierdSubs.Count(),
+                CurrentPage=request.PageNumber,
+                TotalPages=(int)Math.Ceiling(aboutToExpierdSubs.Count() /(decimal)request.PageSize)
+            },
+            new FilterSubscriptionResponseDto()
+            {
+                Content=expiredSubs,
+                Count=expiredSubs.Count(),
+                CurrentPage=request.PageNumber,
+                TotalPages=(int)Math.Ceiling(expiredSubs.Count() /(decimal)request.PageSize)
+            }
+           }
+        };
+    }
     public async Task<MessageResponse> Renew(FileRequestDto file, Guid id)
     {
         var data = await _dbContext.Subscriptions.Include(p => p.SubscriptionFile)

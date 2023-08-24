@@ -6,7 +6,8 @@ public enum Status : short
     Active = 1,
     Disabled = 2,
     Deleted = 3,
-    Expired = 4
+    Expired = 4,
+    AboutToExpired=5
 }
 
 

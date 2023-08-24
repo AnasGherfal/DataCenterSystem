@@ -2,5 +2,5 @@
 
 public class FetchSubscriptionFilterResponseDto
 {
-    public IList<FilterSubscriptionResponseDto> FilteredContent { get; set; }
+    public IList<FilterSubscriptionResponseDto> FilteredContent { get; set; } = default!;
 }

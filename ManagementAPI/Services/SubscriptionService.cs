@@ -70,10 +70,25 @@ public class SubscriptionService:ISubscriptionService
 
     public async Task<FetchSubscriptionResponseDto> GetAll(FetchSubscriptionRequestDto request)
     {
-        var query = _dbContext.Subscriptions.Include(p => p.Customer).Include(p => p.SubscriptionFile)
-                                                .Include(p => p.Visits).Include(p => p.Service).Where(p => p.Status != GeneralStatus.Deleted)
-                                                .ProjectTo<SubscriptionRsponseDto>(_mapper.ConfigurationProvider);
-            var data= await query.OrderBy(p => p.StartDate)
+        var query = _dbContext.Subscriptions.Where(p=> p.Status!=GeneralStatus.Deleted);
+        IQueryable<Subscription> data;
+        var timeLeft = DateTime.UtcNow.AddDays(30);
+        switch (request.Status)
+        {
+            case Status.Active:
+                data = query.Where(p =>  p.EndDate  > DateTime.UtcNow);
+                break;
+            case Status.AboutToExpired:
+               data = query.Where(p => p.EndDate <= timeLeft && DateTime.UtcNow < p.EndDate);
+                break;
+            case Status.Expired:
+                data = query.Where(p =>p.EndDate <=DateTime.UtcNow);
+                break;
+        }
+
+        var result =await data
+            .OrderBy(p => p.StartDate)
+            .ProjectTo<SubscriptionRsponseDto>(_mapper.ConfigurationProvider)
             .Skip(request.PageSize * (request.PageNumber - 1))
             .Take(request.PageSize)
             .ToListAsync();
@@ -81,46 +96,41 @@ public class SubscriptionService:ISubscriptionService
         var totalpages = (int)Math.Ceiling(totalCount /(decimal)request.PageSize);
         return new FetchSubscriptionResponseDto()
         {
-            Content = data,
+            Content =result,
             CurrentPage = request.PageNumber,
             TotalPages = totalpages,
         };
 
     }
-    public async Task<FetchSubscriptionFilterResponseDto> SubscriptionsFilter(FetchSubscriptionRequestDto request)
+    public async Task<FetchSubscriptionFilterResponseDto> SubscriptionsFilter()
     {
         var query = await _dbContext.Subscriptions.Include(p => p.Customer).Include(p => p.SubscriptionFile)
                                                .Include(p => p.Visits).Include(p => p.Service).Where(p => p.Status != GeneralStatus.Deleted)
                                                .ProjectTo<SubscriptionRsponseDto>(_mapper.ConfigurationProvider).ToListAsync();
         var activeSubscriptions =query.Where(p => p.DaysRemaining > 30).ToList();
-        var aboutToExpierdSubs = query.Where(p => p.DaysRemaining <= 30).ToList();
+        var aboutToExpierdSubs = query.Where(p => p.DaysRemaining <= 30 && p.DaysRemaining >0).ToList();
         var expiredSubs = query.Where(p => p.DaysRemaining <= 0).ToList();
         return new FetchSubscriptionFilterResponseDto()
         {
             FilteredContent = new List<FilterSubscriptionResponseDto>()
-           {
-            new FilterSubscriptionResponseDto()
-            {
-                Content=activeSubscriptions,
-                Count=activeSubscriptions.Count(),
-                CurrentPage=request.PageNumber,
-                TotalPages=(int)Math.Ceiling(activeSubscriptions.Count() /(decimal)request.PageSize)
-            },
-            new FilterSubscriptionResponseDto()
-            {
-                Content=aboutToExpierdSubs,
-                Count=aboutToExpierdSubs.Count(),
-                CurrentPage=request.PageNumber,
-                TotalPages=(int)Math.Ceiling(aboutToExpierdSubs.Count() /(decimal)request.PageSize)
-            },
-            new FilterSubscriptionResponseDto()
-            {
-                Content=expiredSubs,
-                Count=expiredSubs.Count(),
-                CurrentPage=request.PageNumber,
-                TotalPages=(int)Math.Ceiling(expiredSubs.Count() /(decimal)request.PageSize)
-            }
-           }
+          {
+              new FilterSubscriptionResponseDto()
+              {
+                  Count= activeSubscriptions.Count(),
+                  Status=Status.Active
+              },
+              new FilterSubscriptionResponseDto()
+              {
+                  Count= aboutToExpierdSubs.Count(),
+                  Status=Status.AboutToExpired
+              },
+             new FilterSubscriptionResponseDto()
+             {
+                 Count = expiredSubs.Count(),
+                 Status=Status.Expired
+
+             }
+          }
         };
     }
     public async Task<MessageResponse> Renew(FileRequestDto file, Guid id)

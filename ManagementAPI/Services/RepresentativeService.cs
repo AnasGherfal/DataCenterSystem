@@ -147,6 +147,7 @@ public class RepresentativeService : IRepresentativeService
     public async Task<MessageResponse> Update(Guid id, UpdateRepresentativeRequestDto request)
     {
         var data = await _dbContext.Representatives
+                                           .Include(p=> p.Files.Where(p=>p.IsActive!=GeneralStatus.Deleted))
                                            .Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
                                            .FirstOrDefaultAsync() ?? throw new NotFoundException("! عذرًا..لا وجود لمخول بهذا الرقم");
         if (IsLocked(data.Status))

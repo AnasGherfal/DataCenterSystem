@@ -24,10 +24,10 @@ namespace ManagementAPI.Controllers
         //TODO: REVIEW [Bonus]: Add CustomerId Query to allow filtering by CustomerId
         public async Task<IActionResult> GetAll([FromQuery] FetchSubscriptionRequestDto request) 
             => Ok(await _service.GetAll(request));
-        [HttpGet("/Filter")]
+        [HttpGet("Filter")]
       
-        public async Task<IActionResult> SubscriptionsFilter([FromQuery] FetchSubscriptionRequestDto request)
-          => Ok(await _service.SubscriptionsFilter(request));
+        public async Task<IActionResult> SubscriptionsFilter()
+          => Ok(await _service.SubscriptionsFilter());
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id) => Ok(await _service.GetById(Guid.Parse(id)));

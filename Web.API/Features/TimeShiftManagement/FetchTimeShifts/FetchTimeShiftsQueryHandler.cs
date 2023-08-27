@@ -1,7 +1,8 @@
+using Core.Dtos;
 using Infrastructure;
+using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared.Dtos;
 
 namespace Web.API.Features.TimeShiftManagement.FetchTimeShifts;
 

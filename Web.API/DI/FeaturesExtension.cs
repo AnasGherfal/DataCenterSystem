@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
+using Core.Behaviors;
 using FluentValidation;
 using MediatR;
-using Shared.Behaviors;
 
 namespace Web.API.DI;
 

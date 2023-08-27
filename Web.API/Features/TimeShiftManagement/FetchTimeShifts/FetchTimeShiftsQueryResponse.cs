@@ -1,5 +1,3 @@
-using Infrastructure.Constants;
-
 namespace Web.API.Features.TimeShiftManagement.FetchTimeShifts
 {
     public sealed record FetchTimeShiftsQueryResponse

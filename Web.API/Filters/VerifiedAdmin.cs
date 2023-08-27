@@ -1,6 +1,6 @@
-﻿using Infrastructure.Constants;
+﻿using Core.Constants;
+using Core.Exceptions;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Shared.Exceptions;
 
 namespace Web.API.Filters;
 

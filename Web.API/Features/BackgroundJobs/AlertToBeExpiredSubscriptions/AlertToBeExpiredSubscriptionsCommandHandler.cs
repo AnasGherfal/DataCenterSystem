@@ -1,4 +1,5 @@
 using Infrastructure;
+using Infrastructure.Persistence;
 using MediatR;
 using Web.API.Services.MailService;
 

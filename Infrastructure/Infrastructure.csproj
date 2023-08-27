@@ -19,11 +19,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Shared\Shared.csproj" />
+      <ProjectReference Include="..\Core\Core.csproj" />
     </ItemGroup>
 
+
     <ItemGroup>
-      <Folder Include="Migrations\" />
+      <Folder Include="Persistence\Migrations\" />
     </ItemGroup>
 
 </Project>

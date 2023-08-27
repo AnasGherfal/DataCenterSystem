@@ -1,6 +1,6 @@
 ﻿using System.Net;
+using Core.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Dtos;
 
 namespace Web.API.Controllers;
 

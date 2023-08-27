@@ -1,5 +1,5 @@
+using Core.Dtos;
 using MediatR;
-using Shared.Dtos;
 
 namespace Web.API.Features.InvoiceManagement.FetchInvoices;
 public sealed record FetchInvoicesQuery: IRequest<PagedResponse<FetchInvoicesQueryResponse>>

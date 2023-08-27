@@ -1,4 +1,4 @@
-using Infrastructure.Constants;
+using Core.Constants;
 
 namespace Web.API.Features.InvoiceManagement.FetchInvoiceById
 {

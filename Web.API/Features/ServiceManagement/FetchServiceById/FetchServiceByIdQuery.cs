@@ -1,5 +1,5 @@
+using Core.Dtos;
 using MediatR;
-using Shared.Dtos;
 
 namespace Web.API.Features.ServiceManagement.FetchServiceById;
 public sealed record FetchServiceByIdQuery: IRequest<ContentResponse<FetchServiceByIdQueryResponse>>

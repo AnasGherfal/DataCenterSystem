@@ -1,4 +1,4 @@
-﻿using Infrastructure.Constants;
+﻿using Core.Constants;
 using Web.API.Services.UploadService.Dtos;
 
 namespace Web.API.Services.UploadService;

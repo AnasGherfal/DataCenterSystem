@@ -1,11 +1,12 @@
-﻿using Infrastructure;
-using Infrastructure.Entities;
-using Infrastructure.Events.Admin;
+﻿using Core.Dtos;
+using Core.Entities;
+using Core.Events.Admin;
+using Core.Exceptions;
+
+using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Shared.Dtos;
-using Shared.Exceptions;
 using Web.API.Services.ClientService;
 
 namespace Web.API.Features.AdminsManagement.UnlockAdminById;

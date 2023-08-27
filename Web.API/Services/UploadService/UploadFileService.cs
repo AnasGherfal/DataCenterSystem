@@ -1,4 +1,4 @@
-﻿using Infrastructure.Constants;
+﻿using Core.Constants;
 using Microsoft.Extensions.Options;
 using Web.API.Options;
 using Web.API.Services.UploadService.Dtos;

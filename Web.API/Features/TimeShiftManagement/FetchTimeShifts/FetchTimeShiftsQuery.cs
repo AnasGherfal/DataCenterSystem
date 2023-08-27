@@ -1,5 +1,5 @@
+using Core.Dtos;
 using MediatR;
-using Shared.Dtos;
 
 namespace Web.API.Features.TimeShiftManagement.FetchTimeShifts;
 public sealed record FetchTimeShiftsQuery: IRequest<PagedResponse<FetchTimeShiftsQueryResponse>>

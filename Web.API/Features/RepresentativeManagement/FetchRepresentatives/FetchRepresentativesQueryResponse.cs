@@ -1,5 +1,4 @@
-using Infrastructure.Constants;
-using Shared.Constants;
+using Core.Constants;
 
 namespace Web.API.Features.RepresentativeManagement.FetchRepresentatives
 {

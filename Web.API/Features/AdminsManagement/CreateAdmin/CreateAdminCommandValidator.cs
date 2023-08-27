@@ -1,5 +1,4 @@
-﻿using Common.Constants;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Web.API.Features.AdminsManagement.CreateAdmin;
 

@@ -6,7 +6,7 @@ namespace Web.API.DI;
 public static class SwaggerExtension
 {
     public const string ConsumerV1 = "consumer-v1";
-    public const string ManagementV1 = "administrator-v1";
+    public const string ManagementV1 = "management-v1";
 
     public static void AddSwagger(this IServiceCollection services)
     {

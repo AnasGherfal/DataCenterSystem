@@ -1,5 +1,4 @@
 using FluentValidation;
-using Shared.Validators;
 
 namespace Web.API.Features.CustomerManagement.FetchCustomers;
 

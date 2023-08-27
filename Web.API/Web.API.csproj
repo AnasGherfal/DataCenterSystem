@@ -21,12 +21,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Core\Core.csproj" />
       <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-      <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Client\" />
       <Folder Include="Features\AuditManagement\FetchAudits\" />
       <Folder Include="Features\AuditManagement\FetchProjectionById\" />
       <Folder Include="Services\SmsService\" />
@@ -38,9 +37,4 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Features\TimeShiftManagement\UnlockTimeShift\e.json" />
-    </ItemGroup>
-
 </Project>

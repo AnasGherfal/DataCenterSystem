@@ -1,6 +1,5 @@
-﻿using Common.Constants;
+﻿using Core.Dtos;
 using MediatR;
-using Shared.Dtos;
 
 namespace Web.API.Features.ServiceManagement.UpdateService;
 

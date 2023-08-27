@@ -1,11 +1,11 @@
-﻿using Infrastructure;
-using Infrastructure.Constants;
-using Infrastructure.Events.Customer;
-using Infrastructure.Events.Subscription;
+﻿using Core.Constants;
+using Core.Dtos;
+using Core.Events.Customer;
+using Core.Exceptions;
+using Infrastructure;
+using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared.Dtos;
-using Shared.Exceptions;
 using Web.API.Services.ClientService;
 
 namespace Web.API.Features.CustomerManagement.UnlockCustomer;
@@ -24,7 +24,7 @@ public sealed record UnlockCustomerCommandHandler : IRequestHandler<UnlockCustom
     public async Task<MessageResponse> Handle(UnlockCustomerCommand request, CancellationToken cancellationToken)
     {
         var id = Guid.Parse(request.Id!);
-        var data = await _dbContext.Customers.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted, cancellationToken: cancellationToken);
+        var data = await _dbContext.Customers.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("Customer not found");
         if (data.Status != GeneralStatus.Locked) throw new BadRequestException("Customer is not locked");
         var @event = new CustomerUnlockedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new CustomerUnlockedEventData());

@@ -1,7 +1,6 @@
-﻿using Common.Constants;
-using Infrastructure.Constants;
+﻿using Core.Constants;
+using Core.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Dtos;
 using Web.API.Abstracts;
 using Web.API.Features.CustomerManagement.CreateCustomer;
 using Web.API.Features.CustomerManagement.DeleteCustomer;
@@ -12,14 +11,6 @@ using Web.API.Features.CustomerManagement.LockCustomer;
 using Web.API.Features.CustomerManagement.UnlockCustomer;
 using Web.API.Features.CustomerManagement.UpdateCustomer;
 using Web.API.Features.CustomerManagement.UpdateCustomerFile;
-using Web.API.Features.RepresentativeManagement.CreateRepresentative;
-using Web.API.Features.RepresentativeManagement.DeleteRepresentative;
-using Web.API.Features.RepresentativeManagement.FetchRepresentativeById;
-using Web.API.Features.RepresentativeManagement.FetchRepresentativeFileById;
-using Web.API.Features.RepresentativeManagement.FetchRepresentatives;
-using Web.API.Features.RepresentativeManagement.LockRepresentative;
-using Web.API.Features.RepresentativeManagement.UnlockRepresentative;
-using Web.API.Features.RepresentativeManagement.UpdateRepresentative;
 using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;

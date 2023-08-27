@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Shared.Dtos;
 
 namespace Web.API.Features.Authentication.Login;
 

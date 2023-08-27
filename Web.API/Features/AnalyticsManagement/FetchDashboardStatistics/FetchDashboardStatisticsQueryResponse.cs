@@ -1,5 +1,3 @@
-using Infrastructure.Constants;
-
 namespace Web.API.Features.AnalyticsManagement.FetchDashboardStatistics
 {
     public sealed record FetchDashboardStatisticsQueryResponse

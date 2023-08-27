@@ -1,10 +1,11 @@
-﻿using Infrastructure;
-using Infrastructure.Constants;
-using Infrastructure.Events.Subscription;
+﻿using Core.Constants;
+using Core.Dtos;
+using Core.Events.Subscription;
+using Core.Exceptions;
+using Infrastructure;
+using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared.Dtos;
-using Shared.Exceptions;
 using Web.API.Services.ClientService;
 
 namespace Web.API.Features.SubscriptionManagement.UnlockSubscription;
@@ -23,7 +24,7 @@ public sealed record UnlockSubscriptionCommandHandler : IRequestHandler<UnlockSu
     public async Task<MessageResponse> Handle(UnlockSubscriptionCommand request, CancellationToken cancellationToken)
     {
         var id = Guid.Parse(request.Id!);
-        var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted, cancellationToken: cancellationToken);
+        var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("subscription not found");
         if (data.Status != GeneralStatus.Locked) throw new BadRequestException("subscription is not locked");
         var @event = new SubscriptionUnlockedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new SubscriptionUnlockedEventData());

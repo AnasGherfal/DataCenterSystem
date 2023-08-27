@@ -1,5 +1,5 @@
+using Core.Dtos;
 using MediatR;
-using Shared.Dtos;
 
 namespace Web.API.Features.RepresentativeManagement.FetchRepresentatives;
 public sealed record FetchRepresentativesQuery : IRequest<PagedResponse<FetchRepresentativesQueryResponse>>

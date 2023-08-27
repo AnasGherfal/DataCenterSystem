@@ -1,9 +1,9 @@
-using Infrastructure.Entities;
+using Core.Dtos;
+using Core.Entities;
+using Core.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Shared.Dtos;
-using Shared.Exceptions;
 
 namespace Web.API.Features.AdminsManagement.FetchAdminById;
 

@@ -1,11 +1,11 @@
-﻿using Infrastructure;
-using Infrastructure.Constants;
-using Infrastructure.Events.Representative;
-using Infrastructure.Events.Subscription;
+﻿using Core.Constants;
+using Core.Dtos;
+using Core.Events.Representative;
+using Core.Exceptions;
+using Infrastructure;
+using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared.Dtos;
-using Shared.Exceptions;
 using Web.API.Services.ClientService;
 using Web.API.Services.UploadService;
 using Web.API.Services.UploadService.Dtos;

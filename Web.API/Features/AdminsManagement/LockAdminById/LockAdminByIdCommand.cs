@@ -1,5 +1,5 @@
-﻿using MediatR;
-using Shared.Dtos;
+﻿using Core.Dtos;
+using MediatR;
 
 namespace Web.API.Features.AdminsManagement.LockAdminById;
 

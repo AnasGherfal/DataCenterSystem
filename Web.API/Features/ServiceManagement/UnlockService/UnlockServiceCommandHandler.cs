@@ -1,10 +1,11 @@
-﻿using Infrastructure;
-using Infrastructure.Constants;
-using Infrastructure.Events.Service;
+﻿using Core.Constants;
+using Core.Dtos;
+using Core.Events.Service;
+using Core.Exceptions;
+using Infrastructure;
+using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared.Dtos;
-using Shared.Exceptions;
 using Web.API.Services.ClientService;
 
 namespace Web.API.Features.ServiceManagement.UnlockService;

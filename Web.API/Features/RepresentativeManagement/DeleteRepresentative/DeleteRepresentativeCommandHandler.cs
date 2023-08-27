@@ -1,11 +1,10 @@
-﻿using Infrastructure;
-using Infrastructure.Constants;
-using Infrastructure.Events.Representative;
-using Infrastructure.Events.Subscription;
+﻿using Core.Dtos;
+using Core.Events.Representative;
+using Core.Exceptions;
+using Infrastructure;
+using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared.Dtos;
-using Shared.Exceptions;
 using Web.API.Services.ClientService;
 
 namespace Web.API.Features.RepresentativeManagement.DeleteRepresentative;

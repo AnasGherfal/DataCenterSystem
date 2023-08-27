@@ -1,9 +1,10 @@
-﻿using Infrastructure;
-using Infrastructure.Events.Customer;
+﻿using Core.Dtos;
+using Core.Events.Customer;
+using Core.Exceptions;
+using Infrastructure;
+using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared.Dtos;
-using Shared.Exceptions;
 using Web.API.Services.ClientService;
 
 namespace Web.API.Features.CustomerManagement.DeleteCustomer;

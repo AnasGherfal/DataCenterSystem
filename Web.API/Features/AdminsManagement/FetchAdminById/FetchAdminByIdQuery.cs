@@ -1,5 +1,5 @@
+using Core.Dtos;
 using MediatR;
-using Shared.Dtos;
 
 namespace Web.API.Features.AdminsManagement.FetchAdminById;
 public sealed record FetchAdminByIdQuery: IRequest<ContentResponse<FetchAdminByIdQueryResponse>>

@@ -1,6 +1,6 @@
-﻿using Infrastructure.Constants;
+﻿using Core.Constants;
+using Core.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Dtos;
 using Web.API.Abstracts;
 using Web.API.Features.VisitsManagement.CreateVisit;
 using Web.API.Features.VisitsManagement.DeleteVisit;

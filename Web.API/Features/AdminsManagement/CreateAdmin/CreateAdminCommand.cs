@@ -1,7 +1,6 @@
-﻿using Common.Constants;
-using Infrastructure.Constants;
+﻿using Core.Constants;
+using Core.Dtos;
 using MediatR;
-using Shared.Dtos;
 
 namespace Web.API.Features.AdminsManagement.CreateAdmin;
 

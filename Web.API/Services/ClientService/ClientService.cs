@@ -1,5 +1,5 @@
-﻿using Infrastructure.Constants;
-using Shared.Exceptions;
+﻿using Core.Constants;
+using Core.Exceptions;
 
 namespace Web.API.Services.ClientService;
 

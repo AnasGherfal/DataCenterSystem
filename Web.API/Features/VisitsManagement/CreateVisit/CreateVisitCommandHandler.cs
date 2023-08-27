@@ -1,12 +1,12 @@
-﻿using Infrastructure;
-using Infrastructure.Constants;
-using Infrastructure.Entities;
-using Infrastructure.Events.TimeShift;
-using Infrastructure.Events.Visit;
+﻿using Core.Constants;
+using Core.Dtos;
+using Core.Entities;
+using Core.Events.Visit;
+using Core.Exceptions;
+
+using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared.Dtos;
-using Shared.Exceptions;
 using Web.API.Services.ClientService;
 
 namespace Web.API.Features.VisitsManagement.CreateVisit;

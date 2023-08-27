@@ -1,6 +1,6 @@
-﻿using FluentValidation;
-using Infrastructure.Constants;
-using Shared.Validators;
+﻿using Core.Constants;
+using Core.Validators;
+using FluentValidation;
 
 namespace Web.API.Features.CustomerManagement.CreateCustomer;
 

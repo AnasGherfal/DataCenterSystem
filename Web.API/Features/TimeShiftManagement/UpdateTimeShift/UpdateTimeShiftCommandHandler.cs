@@ -1,11 +1,10 @@
-﻿using Infrastructure;
-using Infrastructure.Constants;
-using Infrastructure.Events.Service;
-using Infrastructure.Events.TimeShift;
+﻿using Core.Dtos;
+using Core.Events.TimeShift;
+using Core.Exceptions;
+using Infrastructure;
+using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared.Dtos;
-using Shared.Exceptions;
 using Web.API.Services.ClientService;
 
 namespace Web.API.Features.TimeShiftManagement.UpdateTimeShift;

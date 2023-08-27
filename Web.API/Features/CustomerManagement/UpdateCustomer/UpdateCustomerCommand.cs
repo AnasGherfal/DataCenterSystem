@@ -1,6 +1,6 @@
-﻿using MediatR;
-using Shared.Constants;
-using Shared.Dtos;
+﻿using Core.Constants;
+using Core.Dtos;
+using MediatR;
 
 namespace Web.API.Features.CustomerManagement.UpdateCustomer;
 

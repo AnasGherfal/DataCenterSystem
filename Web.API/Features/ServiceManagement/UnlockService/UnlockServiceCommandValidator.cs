@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using Shared.Validators;
+﻿using Core.Validators;
+using FluentValidation;
 
 namespace Web.API.Features.ServiceManagement.UnlockService;
 

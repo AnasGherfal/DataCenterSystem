@@ -1,5 +1,5 @@
+using Core.Dtos;
 using MediatR;
-using Shared.Dtos;
 
 namespace Web.API.Features.ServiceManagement.FetchServices;
 public sealed record FetchServicesQuery: IRequest<PagedResponse<FetchServicesQueryResponse>>

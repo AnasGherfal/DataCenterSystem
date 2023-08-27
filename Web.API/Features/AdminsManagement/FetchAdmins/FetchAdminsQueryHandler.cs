@@ -1,8 +1,8 @@
-using Infrastructure.Entities;
+using Core.Dtos;
+using Core.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Shared.Dtos;
 
 namespace Web.API.Features.AdminsManagement.FetchAdmins;
 

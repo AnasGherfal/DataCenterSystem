@@ -1,9 +1,10 @@
+using Core.Exceptions;
 using Infrastructure;
+using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
-using Shared.Exceptions;
 
 namespace Web.API.Features.RepresentativeManagement.FetchRepresentativeFileById;
 

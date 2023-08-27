@@ -1,5 +1,5 @@
+using Core.Validators;
 using FluentValidation;
-using Shared.Validators;
 
 namespace Web.API.Features.SubscriptionManagement.FetchSubscriptions;
 

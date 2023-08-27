@@ -1,13 +1,13 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using Core.Dtos;
 using Core.Entities;
 using Core.Exceptions;
+using Core.Interfaces.Services;
+using Core.Options;
+using Core.Wrappers;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Web.API.Options;
-using Web.API.Services.TokenService;
 
 namespace Web.API.Features.Authentication.Login;
 

@@ -1,9 +1,12 @@
 ﻿using Core.Constants;
+using Core.Interfaces.Dtos;
+using Core.Interfaces.Services;
+using Core.Options;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Web.API.Options;
-using Web.API.Services.UploadService.Dtos;
 
-namespace Web.API.Services.UploadService;
+namespace Infrastructure.FileStorage;
 
 public class UploadFileService: IUploadFileService
 {

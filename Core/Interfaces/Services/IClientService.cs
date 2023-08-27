@@ -1,4 +1,4 @@
-﻿namespace Web.API.Services.ClientService;
+﻿namespace Core.Interfaces.Services;
 
 public interface IClientService
 {

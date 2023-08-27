@@ -1,11 +1,11 @@
-﻿using Core.Dtos;
-using Core.Events.Service;
+﻿using Core.Events.Service;
 using Core.Exceptions;
+using Core.Interfaces.Services;
+using Core.Wrappers;
 using Infrastructure;
 using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Web.API.Services.ClientService;
 
 namespace Web.API.Features.ServiceManagement.DeleteService;
 

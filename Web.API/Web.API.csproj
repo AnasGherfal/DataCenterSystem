@@ -9,7 +9,6 @@
     <ItemGroup>
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
-        <PackageReference Include="MailKit" Version="4.1.0" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.7" />
         <PackageReference Include="NCrontab.Signed" Version="3.3.2" />
@@ -28,13 +27,9 @@
     <ItemGroup>
       <Folder Include="Features\AuditManagement\FetchAudits\" />
       <Folder Include="Features\AuditManagement\FetchProjectionById\" />
-      <Folder Include="Services\SmsService\" />
     </ItemGroup>
 
     <ItemGroup>
       <None Remove="Templates\SubscriptionAlert.html" />
-      <Content Include="Templates\SubscriptionAlert.html">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
     </ItemGroup>
 </Project>

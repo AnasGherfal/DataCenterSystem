@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Core.Dtos;
+namespace Core.Wrappers;
 
 public class MessageResponse
 {

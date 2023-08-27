@@ -1,3 +1,3 @@
-﻿namespace Web.API.Services.UploadService.Dtos;
+﻿namespace Core.Interfaces.Dtos;
 
 public record FileStorageUploadResponse(Guid Id, string Link);

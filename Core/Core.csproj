@@ -6,9 +6,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectCapability Include="AspNetCore" />
         <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <ProjectCapability Include="AspNetCore" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.21.0" />
         <PackageReference Include="FluentValidation" Version="11.5.0" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.4" />

@@ -1,12 +1,13 @@
-﻿using Microsoft.Extensions.Options;
-using Web.API.Options;
-using System.Reflection;
+﻿using System.Reflection;
+using Core.Options;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MimeKit;
+using Web.API.Services.MailService;
 
-
-namespace Web.API.Services.MailService;
+namespace Infrastructure.Mail;
 
 public class MailService: IMailService
 {
@@ -25,7 +26,7 @@ public class MailService: IMailService
         mail.To.Add(new MailboxAddress(fullName, email));
         mail.Subject = "OTP";
         var builder = new BodyBuilder();
-        using (var sourceReader = File.OpenText($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Templates/SubscriptionAlert.html"))
+        using (var sourceReader = File.OpenText($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Mail/Templates/SubscriptionAlert.html"))
         {
             builder.HtmlBody = (await sourceReader.ReadToEndAsync()).Replace("{{FullName}}", fullName);
         }

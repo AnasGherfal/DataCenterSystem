@@ -1,12 +1,11 @@
-﻿using Core.Dtos;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Events.TimeShift;
 using Core.Exceptions;
-
+using Core.Interfaces.Services;
+using Core.Wrappers;
 using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Web.API.Services.ClientService;
 
 namespace Web.API.Features.TimeShiftManagement.CreateTimeShift;
 

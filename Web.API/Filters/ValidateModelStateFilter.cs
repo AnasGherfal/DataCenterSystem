@@ -1,7 +1,7 @@
 ﻿using Core.Exceptions;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Shared.Filters;
+namespace Web.API.Filters;
 
 public class ValidateModelStateFilter : ActionFilterAttribute
 {

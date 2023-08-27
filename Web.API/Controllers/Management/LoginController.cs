@@ -1,4 +1,4 @@
-﻿using Core.Dtos;
+﻿using Core.Wrappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.API.Abstracts;

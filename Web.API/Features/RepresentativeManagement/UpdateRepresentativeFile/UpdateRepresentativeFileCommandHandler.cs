@@ -1,14 +1,13 @@
 ﻿using Core.Constants;
-using Core.Dtos;
 using Core.Events.Representative;
 using Core.Exceptions;
+using Core.Interfaces.Dtos;
+using Core.Interfaces.Services;
+using Core.Wrappers;
 using Infrastructure;
 using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Web.API.Services.ClientService;
-using Web.API.Services.UploadService;
-using Web.API.Services.UploadService.Dtos;
 
 namespace Web.API.Features.RepresentativeManagement.UpdateRepresentativeFile;
 

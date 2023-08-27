@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Core.Entities;
 
-namespace Web.API.Services.TokenService;
+namespace Core.Interfaces.Services;
 
 public interface ITokenService
 {

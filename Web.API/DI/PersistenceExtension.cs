@@ -1,7 +1,7 @@
-﻿using Infrastructure;
+﻿using Core.Options;
+using Infrastructure;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Web.API.Options;
 
 namespace Web.API.DI;
 

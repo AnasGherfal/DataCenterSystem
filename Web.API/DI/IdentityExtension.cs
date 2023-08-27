@@ -1,12 +1,13 @@
 using System.Text;
 using Core.Entities;
+using Core.Interfaces.Services;
+using Core.Options;
+using Infrastructure.ClientInfo;
+using Infrastructure.Identity;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Web.API.Options;
-using Web.API.Services.ClientService;
-using Web.API.Services.TokenService;
 
 namespace Web.API.DI;
 

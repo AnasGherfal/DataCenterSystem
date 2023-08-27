@@ -1,7 +1,7 @@
 using Core.Constants;
-using Core.Dtos;
+using Core.Interfaces.Services;
+using Core.Wrappers;
 using MediatR;
-using Web.API.Services.ClientService;
 
 namespace Web.API.Features.AdminsManagement.FetchPermissions
 {

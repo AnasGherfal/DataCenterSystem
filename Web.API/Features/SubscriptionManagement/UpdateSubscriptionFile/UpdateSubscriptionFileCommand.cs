@@ -1,5 +1,5 @@
 ﻿using Core.Constants;
-using Core.Dtos;
+using Core.Wrappers;
 using MediatR;
 
 namespace Web.API.Features.SubscriptionManagement.UpdateSubscriptionFile;

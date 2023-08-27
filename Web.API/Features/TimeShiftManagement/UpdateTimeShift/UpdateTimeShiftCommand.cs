@@ -1,4 +1,4 @@
-﻿using Core.Dtos;
+﻿using Core.Wrappers;
 using MediatR;
 
 namespace Web.API.Features.TimeShiftManagement.UpdateTimeShift;

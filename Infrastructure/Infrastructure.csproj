@@ -16,6 +16,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.4" />
       <PackageReference Include="MimeMapping" Version="2.0.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="MailKit" Version="4.1.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -25,6 +26,15 @@
 
     <ItemGroup>
       <Folder Include="Persistence\Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.AspNetCore.Hosting.Abstractions">
+        <HintPath>..\..\..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\7.0.10\Microsoft.AspNetCore.Hosting.Abstractions.dll</HintPath>
+      </Reference>
+      <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
+        <HintPath>..\..\..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\7.0.10\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

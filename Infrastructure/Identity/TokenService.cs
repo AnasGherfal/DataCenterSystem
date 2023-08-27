@@ -1,12 +1,13 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Core.Entities;
+using Core.Interfaces.Services;
+using Core.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Web.API.Options;
 
-namespace Web.API.Services.TokenService;
+namespace Infrastructure.Identity;
 
 public class TokenService : ITokenService
 {

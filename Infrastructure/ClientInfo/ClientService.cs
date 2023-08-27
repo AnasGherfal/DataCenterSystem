@@ -1,7 +1,9 @@
 ﻿using Core.Constants;
 using Core.Exceptions;
+using Core.Interfaces.Services;
+using Microsoft.AspNetCore.Http;
 
-namespace Web.API.Services.ClientService;
+namespace Infrastructure.ClientInfo;
 
 public class ClientService: IClientService
 {

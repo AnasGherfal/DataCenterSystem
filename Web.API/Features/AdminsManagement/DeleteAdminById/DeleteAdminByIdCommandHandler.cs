@@ -1,13 +1,12 @@
-﻿using Core.Dtos;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Events.Admin;
 using Core.Exceptions;
-
+using Core.Interfaces.Services;
+using Core.Wrappers;
 using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Web.API.Services.ClientService;
 
 namespace Web.API.Features.AdminsManagement.DeleteAdminById;
 

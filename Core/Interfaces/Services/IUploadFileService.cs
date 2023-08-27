@@ -1,7 +1,7 @@
 ﻿using Core.Constants;
-using Web.API.Services.UploadService.Dtos;
+using Core.Interfaces.Dtos;
 
-namespace Web.API.Services.UploadService;
+namespace Core.Interfaces.Services;
 
 public interface IUploadFileService
 {

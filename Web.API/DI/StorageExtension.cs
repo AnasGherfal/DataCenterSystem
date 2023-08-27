@@ -1,5 +1,6 @@
-using Web.API.Options;
-using Web.API.Services.UploadService;
+using Core.Interfaces.Services;
+using Core.Options;
+using Infrastructure.FileStorage;
 
 namespace Web.API.DI;
 

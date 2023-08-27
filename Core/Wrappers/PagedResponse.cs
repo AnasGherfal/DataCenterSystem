@@ -1,4 +1,4 @@
-namespace Core.Dtos;
+namespace Core.Wrappers;
 
 public class PagedResponse<T> : MessageResponse
 {

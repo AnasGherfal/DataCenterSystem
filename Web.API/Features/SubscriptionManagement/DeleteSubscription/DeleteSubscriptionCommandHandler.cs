@@ -1,11 +1,11 @@
-﻿using Core.Dtos;
-using Core.Events.Subscription;
+﻿using Core.Events.Subscription;
 using Core.Exceptions;
+using Core.Interfaces.Services;
+using Core.Wrappers;
 using Infrastructure;
 using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Web.API.Services.ClientService;
 
 namespace Web.API.Features.SubscriptionManagement.DeleteSubscription;
 

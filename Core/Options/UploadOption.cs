@@ -1,4 +1,4 @@
-﻿namespace Web.API.Options;
+﻿namespace Core.Options;
 
 public class UploadOption
 {

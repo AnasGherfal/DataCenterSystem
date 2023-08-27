@@ -1,7 +1,7 @@
+using Core.Options;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Middlewares;
 using Web.API.DI;
-using Web.API.Options;
+using Web.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;

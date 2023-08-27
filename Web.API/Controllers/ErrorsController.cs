@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Core.Dtos;
+using Core.Wrappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Web.API.Controllers;

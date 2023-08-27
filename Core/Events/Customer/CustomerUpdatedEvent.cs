@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Core.Constants;
-using Core.Dtos;
 using Core.Events.Abstracts;
+using Core.Interfaces.Dtos;
 
 namespace Core.Events.Customer;
 
@@ -21,7 +21,7 @@ public class CustomerUpdatedEventData : IEventData
     public string PrimaryPhone { get; set; } = string.Empty;
     public string? SecondaryPhone { get; set; }
     public string Email { get; set; } =string.Empty;
-    public IList<FileRequestDto> Files { get; set; }=new List<FileRequestDto>();
+    public IList<FileStorageData> Files { get; set; }=new List<FileStorageData>();
     [JsonIgnore]
     public EventType Type => EventType.CustomerUpdated;
 }

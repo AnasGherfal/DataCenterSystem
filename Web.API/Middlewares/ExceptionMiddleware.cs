@@ -1,10 +1,8 @@
 ﻿using System.Net;
-using Core.Dtos;
 using Core.Exceptions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+using Core.Wrappers;
 
-namespace Shared.Middlewares;
+namespace Web.API.Middlewares;
 
 public class ExceptionMiddleware
 {

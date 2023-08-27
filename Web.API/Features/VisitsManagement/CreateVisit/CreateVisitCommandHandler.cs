@@ -1,13 +1,12 @@
 ﻿using Core.Constants;
-using Core.Dtos;
 using Core.Entities;
 using Core.Events.Visit;
 using Core.Exceptions;
-
+using Core.Interfaces.Services;
+using Core.Wrappers;
 using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Web.API.Services.ClientService;
 
 namespace Web.API.Features.VisitsManagement.CreateVisit;
 

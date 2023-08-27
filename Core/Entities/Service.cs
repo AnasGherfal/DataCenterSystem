@@ -1,4 +1,5 @@
 ﻿using Core.Constants;
+using Core.Events.Abstracts;
 using Core.Events.Service;
 
 namespace Core.Entities;

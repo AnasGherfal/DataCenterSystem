@@ -25,11 +25,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\AuditManagement\FetchAudits\" />
-      <Folder Include="Features\AuditManagement\FetchProjectionById\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Remove="Templates\SubscriptionAlert.html" />
     </ItemGroup>
 </Project>

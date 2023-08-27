@@ -25,7 +25,8 @@ public sealed record FetchProjectionByIdQueryHandler : IRequestHandler<FetchProj
     public async Task<ContentResponse<FetchProjectionByIdQueryResponse>> Handle(FetchProjectionByIdQuery request, CancellationToken cancellationToken)
     {
         var data = await _dbContext.Events
-            .Where(p => p.AggregateId == Guid.Parse(request.Id!))
+            .Where(p => p.AggregateId == Guid.Parse(request.Id!)
+            && (request.Date == null || p.DateTime <= request.Date.Value))
             .OrderBy(p => p.Sequence)
             .AsNoTracking()
             .ToListAsync(cancellationToken: cancellationToken);

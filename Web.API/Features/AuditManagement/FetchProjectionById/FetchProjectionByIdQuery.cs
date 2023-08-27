@@ -7,5 +7,6 @@ public sealed record FetchProjectionByIdQuery: IRequest<ContentResponse<FetchPro
 {
     public EntityType? ProjectionType { get; set; }
     public string? Id { get; private set; }
+    public DateTime? Date { get; private set; }
     public void SetId(string id) => Id = id;
 }

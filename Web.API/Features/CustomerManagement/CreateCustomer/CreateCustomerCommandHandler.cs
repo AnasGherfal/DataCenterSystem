@@ -1,87 +1,65 @@
-﻿using AutoMapper;
-using Infrastructure;
+﻿using Infrastructure;
 using Infrastructure.Constants;
-using Infrastructure.Models;
+using Infrastructure.Entities;
+using Infrastructure.Events.Abstracts;
+using Infrastructure.Events.Customer;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared.Constants;
 using Shared.Dtos;
 using Shared.Exceptions;
+using Web.API.Services.ClientService;
+using Web.API.Services.UploadService;
+using Web.API.Services.UploadService.Dtos;
 
 namespace Web.API.Features.CustomerManagement.CreateCustomer;
 
 public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, MessageResponse>
 {
-    private readonly DataCenterContext _dbContext;
-    private readonly IConfiguration _config;
-    public CreateCustomerCommandHandler(DataCenterContext dbContext, IConfiguration config)
+    private readonly IClientService _client;
+    private readonly IUploadFileService _uploadFile;
+    private readonly AppDbContext _dbContext;
+
+    public CreateCustomerCommandHandler(AppDbContext dbContext, IUploadFileService uploadFile, IClientService client)
     {
         _dbContext = dbContext;
-        _config = config;
-        
+        _uploadFile = uploadFile;
+        _client = client;
     }
+
     public async Task<MessageResponse> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
     {
-        var data = new Customer
+        var customerExists = await _dbContext.Customers
+            .AnyAsync(p => p.PrimaryPhone == request.PrimaryPhone!
+                || p.Email == request.Email!, cancellationToken: cancellationToken);
+        if (customerExists) throw new BadRequestException("العميل موجود بالفعل");
+        var fileRequests = request.Documents!
+            .Select(p => new FileStorageUploadRequest(Guid.NewGuid(), p.File!, (short) p.DocType!.Value))
+            .ToList();
+        var uploadPath = await _uploadFile.UploadFiles(StorageType.CustomerFile, fileRequests);
+        if (uploadPath == null) throw new BadRequestException("حدث خطأ أثناء رفع الملف");
+        var @event = new CustomerCreatedEvent(_client.GetIdentifier(), Guid.NewGuid(), new CustomerCreatedEventData()
         {
             Name = request.Name!,
-            Address = request.Address,
+            Address = request.Address!,
+            City = request.City!,
             PrimaryPhone = request.PrimaryPhone!,
-            SecondaryPhone = request.SecondaryPhone,
+            SecondaryPhone = request.SecondaryPhone ?? "",
             Email = request.Email!,
-            Status = GeneralStatus.Active,
-            CreatedOn = DateTime.UtcNow,       
-        } ?? throw new BadRequestException("! طلبك غير صالح يرجى إعادة المحاولة");
-        var isNotUnique = await _dbContext.Customers
-            .Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted)
-            .AnyAsync();
-        if (isNotUnique) throw new NotFoundException("الاسم موجود مسبقًا");
-        await _dbContext.Customers.AddAsync(data);
-        var customerFiles = new List<CustomerFile>()
-        {
-            new CustomerFile()
+            Documents = fileRequests.Select(p => new FileStorageData()
             {
-                DocType=request.FirstFile.DocType,
-                Filename=ToTrustedFileName(data.Name,(DocType)request.FirstFile.DocType,Path.GetExtension(request.FirstFile.File.FileName)),
-                FilePath=GetFilePath(data.Name),
-                CustomerId=data.Id,
-                Customer=data,
-                 IsActive=GeneralStatus.Active,
-                CreatedOn=DateTime.UtcNow
-            },
-              new CustomerFile()
-            {
-                DocType=request.SecondFile.DocType,
-                Filename=ToTrustedFileName(data.Name,(DocType)request.SecondFile.DocType,Path.GetExtension(request.SecondFile.File.FileName)),
-                FilePath=GetFilePath(data.Name),
-                CustomerId=data.Id,
-                Customer=data,
-                IsActive=GeneralStatus.Active,
-                CreatedOn=DateTime.UtcNow
-            }
-        };
-        foreach (var file in customerFiles)
-        {
-            _dbContext.CustomerFiles.Add(file);
-        }
-        await _dbContext.SaveChangesAsync();
-    
-       
-
-
+                FileIdentifier = p.Id,
+                FileType = request.Documents!.First(q => q.File == p.File).DocType!.Value,
+                FileLink = uploadPath.First(q => q.Id == p.Id).Link,
+            }).ToList()
+        });
+        var data = new Customer();
+        data.Apply(@event);
+        await _dbContext.Customers.AddAsync(data, cancellationToken);
+        await _dbContext.Events.AddAsync(@event, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
         return new MessageResponse()
         {
-            Msg = "تمت إضافة العميل بنجاح!",
+            Msg = "تم اضافة مشترك بنجاح!",
         };
     }
-
-    private string GetFilePath(string name)
-    {
-        return _config.GetValue<string>("Storage:Customer") + "\\" + DateOnly.FromDateTime(DateTime.UtcNow).Year.ToString() + "\\" + $"{name}\\";
-    }
-    private static string ToTrustedFileName(string name,DocType type,string ext)
-    {
-        return name + $" {type}" + ext;
-    }
 }
-

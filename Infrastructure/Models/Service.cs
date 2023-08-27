@@ -1,5 +1,5 @@
-﻿using Infrastructure.Audits.Service;
-using Infrastructure.Constants;
+﻿using Infrastructure.Constants;
+using Infrastructure.Events.Service;
 
 namespace Infrastructure.Models;
 
@@ -17,24 +17,21 @@ public class Service : BaseModel
     public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     
     
-    public static Service Create(ServiceCreatedAudit @event)
+    public void Apply(ServiceCreatedEvent @event)
     {
-        return new Service()
-        {
-            Id = @event.AggregateId,
-            Name = @event.Data.Name,
-            AmountOfPower = @event.Data.AmountOfPower,
-            AcpPort = @event.Data.AcpPort,
-            Dns = @event.Data.Dns,
-            MonthlyVisits = @event.Data.MonthlyVisits,
-            Price = @event.Data.Price,
-            Status = GeneralStatus.Active,
-            CreatedOn = @event.DateTime,
-            // CreatedById = @event.UserId,
-        };
+        Id = @event.AggregateId;
+        Name = @event.Data.Name;
+        AmountOfPower = @event.Data.AmountOfPower;
+        AcpPort = @event.Data.AcpPort;
+        Dns = @event.Data.Dns;
+        MonthlyVisits = @event.Data.MonthlyVisits;
+        Price = @event.Data.Price;
+        Status = GeneralStatus.Active;
+        CreatedOn = @event.DateTime;
+        CreatedById = @event.UserId;
     }
     
-    public void Apply(ServiceUpdatedAudit @event)
+    public void Apply(ServiceUpdatedEvent @event)
     {
         Name = @event.Data.Name;
         AmountOfPower = @event.Data.AmountOfPower;
@@ -44,17 +41,17 @@ public class Service : BaseModel
         Price = @event.Data.Price;
     }
     
-    public void Apply(ServiceLockedAudit @event)
+    public void Apply(ServiceLockedEvent @event)
     {
         Status = GeneralStatus.Locked;
     }
     
-    public void Apply(ServiceUnlockedAudit @event)
+    public void Apply(ServiceUnlockedEvent @event)
     {
         Status = GeneralStatus.Active;
     }
     
-    public void Apply(ServiceDeletedAudit @event)
+    public void Apply(ServiceDeletedEvent @event)
     {
         Status = GeneralStatus.Deleted;
     }

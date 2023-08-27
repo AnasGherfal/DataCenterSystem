@@ -2,7 +2,7 @@ using Infrastructure.Constants;
 
 namespace Web.API.Features.SubscriptionManagement.FetchSubscriptions
 {
-    public class FetchSubscriptionsQueryResponse
+    public sealed record FetchSubscriptionsQueryResponse
     {
         public Guid Id { get; set; }
         public string CustomerName { get; set; } = string.Empty;

@@ -1,8 +1,9 @@
 ﻿using Infrastructure.Constants;
+using Web.API.Services.UploadService.Dtos;
 
 namespace Web.API.Services.UploadService;
 
 public interface IUploadFileService
 {
-    Task<string> Upload(IFormFile file, StorageType type);
+    Task<IList<FileStorageUploadResponse>?> UploadFiles(StorageType type, IList<FileStorageUploadRequest> files);
 } 

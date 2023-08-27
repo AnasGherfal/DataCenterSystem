@@ -1,9 +1,9 @@
-﻿using Shared.Constants;
-
-namespace ManagementAPI.Dtos.Subscriptions;
+﻿namespace ManagementAPI.Dtos.Subscriptions;
 
 public class FilterSubscriptionResponseDto
 {
+    public int CurrentPage { get; set; }
+    public int TotalPages { get; set; }
     public int Count { get; set; }
-    public Status Status { get; set; }
+    public IList<SubscriptionRsponseDto> Content { get; set; } = new List<SubscriptionRsponseDto>();
 }

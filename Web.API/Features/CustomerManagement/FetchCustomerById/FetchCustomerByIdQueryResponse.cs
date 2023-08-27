@@ -1,18 +1,27 @@
-﻿using Infrastructure.Constants;
-using Shared.Dtos;
+using Infrastructure.Constants;
+using Shared.Constants;
 
-namespace Web.API.Features.CustomerManagement.FetchCustomerById;
-
-public class FetchCustomerByIdQueryResponse
+namespace Web.API.Features.CustomerManagement.FetchCustomerById
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; } = default!;
-    public string? Address { get; set; }
-    public string PrimaryPhone { get; set; } = default!;
-    public string? SecondaryPhone { get; set; }
-    public string Email { get; set; } = default!;
-    public GeneralStatus Status { get; set; }
-    public IList<Guid> Subsicrptions { get; set; } = new List<Guid>();
-    public IList<Guid> Representative { get; set; } = new List<Guid>();
-    public IList<FileResponseDto> Files { get; set; } = new List<FileResponseDto>();
+    public sealed record FetchCustomerByIdQueryResponse
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public string PrimaryPhone { get; set; } = string.Empty;
+        public string SecondaryPhone { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public GeneralStatus Status { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public IList<FetchCustomerByIdQueryResponseItem> Files { get; set; } = default!;
+    }
+    
+    public sealed record FetchCustomerByIdQueryResponseItem
+    {
+        public Guid Id { get; set; }
+        public DocumentType FileType { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime CreatedOn { get; set; }
+    }
 }

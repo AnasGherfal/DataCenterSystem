@@ -59,7 +59,7 @@ public class SubscriptionMapperProfile:Profile
                     Email = x.Representative.Email,
                     Status = x.Representative.Status,
                     IdentityNo = x.Representative.IdentityNo,
-                    IdentityType = x.Representative.IdentityType,
+                    IdentityType = (short) x.Representative.IdentityType,
                     PhoneNo = x.Representative.PhoneNo
                 }).ToList()
             }).ToList()))

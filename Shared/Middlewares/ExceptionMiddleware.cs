@@ -41,6 +41,14 @@ public class ExceptionMiddleware
                     httpContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
                     responseMessage = e.Message;
                     break;
+                case NotAuthenticatedException e:
+                    httpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                    responseMessage = e.Message;
+                    break;
+                case ForbiddenException e:
+                    httpContext.Response.StatusCode = (int) HttpStatusCode.Forbidden;
+                    responseMessage = e.Message;
+                    break;
                 default:
                     _logger.LogCritical(ex, "{@protocol} {@scheme} {@method} {@path} {@queryString} {@body}",
                         httpContext.Request.Protocol,

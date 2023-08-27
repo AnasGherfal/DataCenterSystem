@@ -3,7 +3,7 @@ using Infrastructure.Constants;
 
 namespace Web.API.Features.ServiceManagement.FetchServices
 {
-    public class FetchServicesQueryResponse
+    public sealed record FetchServicesQueryResponse
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;

@@ -1,23 +1,26 @@
 ﻿using Infrastructure;
-using Infrastructure.Audits.Admin;
-using Infrastructure.Models;
+using Infrastructure.Entities;
+using Infrastructure.Events.Admin;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Shared.Dtos;
 using Shared.Exceptions;
+using Web.API.Services.ClientService;
 
 namespace Web.API.Features.AdminsManagement.ResetAdminPasswordById;
 
 public sealed record ResetAdminPasswordByIdCommandHandler : IRequestHandler<ResetAdminPasswordByIdCommand, ContentResponse<string>>
 {
-    private readonly DataCenterContext _dbContext;
+    private readonly IClientService _client;
+    private readonly AppDbContext _dbContext;
     private readonly UserManager<Admin> _userManager;
 
-    public ResetAdminPasswordByIdCommandHandler(UserManager<Admin> userManager, DataCenterContext dbContext)
+    public ResetAdminPasswordByIdCommandHandler(UserManager<Admin> userManager, AppDbContext dbContext, IClientService client)
     {
         _userManager = userManager;
         _dbContext = dbContext;
+        _client = client;
     }
 
     public async Task<ContentResponse<string>> Handle(ResetAdminPasswordByIdCommand request, CancellationToken cancellationToken)
@@ -25,14 +28,15 @@ public sealed record ResetAdminPasswordByIdCommandHandler : IRequestHandler<Rese
         var admin = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == Guid.Parse(request.Id!), cancellationToken);
         if (admin == null) throw new NotFoundException("ADMIN_NOT_FOUND");
         var newPassword = GeneratePassword();
+        var @event = new AdminPasswordResetEvent(_client.GetIdentifier(), admin.Id, admin.Sequence + 1, new AdminPasswordResetEventData()
+        {
+            NewPassword = newPassword,
+        });
         var token = await _userManager.GeneratePasswordResetTokenAsync(admin);
         //TODO: Not Idempotent - Use Transaction Instead
         var result = await _userManager.ResetPasswordAsync(admin, token, newPassword);
         if (!result.Succeeded) throw new BadRequestException(result.Errors.FirstOrDefault()!.Description);
-        await _dbContext.Audits.AddAsync(new AdminPasswordResetAudit("", admin.Id, new AdminPasswordResetAuditData()
-        {
-            NewPassword = newPassword,
-        }), cancellationToken);
+        await _dbContext.Events.AddAsync(@event, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return new ContentResponse<string>("SUCCESS", "");
     }

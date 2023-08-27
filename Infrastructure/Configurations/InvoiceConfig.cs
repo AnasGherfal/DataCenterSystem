@@ -1,4 +1,7 @@
-﻿namespace Infrastructure.Configurations;
+﻿
+using Infrastructure.Models;
+
+namespace Infrastructure.Configurations;
 
 public class InvoiceConfig : IEntityTypeConfiguration<Invoice>
 {

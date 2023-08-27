@@ -8,9 +8,9 @@ namespace Web.API.Features.ServiceManagement.FetchServiceById;
 
 public sealed record FetchServiceByIdQueryHandler : IRequestHandler<FetchServiceByIdQuery, ContentResponse<FetchServiceByIdQueryResponse>>
 {
-    private readonly DataCenterContext _dbContext;
+    private readonly AppDbContext _dbContext;
 
-    public FetchServiceByIdQueryHandler(DataCenterContext dbContext)
+    public FetchServiceByIdQueryHandler(AppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

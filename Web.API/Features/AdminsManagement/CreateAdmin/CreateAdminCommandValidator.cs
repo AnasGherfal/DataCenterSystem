@@ -17,7 +17,7 @@ public class CreateAdminCommandValidator: AbstractValidator<CreateAdminCommand>
             .Must(p => p > 0);
         RuleFor(p => p.Permissions)
             .NotNull()
-            .Must(p => p > 0)
-            .Must(((_, i) => Enum.IsDefined(typeof(SystemPermissions), (SystemPermissions?) i!))).WithMessage("Invalid Permission");
+            .IsInEnum()
+            .Must(p => p > 0);
     }
 }

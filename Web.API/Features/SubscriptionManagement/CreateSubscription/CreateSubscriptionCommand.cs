@@ -1,5 +1,5 @@
-﻿using MediatR;
-using Shared.Constants;
+﻿using Infrastructure.Constants;
+using MediatR;
 using Shared.Dtos;
 
 namespace Web.API.Features.SubscriptionManagement.CreateSubscription;
@@ -10,6 +10,6 @@ public sealed record CreateSubscriptionCommand : IRequest<MessageResponse>
     public string? CustomerId { get; set; }
     public string? StartDate { get; set; }
     public string? EndDate { get; set; }
-    public IdentityType? DocType { get; private set; }
     public IFormFile? File { get; private set; }
+    public DocumentType? FileType { get; private set; }
 }

@@ -3,7 +3,7 @@ using Shared.Constants;
 
 namespace Web.API.Features.SubscriptionManagement.FetchSubscriptionById
 {
-    public class FetchSubscriptionByIdQueryResponse
+    public sealed record FetchSubscriptionByIdQueryResponse
     {
         public Guid Id { get; set; }
         public string ServiceName { get; set; } = default!;
@@ -16,12 +16,11 @@ namespace Web.API.Features.SubscriptionManagement.FetchSubscriptionById
         public IList<FetchSubscriptionByIdQueryResponseItem> Files { get; set; } = default!;
     }
     
-    public class FetchSubscriptionByIdQueryResponseItem
+    public sealed record FetchSubscriptionByIdQueryResponseItem
     {
         public Guid Id { get; set; }
-        public string FileName { get; set; } = string.Empty;
-        public IdentityType FileType { get; set; }
-        public GeneralStatus Status { get; set; }
+        public DocumentType FileType { get; set; }
+        public bool IsActive { get; set; }
         public DateTime CreatedOn { get; set; }
     }
 }

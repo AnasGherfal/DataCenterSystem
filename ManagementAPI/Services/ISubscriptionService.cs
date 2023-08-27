@@ -11,7 +11,7 @@ public interface ISubscriptionService
     public Task<MessageResponse> Create(CreateSubscriptionRequestDto request);
     public Task<SubscriptionRsponseDto> GetById(Guid id);
     public Task<FetchSubscriptionResponseDto> GetAll(FetchSubscriptionRequestDto request);
-    public Task<FetchSubscriptionFilterResponseDto> SubscriptionsFilter();
+    public Task<FetchSubscriptionFilterResponseDto> SubscriptionsFilter(FetchSubscriptionRequestDto request);
     public  Task<MessageResponse> Renew( FileRequestDto file,Guid id);
     public Task<MessageResponse> Update(Guid id, UpdateSubscriptionRequestDto request);
     public Task<MessageResponse> Lock(Guid id);

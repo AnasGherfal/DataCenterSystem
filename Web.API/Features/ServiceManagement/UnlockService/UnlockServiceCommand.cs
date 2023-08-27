@@ -5,5 +5,5 @@ namespace Web.API.Features.ServiceManagement.UnlockService;
 
 public sealed record UnlockServiceCommand : IRequest<MessageResponse>
 {
-    public string? Id { get; set; } = string.Empty;
+    public string? Id { get; set; }
 }

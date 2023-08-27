@@ -1,15 +1,15 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Shared.Validators;
+using Web.API.Features.RepresentativeManagement.FetchRepresentativeById;
 
-namespace Web.API.Features.CustomerManagement.FetchCustomerById
+namespace Web.API.Features.CustomerManagement.FetchCustomerById;
+
+public class FetchCustomerByIdQueryValidator: AbstractValidator<FetchRepresentativeByIdQuery>
 {
-    public class FetchCustomerByIdQueryValidator :AbstractValidator<FetchCustomerByIdQuery>
+    public FetchCustomerByIdQueryValidator()
     {
-        public FetchCustomerByIdQueryValidator()
-        {
-            RuleFor(p => p.id)
-                .NotEmpty()
-                .IsGuid();
-        }
+        RuleFor(p => p.Id)
+            .NotEmpty()
+            .IsGuid();
     }
 }

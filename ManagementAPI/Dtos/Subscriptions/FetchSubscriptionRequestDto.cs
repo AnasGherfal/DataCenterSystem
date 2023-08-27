@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Shared.Constants;
 
 namespace ManagementAPI.Dtos.Subscriptions
 {
@@ -7,7 +6,6 @@ namespace ManagementAPI.Dtos.Subscriptions
     {
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;
-        public Status? Status { get; set; }
     }
 
     public class FetchSubscriptionRequestDtoValidator : AbstractValidator<FetchSubscriptionRequestDto>

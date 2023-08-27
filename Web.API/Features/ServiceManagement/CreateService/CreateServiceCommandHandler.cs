@@ -1,28 +1,31 @@
 ﻿using Infrastructure;
-using Infrastructure.Audits.Service;
 using Infrastructure.Constants;
-using Infrastructure.Models;
+using Infrastructure.Entities;
+using Infrastructure.Events.Service;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Shared.Dtos;
 using Shared.Exceptions;
+using Web.API.Services.ClientService;
 
 namespace Web.API.Features.ServiceManagement.CreateService;
 
 public sealed record CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand, MessageResponse>
 {
-    private readonly DataCenterContext _dbContext;
+    private readonly IClientService _client;
+    private readonly AppDbContext _dbContext;
 
-    public CreateServiceCommandHandler(DataCenterContext dbContext)
+    public CreateServiceCommandHandler(AppDbContext dbContext, IClientService client)
     {
         _dbContext = dbContext;
+        _client = client;
     }
 
     public async Task<MessageResponse> Handle(CreateServiceCommand request, CancellationToken cancellationToken)
     {
         var dataExists = await _dbContext.Services.AnyAsync(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted, cancellationToken: cancellationToken);
         if (dataExists) throw new BadRequestException("عذرًا ولكن هذا الأسم موجود مسبقًا");
-        var @event = new ServiceCreatedAudit("", Guid.NewGuid(), new ServiceCreatedAuditData()
+        var @event = new ServiceCreatedEvent(_client.GetIdentifier(), Guid.NewGuid(), new ServiceCreatedEventData()
         {
             Name = request.Name!,
             AmountOfPower = request.AmountOfPower!,
@@ -30,10 +33,11 @@ public sealed record CreateServiceCommandHandler : IRequestHandler<CreateService
             Dns = request.Dns!,
             MonthlyVisits = request.MonthlyVisits!.Value,
             Price = request.Price!.Value,
-            Photo = "",
         });
-        await _dbContext.Services.AddAsync(Service.Create(@event), cancellationToken);
-        await _dbContext.Audits.AddAsync(@event, cancellationToken);
+        var data = new Service();
+        data.Apply(@event);
+        await _dbContext.Services.AddAsync(data, cancellationToken);
+        await _dbContext.Events.AddAsync(@event, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return new MessageResponse()
         {

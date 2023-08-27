@@ -1,8 +1,9 @@
 using Common.Constants;
+using Infrastructure.Constants;
 
 namespace Web.API.Features.AdminsManagement.FetchAdminById
 {
-    public class FetchAdminByIdQueryResponse
+    public sealed record FetchAdminByIdQueryResponse
     {
         public Guid Id { get; set; }
         public string DisplayName { get; set; } = string.Empty;

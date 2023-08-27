@@ -1,41 +1,40 @@
-﻿using Common.Constants;
-using Infrastructure;
-using Infrastructure.Audits.Admin;
-using Infrastructure.Audits.Service;
+﻿using Infrastructure;
 using Infrastructure.Constants;
-using Infrastructure.Models;
+using Infrastructure.Events.Service;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Shared.Dtos;
 using Shared.Exceptions;
+using Web.API.Services.ClientService;
 
 namespace Web.API.Features.ServiceManagement.UpdateService;
 
 public sealed record UpdateServiceCommandHandler : IRequestHandler<UpdateServiceCommand, MessageResponse>
 {
-    private readonly DataCenterContext _dbContext;
+    private readonly IClientService _client;
+    private readonly AppDbContext _dbContext;
 
-    public UpdateServiceCommandHandler(DataCenterContext dbContext)
+    public UpdateServiceCommandHandler(AppDbContext dbContext, IClientService client)
     {
         _dbContext = dbContext;
+        _client = client;
     }
 
     public async Task<MessageResponse> Handle(UpdateServiceCommand request, CancellationToken cancellationToken)
     {
         var id = Guid.Parse(request.Id!);
         var data = await _dbContext.Services
-                       .SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted, cancellationToken: cancellationToken);
+                       .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("!عذرًا لا وجود لباقة بهذا الرقم");
-        if (IsLocked(data.Status)) throw new BadRequestException($"! {data.Id}: عذرًا هذه الباقة مقيدة");
+        if (data.Status == GeneralStatus.Locked) throw new BadRequestException($"! {data.Id}: عذرًا هذه الخدمة مقيدة");
         if (data.Name != request.Name)
         {
             var isNotUnique = await _dbContext.Services
-                .Where(p => p.Name == request.Name && p.Status != GeneralStatus.Deleted)
+                .Where(p => p.Name == request.Name)
                 .AnyAsync(cancellationToken: cancellationToken);
             if (isNotUnique) throw new BadRequestException("!عذرًا ولكن هذا الأسم محجوز لباقة أخرى");
         }
-        var @event = new ServiceUpdatedAudit("", Guid.NewGuid(), new ServiceUpdatedAuditData()
+        var @event = new ServiceUpdatedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new ServiceUpdatedEventData()
         {
             Name = request.Name!,
             AmountOfPower = request.AmountOfPower!,
@@ -46,21 +45,11 @@ public sealed record UpdateServiceCommandHandler : IRequestHandler<UpdateService
         });
         data.Apply(@event);
         _dbContext.Entry(data).State = EntityState.Modified;
-        await _dbContext.Audits.AddAsync(@event, cancellationToken);
+        await _dbContext.Events.AddAsync(@event, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return new MessageResponse()
         {
             Msg = "تمت إضافة الباقة بنجاح",
-        };
-    }
-    
-    private static bool IsLocked(GeneralStatus status)
-    {
-        return status switch
-        {
-            GeneralStatus.Active => false,
-            GeneralStatus.Locked => true,
-            _ => true,
         };
     }
 }

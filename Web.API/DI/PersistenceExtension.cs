@@ -9,7 +9,7 @@ public static class PersistenceExtension
     public static void AddPersistence(this IServiceCollection services, IConfigurationSection section)
     {
         var connectionString = section.GetValue<string>(nameof(PersistenceOption.ConnectionString));
-        services.AddDbContext<DataCenterContext>(o =>
+        services.AddDbContext<AppDbContext>(o =>
         {
             if (string.IsNullOrWhiteSpace(connectionString))
             {
@@ -28,10 +28,11 @@ public static class PersistenceExtension
     public static async void UsePersistence(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
-        await using var commandDb = scope.ServiceProvider.GetRequiredService<DataCenterContext>();
-        if (commandDb.Database.IsSqlServer())
+        await using var dbConte = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        if (dbConte.Database.IsSqlServer())
         {
-            await commandDb.Database.MigrateAsync();   
+            await dbConte.Database.MigrateAsync();
         }
+        dbConte.InitAdmin();
     }
 }

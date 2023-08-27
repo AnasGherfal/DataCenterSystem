@@ -1,4 +1,5 @@
 ﻿using Common.Constants;
+using Infrastructure.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Dtos;
 using Web.API.Abstracts;
@@ -13,7 +14,7 @@ using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;
 
-[RoleBasedPermission(SystemPermissions.ServiceManegment)]
+[VerifiedAdmin(SystemPermissions.ServiceManagement)]
 [ApiController]
 public class ServicesController : ManagementController
 {
@@ -23,11 +24,14 @@ public class ServicesController : ManagementController
     
     [HttpGet]
     public async Task<PagedResponse<FetchServicesQueryResponse>> Fetch([FromQuery] FetchServicesQuery request) 
-        => await Mediator.Send(new FetchServicesQuery(request.PageNumber, request.PageSize));
+        => await Mediator.Send(request);
     
     [HttpGet("{id}")]
     public async Task<ContentResponse<FetchServiceByIdQueryResponse>> FetchById(string id)
-        => await Mediator.Send(new FetchServiceByIdQuery(id));
+        => await Mediator.Send(new FetchServiceByIdQuery()
+        {
+            Id = id,
+        });
 
     [HttpPut("{id}")]
     public async Task<MessageResponse> Update(string id, [FromBody] UpdateServiceCommand request)

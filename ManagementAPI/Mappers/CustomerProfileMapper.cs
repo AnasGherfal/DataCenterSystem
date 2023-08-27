@@ -43,7 +43,7 @@ public class CustomerProfileMapper : Profile
                 LastName = p.LastName,
                 Email = p.Email,
                 IdentityNo = p.IdentityNo,
-                IdentityType = p.IdentityType,
+                IdentityType = (short) p.IdentityType,
                 PhoneNo = p.PhoneNo,
                 Status = p.Status
             }).ToList()));

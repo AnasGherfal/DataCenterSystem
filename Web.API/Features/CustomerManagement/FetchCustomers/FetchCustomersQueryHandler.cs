@@ -1,18 +1,15 @@
-﻿using Infrastructure;
+using Infrastructure;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Shared.Dtos;
-using Web.API.Features.AdminsManagement.FetchAdmins;
 
 namespace Web.API.Features.CustomerManagement.FetchCustomers;
 
-public sealed record FetchCustomersQueryHandler : IRequestHandler<FetchCustomersQuery,PagedResponse<FetchCustomersQueryResponse>>
+public sealed record FetchCustomersQueryHandler : IRequestHandler<FetchCustomersQuery, PagedResponse<FetchCustomersQueryResponse>>
 {
-    private readonly DataCenterContext _dbContext;
+    private readonly AppDbContext _dbContext;
 
-
-    public FetchCustomersQueryHandler(DataCenterContext dbContext)
+    public FetchCustomersQueryHandler(AppDbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -21,7 +18,15 @@ public sealed record FetchCustomersQueryHandler : IRequestHandler<FetchCustomers
     {
         var pageNumber = request.PageNumber ?? 1;
         var pageSize = request.PageSize ?? 5;
-        var data = await _dbContext.Customers
+        var query = _dbContext.Customers
+            .Where(p => string.IsNullOrWhiteSpace(request.Search)
+                        || p.Name.Contains(request.Search)
+                        || p.Email.Contains(request.Search)
+                        || p.PrimaryPhone.Contains(request.Search));
+        var data = await query
+            .Include(p => p.Documents)
+            .Include(p => p.Representatives)
+            .Include(p => p.Subscriptions)
             .OrderBy(p => p.CreatedOn)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -31,16 +36,18 @@ public sealed record FetchCustomersQueryHandler : IRequestHandler<FetchCustomers
                 Id = p.Id,
                 Name = p.Name,
                 Address = p.Address,
+                City = p.City,
                 Email = p.Email,
                 PrimaryPhone = p.PrimaryPhone,
                 SecondaryPhone = p.SecondaryPhone,
+                NumberOfFiles = p.Documents.Count,
+                NumberOfSubscriptions = p.Subscriptions.Count,
+                NumberOfRepresentatives = p.Representatives.Count,
                 Status = p.Status,
-                Subsicrptions = p.Subscriptions.Select(p => p.Id).ToList(),
-                Representative = p.Representatives.Select(p => p.Id).ToList(),
-                FileName = p.Files.Select(p => p.Filename).ToList()
+                CreatedOn = p.CreatedOn,
             })
             .ToListAsync(cancellationToken: cancellationToken);
-        var count = await _dbContext.Customers.CountAsync(cancellationToken: cancellationToken);
+        var count = await query.CountAsync(cancellationToken: cancellationToken);
         return new PagedResponse<FetchCustomersQueryResponse>("", data, count, pageNumber, pageSize);
     }
 }

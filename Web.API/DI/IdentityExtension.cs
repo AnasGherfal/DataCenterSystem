@@ -1,11 +1,11 @@
 using System.Text;
 using Infrastructure;
-using Infrastructure.Models;
+using Infrastructure.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Web.API.Options;
+using Web.API.Services.ClientService;
 using Web.API.Services.TokenService;
 
 namespace Web.API.DI;
@@ -15,37 +15,30 @@ public static class IdentityExtension
     public static void AddIdentity(this IServiceCollection services, IConfigurationSection section)
     {
         services.Configure<AuthenticationOption>(section);
+        services.AddScoped<IClientService, ClientService>();
         services.AddScoped<ITokenService, TokenService>();
-        var authOption = services.BuildServiceProvider().GetRequiredService<IOptions<AuthenticationOption>>().Value;
-        services.AddAuthentication(options => 
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        services.AddHttpContextAccessor();
+        var authOption = section.Get<AuthenticationOption>()!;
+        services.AddAuthentication(opt => {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
                 options.SaveToken = true;
-                options.RequireHttpsMetadata = false;
-                options.Events = new JwtBearerEvents()
-                {
-                    OnTokenValidated = _ => Task.CompletedTask,
-                    OnMessageReceived = _ => Task.CompletedTask
-                };
-                options.TokenValidationParameters = new TokenValidationParameters()
+                options.RequireHttpsMetadata = true;
+                options.Authority = authOption.ValidIssuer;
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateIssuerSigningKey = true,
-                    ValidAudience = authOption.ValidAudience,
                     ValidIssuer = authOption.ValidIssuer,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOption.Secret)),
-                    ClockSkew = TimeSpan.Zero,
+                    ValidAudience = authOption.ValidAudience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOption.Secret))
                 };
             });
-        
-        services.AddIdentity<Admin, AdminRole>(
-                options =>
+        services.AddIdentity<Admin, AdminRole>(options =>
                 {
                     options.Password.RequireDigit = false;
                     options.Password.RequiredLength = 8;
@@ -59,8 +52,8 @@ public static class IdentityExtension
                     options.User.RequireUniqueEmail = true;
                 }
             )
-            // .AddErrorDescriber<MultiLanguageIdentityErrorDescriber>()
-            .AddEntityFrameworkStores<DataCenterContext>()
+            .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
+        services.AddAuthorization();
     }
 }

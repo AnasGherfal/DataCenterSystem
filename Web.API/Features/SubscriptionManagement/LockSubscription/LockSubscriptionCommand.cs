@@ -5,5 +5,5 @@ namespace Web.API.Features.SubscriptionManagement.LockSubscription;
 
 public sealed record LockSubscriptionCommand : IRequest<MessageResponse>
 {
-    public string? Id { get; set; } = string.Empty;
+    public string? Id { get; set; }
 }

@@ -3,6 +3,8 @@
 public enum StorageType
 {
     SubscriptionFile,
+    RepresentativeFile,
+    CustomerFile,
 }
 
 public static class StringExtension
@@ -12,6 +14,8 @@ public static class StringExtension
         return type switch
         {
             StorageType.SubscriptionFile => "SubscriptionFiles",
+            StorageType.RepresentativeFile => "RepresentativeFiles",
+            StorageType.CustomerFile => "CustomerFiles",
             _ => "",
         };
     }

@@ -3,5 +3,7 @@ using Shared.Dtos;
 
 namespace Web.API.Features.AdminsManagement.DeleteAdminById;
 
-public sealed record DeleteAdminByIdCommand(string? Id) 
-    : IRequest<MessageResponse>;
+public sealed record DeleteAdminByIdCommand: IRequest<MessageResponse>
+{
+    public string? Id { get; set; }
+}

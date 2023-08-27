@@ -8,16 +8,16 @@ public static class ServicesExtension
     public static void AddServices(this IServiceCollection services, IConfiguration config)
     {
         services.AddSingleton(config);
-        services.AddScoped<IInvoiceService, InvoiceService>();
-        services.AddScoped<ICustomerService, CustomerService>();
-        services.AddScoped<IRepresentativeService, RepresentativeService>();
-        services.AddScoped<IVisitService, VisitService>();
-        services.AddScoped<ISubscriptionService, SubscriptionService>();
+        // services.AddScoped<IInvoiceService, InvoiceService>();
+        // services.AddScoped<ICustomerService, CustomerService>();
+        // services.AddScoped<IRepresentativeService, RepresentativeService>();
+        // services.AddScoped<IVisitService, VisitService>();
+        // services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IVisitTimeShiftService, VisitTimeShiftService>();
-        services.AddScoped<IUploadFileService, UploadFileService>();
-        services.AddScoped<IServiceServices,ServiceServices>();
-        services.AddScoped<SubscriptionService>();
-        services.AddScoped<UserService>();
+        // services.AddScoped<IUploadFileService, UploadFileService>();
+        // services.AddScoped<IServiceServices,ServiceServices>();
+        // services.AddScoped<SubscriptionService>();
+        // services.AddScoped<UserService>();
 
 
     }

@@ -8,9 +8,9 @@ namespace Web.API.Features.SubscriptionManagement.FetchSubscriptionById;
 
 public sealed record FetchSubscriptionByIdQueryHandler : IRequestHandler<FetchSubscriptionByIdQuery, ContentResponse<FetchSubscriptionByIdQueryResponse>>
 {
-    private readonly DataCenterContext _dbContext;
+    private readonly AppDbContext _dbContext;
 
-    public FetchSubscriptionByIdQueryHandler(DataCenterContext dbContext)
+    public FetchSubscriptionByIdQueryHandler(AppDbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -20,28 +20,28 @@ public sealed record FetchSubscriptionByIdQueryHandler : IRequestHandler<FetchSu
         var data = await _dbContext.Subscriptions
             .Include(p => p.Customer)
             .Include(p => p.Service)
+            .Include(p => p.Documents)
             .FirstOrDefaultAsync(p => p.Id == Guid.Parse(request.Id!), cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("SUBSCRIPTION_NOT_FOUND");
+        var document = data.Documents.FirstOrDefault(p => p.IsActive);
         return new ContentResponse<FetchSubscriptionByIdQueryResponse>("", new FetchSubscriptionByIdQueryResponse()
         {
             Id = data.Id,
-            CustomerName = data.Customer.Name,
-            ServiceName = data.Service.Name,
+            CustomerName = data.Customer!.Name,
+            ServiceName = data.Service!.Name,
             StartDate = data.StartDate,
             EndDate = data.EndDate,
-            TotalPrice = data.TotalPrice ?? 0,
+            TotalPrice = data.TotalPrice,
             Status = data.Status,
             CreatedOn = data.CreatedOn,
-            Files = { 
-                new FetchSubscriptionByIdQueryResponseItem() 
+            Files = data.Documents
+                .Select(p => new FetchSubscriptionByIdQueryResponseItem()
                 {
-                    Id = data.SubscriptionFile.Id,
-                    FileName = data.SubscriptionFile.FileName,
-                    FileType = data.SubscriptionFile.FileType,
-                    Status = data.SubscriptionFile.IsActive,
-                    CreatedOn = data.SubscriptionFile.CreatedOn,
-                },
-            }
+                    Id = p.Id,
+                    FileType = p.FileType,
+                    IsActive = p.IsActive,
+                    CreatedOn = p.CreatedOn, 
+                }).ToList(),
         });
     }
 }

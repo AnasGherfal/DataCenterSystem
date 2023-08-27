@@ -2,5 +2,8 @@ using MediatR;
 using Shared.Dtos;
 
 namespace Web.API.Features.ServiceManagement.FetchServices;
-public sealed record FetchServicesQuery(int? PageNumber, int? PageSize) 
-    : IRequest<PagedResponse<FetchServicesQueryResponse>>;
+public sealed record FetchServicesQuery: IRequest<PagedResponse<FetchServicesQueryResponse>>
+{
+    public int? PageNumber { get; set; }
+    public int? PageSize { get; set; }
+}

@@ -7,7 +7,10 @@ public class FetchSubscriptionFileByIdQueryValidator: AbstractValidator<FetchSub
 {
     public FetchSubscriptionFileByIdQueryValidator()
     {
-        RuleFor(p => p.Id)
+        RuleFor(p => p.SubscriptionId)
+            .NotEmpty()
+            .IsGuid();
+        RuleFor(p => p.FileId)
             .NotEmpty()
             .IsGuid();
     }

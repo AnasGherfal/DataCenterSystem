@@ -1,57 +1,63 @@
-﻿using Common.Constants;
+﻿using System.Security.Claims;
 using Infrastructure;
-using Infrastructure.Audits.Admin;
-using Infrastructure.Models;
+using Infrastructure.Constants;
+using Infrastructure.Entities;
+using Infrastructure.Events.Admin;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Shared.Dtos;
 using Shared.Exceptions;
+using Web.API.Services.ClientService;
 
 namespace Web.API.Features.AdminsManagement.CreateAdmin;
 
 public sealed record CreateAdminCommandHandler : IRequestHandler<CreateAdminCommand, ContentResponse<CreateAdminCommandResponse>>
 {
-    private readonly DataCenterContext _dbContext;
+    private readonly IClientService _client;
+    private readonly AppDbContext _dbContext;
     private readonly UserManager<Admin> _userManager;
 
-    public CreateAdminCommandHandler(UserManager<Admin> userManager, DataCenterContext dbContext)
+    public CreateAdminCommandHandler(UserManager<Admin> userManager, AppDbContext dbContext, IClientService client)
     {
         _userManager = userManager;
         _dbContext = dbContext;
+        _client = client;
     }
 
     public async Task<ContentResponse<CreateAdminCommandResponse>> Handle(CreateAdminCommand request, CancellationToken cancellationToken)
     {
         var admin = await _userManager.Users.SingleOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
         if (admin != null) throw new BadRequestException("EMAIL_ALREADY_EXIST");
-        var newAdmin = new Admin()
-        {
-            Email = request.Email!,
-            DisplayName = request.FullName!,
-            EmployeeId = request.EmpId!.Value,
-            Permissions = (SystemPermissions) request.Permissions!.Value,
-            UserName = Guid.NewGuid().ToString().Replace("-", ""),
-            EmailConfirmed = true,
-            SecurityStamp = Guid.NewGuid().ToString(),
-            CreatedOn = DateTime.UtcNow,
-        };
         var password = GeneratePassword();
-        //TODO: Not Idempotent - Use Transaction Instead
-        var result = await _userManager.CreateAsync(newAdmin, password);
-        if (!result.Succeeded) throw new BadRequestException(result.Errors.FirstOrDefault()!.Description);
-        await _dbContext.Audits.AddAsync(new AdminCreatedAudit("", newAdmin.Id, new AdminCreatedAuditData()
+        var @event = new AdminCreatedEvent(_client.GetIdentifier(), Guid.NewGuid(), new AdminCreatedEventData()
         {
-            FullName = newAdmin.DisplayName,
-            Email = newAdmin.Email,
-            Permissions = newAdmin.Permissions,
-            EmpId = newAdmin.EmployeeId,
+            FullName = request.FullName!,
+            UserName = Guid.NewGuid().ToString().Replace("-", ""),
+            SecurityStamp = Guid.NewGuid().ToString(),
+            Email = request.Email!,
+            Permissions = request.Permissions!.Value,
+            EmpId = request.EmpId!.Value,
             Password = password,
-        }), cancellationToken);
+        });
+        var data = new Admin();
+        data.Apply(@event);
+        //TODO: Not Idempotent - Use Transaction Instead
+        var result = await _userManager.CreateAsync(data, password);
+        await _userManager.AddClaimsAsync(data, new List<Claim>()
+        {
+            new(ClaimsKey.IdentityId.Key(), data.Id.ToString()),
+            new(ClaimsKey.DisplayName.Key(), data.DisplayName),
+            new(ClaimsKey.Email.Key(), data.Email ?? ""),
+            new(ClaimsKey.Permissions.Key(), data.Permissions.ToString("D")),
+            new(ClaimsKey.EmailVerified.Key(), data.EmailConfirmed.ToString()),
+        });
+        if (!result.Succeeded) throw new BadRequestException(result.Errors.FirstOrDefault()!.Description);
+        await _dbContext.Events.AddAsync(@event, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         var responseContent = new CreateAdminCommandResponse()
         {
-            UserId = newAdmin.Id.ToString(),
+            UserId = data.Id.ToString(),
             UserPassword = password,
         };
         return new ContentResponse<CreateAdminCommandResponse>("SUCCESS", responseContent);

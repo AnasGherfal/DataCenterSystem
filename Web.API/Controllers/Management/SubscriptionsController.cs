@@ -1,4 +1,5 @@
 ﻿using Common.Constants;
+using Infrastructure.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Dtos;
 using Web.API.Abstracts;
@@ -14,7 +15,7 @@ using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;
 
-[RoleBasedPermission(SystemPermissions.SubscriptionManegment)]
+[VerifiedAdmin(SystemPermissions.SubscriptionManagement)]
 [ApiController]
 public class SubscriptionsController : ManagementController
 {
@@ -24,28 +25,30 @@ public class SubscriptionsController : ManagementController
     
     [HttpGet]
     public async Task<PagedResponse<FetchSubscriptionsQueryResponse>> Fetch([FromQuery] FetchSubscriptionsQuery request) 
-        => await Mediator.Send(new FetchSubscriptionsQuery()
-        {
-            PageSize = request.PageSize,
-            PageNumber = request.PageNumber,
-            CustomerId = request.CustomerId,
-        });
+        => await Mediator.Send(request);
     
     [HttpGet("{id}")]
     public async Task<ContentResponse<FetchSubscriptionByIdQueryResponse>> FetchById(string id)
-        => await Mediator.Send(new FetchSubscriptionByIdQuery(id));
+        => await Mediator.Send(new FetchSubscriptionByIdQuery()
+        {
+            Id = id,
+        });
     
-    [HttpGet("{id}/document")]
+    [HttpGet("{id}/document/{fileId}")]
     public async Task<FileStreamResult> FetchById(string id, string fileId)
-        => await Mediator.Send(new FetchSubscriptionFileByIdQuery(id));
+        => await Mediator.Send(new FetchSubscriptionFileByIdQuery()
+        {
+            SubscriptionId = id,
+            FileId = fileId,
+        });
 
     
     [HttpPut("{id}/renew")]
     public async Task<MessageResponse> Renew(string id, [FromBody] RenewSubscriptionCommand request)
-    {
-        request.SetId(id);
-        return await Mediator.Send(request);
-    }
+        => await Mediator.Send(new RenewSubscriptionCommand()
+        {
+            Id = id,
+        });
 
     [HttpPut("{id}/lock")]
     public async Task<MessageResponse> Lock(string id) 

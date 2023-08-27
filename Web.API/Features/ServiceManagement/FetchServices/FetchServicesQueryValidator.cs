@@ -8,7 +8,6 @@ public class FetchServicesQueryValidator: AbstractValidator<FetchServicesQuery>
     {
             RuleFor(p => p.PageNumber)
                 .GreaterThanOrEqualTo(1);
-
             RuleFor(p => p.PageSize)
                 .GreaterThanOrEqualTo(5);
     }

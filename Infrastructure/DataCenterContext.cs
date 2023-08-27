@@ -1,6 +1,18 @@
-﻿using Infrastructure.Audits.Abstracts;
+﻿using Infrastructure.Builders;
 using Infrastructure.Configurations;
+using Infrastructure.Events.Abstracts;
+using Infrastructure.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Admin = Infrastructure.Entities.Admin;
+using AdminRole = Infrastructure.Entities.AdminRole;
+using Companion = Infrastructure.Entities.Companion;
+using Customer = Infrastructure.Entities.Customer;
+using Invoice = Infrastructure.Entities.Invoice;
+using Representative = Infrastructure.Entities.Representative;
+using Service = Infrastructure.Entities.Service;
+using Subscription = Infrastructure.Entities.Subscription;
+using User = Infrastructure.Entities.User;
+using Visit = Infrastructure.Entities.Visit;
 
 namespace Infrastructure;
 
@@ -10,7 +22,7 @@ public class DataCenterContext : IdentityDbContext<Admin, AdminRole, Guid>
     {
     }
     
-    public DbSet<Audit> Audits => Set<Audit>();
+    public DbSet<Event> Audits => Set<Event>();
     public DbSet<AdditionalPower> AdditionalPowers => Set<AdditionalPower>();
     public DbSet<Companion> Companions => Set<Companion>();
     public DbSet<Customer> Customers => Set<Customer>();
@@ -38,7 +50,7 @@ public class DataCenterContext : IdentityDbContext<Admin, AdminRole, Guid>
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        this.AddAuditBuilder(modelBuilder);
+        this.AddEventBuilder(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DataCenterContext).Assembly);
         base.OnModelCreating(modelBuilder);
     }

@@ -2,5 +2,8 @@ using MediatR;
 using Shared.Dtos;
 
 namespace Web.API.Features.AdminsManagement.FetchAdmins;
-public sealed record FetchAdminsQuery(int? PageNumber, int? PageSize) 
-    : IRequest<PagedResponse<FetchAdminsQueryResponse>>;
+public sealed record FetchAdminsQuery: IRequest<PagedResponse<FetchAdminsQueryResponse>>
+{
+    public int? PageNumber { get; set; }
+    public int? PageSize { get; set; }
+}

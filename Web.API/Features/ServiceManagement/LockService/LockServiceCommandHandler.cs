@@ -1,32 +1,35 @@
 ﻿using Infrastructure;
-using Infrastructure.Audits.Service;
 using Infrastructure.Constants;
+using Infrastructure.Events.Service;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Shared.Dtos;
 using Shared.Exceptions;
+using Web.API.Services.ClientService;
 
 namespace Web.API.Features.ServiceManagement.LockService;
 
 public sealed record LockServiceCommandHandler : IRequestHandler<LockServiceCommand, MessageResponse>
 {
-    private readonly DataCenterContext _dbContext;
+    private readonly IClientService _client;
+    private readonly AppDbContext _dbContext;
 
-    public LockServiceCommandHandler(DataCenterContext dbContext)
+    public LockServiceCommandHandler(AppDbContext dbContext, IClientService client)
     {
         _dbContext = dbContext;
+        _client = client;
     }
 
     public async Task<MessageResponse> Handle(LockServiceCommand request, CancellationToken cancellationToken)
     {
         var id = Guid.Parse(request.Id!);
-        var data = await _dbContext.Services.SingleOrDefaultAsync(p => p.Id == id && p.Status != GeneralStatus.Deleted, cancellationToken: cancellationToken);
+        var data = await _dbContext.Services.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("!عذرًا لا وجود لباقة بهذا الرقم");
         if (data.Status == GeneralStatus.Locked) throw new BadRequestException($"! {data.Name}: عذرًا هذه الباقة مقيدة");
-        var @event = new ServiceLockedAudit("", Guid.NewGuid(), new ServiceLockedAuditData());
+        var @event = new ServiceLockedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new ServiceLockedEventData());
         data.Apply(@event);
         _dbContext.Entry(data).State = EntityState.Modified;
-        await _dbContext.Audits.AddAsync(@event, cancellationToken);
+        await _dbContext.Events.AddAsync(@event, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return new MessageResponse()
         {

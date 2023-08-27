@@ -5,5 +5,5 @@ namespace Web.API.Features.SubscriptionManagement.DeleteSubscription;
 
 public sealed record DeleteSubscriptionCommand : IRequest<MessageResponse>
 {
-    public string? Id { get; set; } = string.Empty;
+    public string? Id { get; set; }
 }

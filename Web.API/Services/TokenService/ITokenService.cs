@@ -1,5 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using Infrastructure.Models;
+using Infrastructure.Entities;
 
 namespace Web.API.Services.TokenService;
 

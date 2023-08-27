@@ -7,9 +7,9 @@ namespace Web.API.Features.ServiceManagement.FetchServices;
 
 public sealed record FetchServicesQueryHandler : IRequestHandler<FetchServicesQuery, PagedResponse<FetchServicesQueryResponse>>
 {
-    private readonly DataCenterContext _dbContext;
+    private readonly AppDbContext _dbContext;
 
-    public FetchServicesQueryHandler(DataCenterContext dbContext)
+    public FetchServicesQueryHandler(AppDbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -36,7 +36,7 @@ public sealed record FetchServicesQueryHandler : IRequestHandler<FetchServicesQu
                 CreatedOn = p.CreatedOn,
             })
             .ToListAsync(cancellationToken: cancellationToken);
-        var count = await _dbContext.Users.CountAsync(cancellationToken: cancellationToken);
+        var count = await _dbContext.Services.CountAsync(cancellationToken: cancellationToken);
         return new PagedResponse<FetchServicesQueryResponse>("", data, count, pageNumber, pageSize);
     }
 }

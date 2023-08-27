@@ -1,4 +1,5 @@
-﻿namespace Infrastructure.Configurations;
+﻿using Infrastructure.Models;
+namespace Infrastructure.Configurations;
 
 public class SubscriptionFileConfig : IEntityTypeConfiguration<SubscriptionFile>
 {

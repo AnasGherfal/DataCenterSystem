@@ -55,6 +55,7 @@ public class CustomerService : ICustomerService
 
         var data = await _dbContext.Customers.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
                                        .Include(p => p.Representatives)
+                                       .ThenInclude(p => p.Files.Where(c => c.IsActive != GeneralStatus.Deleted))
                                        .Include(p => p.Subscriptions)
                                        .Include(p => p.Files.Where(c=>c.IsActive!=GeneralStatus.Deleted))
                                        .ProjectTo<CustomerResponseDto>(_mapper.ConfigurationProvider)
@@ -78,6 +79,7 @@ public class CustomerService : ICustomerService
     {
        var query = _dbContext.Customers
             .Include(p=>p.Representatives.Where(c => c.Status != GeneralStatus.Deleted))
+            .ThenInclude(p => p.Files.Where(c => c.IsActive!=GeneralStatus.Deleted))
             .Include(p=>p.Subscriptions.Where(c => c.Status != GeneralStatus.Deleted))
             .Include(p => p.Files.Where(c=>c.IsActive!=GeneralStatus.Deleted))
             .Where(p => p.Status  != GeneralStatus.Deleted);

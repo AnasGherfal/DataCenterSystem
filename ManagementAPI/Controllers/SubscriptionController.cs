@@ -33,7 +33,7 @@ namespace ManagementAPI.Controllers
         public async Task<IActionResult> GetById(string id) => Ok(await _service.GetById(Guid.Parse(id)));
 
         [HttpPut("{id}/Renew")]
-        public async Task<IActionResult> Renew([FromForm]FileRequestDto file, string id) => Ok(await _service.Renew(file, Guid.Parse(id)));
+        public async Task<IActionResult> Renew(string id,  IFormFile file) => Ok(await _service.Renew(file, Guid.Parse(id)));
 
         [HttpPut("{id}/lock")]
         public async Task<IActionResult> Lock(string id) => Ok(await _service.Lock(Guid.Parse(id)));

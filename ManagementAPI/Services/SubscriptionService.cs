@@ -12,6 +12,7 @@ using Shared.Exceptions;
 using Microsoft.AspNetCore.StaticFiles;
 using System.Threading;
 using System.Net.Http.Headers;
+using Azure.Core;
 
 namespace ManagementAPI.Services;
 
@@ -84,6 +85,9 @@ public class SubscriptionService:ISubscriptionService
             case Status.Expired:
                 data = query.Where(p =>p.EndDate <=DateTime.UtcNow);
                 break;
+            default:
+                data = query;
+                break;
         }
 
         var result =await data
@@ -107,7 +111,7 @@ public class SubscriptionService:ISubscriptionService
         var query = await _dbContext.Subscriptions.Include(p => p.Customer).Include(p => p.SubscriptionFile)
                                                .Include(p => p.Visits).Include(p => p.Service).Where(p => p.Status != GeneralStatus.Deleted)
                                                .ProjectTo<SubscriptionRsponseDto>(_mapper.ConfigurationProvider).ToListAsync();
-        var activeSubscriptions =query.Where(p => p.DaysRemaining > 30).ToList();
+        var activeSubscriptions =query.Where(p => p.EndDate > DateTime.UtcNow ).ToList();
         var aboutToExpierdSubs = query.Where(p => p.DaysRemaining <= 30 && p.DaysRemaining >0).ToList();
         var expiredSubs = query.Where(p => p.DaysRemaining <= 0).ToList();
         return new FetchSubscriptionFilterResponseDto()
@@ -133,15 +137,17 @@ public class SubscriptionService:ISubscriptionService
           }
         };
     }
-    public async Task<MessageResponse> Renew(FileRequestDto file, Guid id)
+    public async Task<MessageResponse> Renew(IFormFile file, Guid id)
     {
         var data = await _dbContext.Subscriptions.Include(p => p.SubscriptionFile)
+                                                 .Include(p => p.Customer)
+                                                 .Include(p => p.Service)
                                                  .SingleOrDefaultAsync(a => a.Id == id && a.Status != GeneralStatus.Deleted) 
                                                  ?? throw new NotFoundException("عذرًا لا وجود لإشتراك مفعل بهذا الرقم");
         if (data.Status == GeneralStatus.Locked) throw new BadRequestException("عذرًا...يبدو أن هذا الإشتراك قد تم تقييده يرجى مراجعة المسؤول ! ");
         var duration = DateTime.Now.AddDays(29);
          if (!IsExpired(data))
-             if (duration > data.EndDate)
+             if (duration < data.EndDate)
                  throw new BadRequestException("عذرًا لا يمكنك تجديد هذا الإشتراك! التجديد يتم عند انتهاء الإشتراك أو قبل إنتهاءه بمدة 30 يومًا! ");
         Subscription reNewSubcription = new()
         {
@@ -155,39 +161,38 @@ public class SubscriptionService:ISubscriptionService
             Visits = data.Visits,
             CreatedById = data.CreatedById,
             CreatedOn = DateTime.UtcNow,
-            Invoices = data.Invoices
+            Invoices = data.Invoices,
+            Customer = data.Customer,
+            Service = data.Service,
+            MonthlyVisits  = data.Service.MonthlyVisits
 
         };
         data.Status = GeneralStatus.Deleted;
+        if(data.SubscriptionFile!=null)
         data.SubscriptionFile.IsActive = GeneralStatus.Deleted;
+
         _dbContext.Subscriptions.Add(reNewSubcription);
         await _dbContext.SaveChangesAsync();
-        await _uploadFile.Upload(file, EntityType.SubscriptionFile, reNewSubcription);
+        var subFile = new FileRequestDto() { File = file, DocType = 4 };
+        await _uploadFile.Upload(subFile, EntityType.SubscriptionFile, reNewSubcription);
         return new MessageResponse()
         {
             Msg = "لقد تم تجديد هذا الإشتراك بنجاح !"
         };
     }
 
-    public async Task<FileStreamResult> Download(Guid Id)
+    public async Task<FileStream> Download(Guid id)
     {
-        var data = await  _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.SubscriptionId == Id && a.IsActive != GeneralStatus.Deleted) ?? throw new BadRequestException("no file with this subs number");
+        var data = await _dbContext.SubscriptionFiles.SingleOrDefaultAsync(a => a.Id == id && a.IsActive == GeneralStatus.Active) ?? throw new BadRequestException("عذرًا لا وجود لملفات لهذا الاشتراك..");
         var path = data.FilePath;
         // Check if the file exists.
-     
-        if (data.IsActive != GeneralStatus.Active) throw new NotFoundException("FILE_NOT_ACTIVE");
-        if (!File.Exists(data.FilePath)) throw new NotFoundException("File not found: ");
-        var fileContents = await File.ReadAllBytesAsync(data.FilePath);
-        var stream = new MemoryStream(fileContents);
-        var contentType = new FileExtensionContentTypeProvider();
-        if(!contentType.TryGetContentType(data.FilePath, out var fileType))
+        if (!File.Exists(path))
         {
-            fileType = "application/octet-stream";
+            throw new FileNotFoundException("لم يتم العثور على الملف.. ");
         }
-        return new FileStreamResult(stream, new MediaTypeHeaderValue(fileType).ToString())
-        {
-            FileDownloadName = Path.GetFileName(data.FilePath)
-        };
+
+        // Open the file for reading.
+        return File.OpenRead(path);
     }
     public async Task<string> GetPageContent(string url)
     {

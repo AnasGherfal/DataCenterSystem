@@ -15,7 +15,6 @@ public class FetchInvoicesRequestDtoValidator : AbstractValidator<FetchInvoicesR
         // PageNumber: Must be number, not less than 1.
 
         RuleFor(x => x.PageNumber).GreaterThanOrEqualTo(1);
-        RuleFor(x => x.CustomerName).NotEmpty().WithMessage("يرجى إدخال إسم العميل لرؤية الفواتير الخاصه به..");
         RuleFor(x => x.EndDate).GreaterThanOrEqualTo(x => x.StartDate);
 
         // PageSize: Must be number, not less than 5 & not bigger than 50

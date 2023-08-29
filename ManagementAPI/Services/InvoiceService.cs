@@ -32,9 +32,15 @@ public class InvoiceService : IInvoiceService
             data.TotalAmount += visit.Price;
             visit.InvoiceId = data.Id;
             visit.Invoice = data;
-            
-            
         }
+        var invoiceNo = GenerateInvoiceNo();
+        var isNotUnique = await _dbContext.Invoices.AnyAsync(p => p.InvoiceNo == invoiceNo);
+        while (isNotUnique)
+        {
+            invoiceNo = GenerateInvoiceNo();
+            isNotUnique = await _dbContext.Invoices.AnyAsync(p => p.InvoiceNo == invoiceNo);
+         }
+        data.InvoiceNo = invoiceNo;
         _dbContext.Invoices.Add(data);
         await _dbContext.SaveChangesAsync();
         return new MessageResponse() 
@@ -59,16 +65,16 @@ public class InvoiceService : IInvoiceService
 
     public async Task<FetchInvoicesResponseDto> GetAll(FetchInvoicesRequestDto request)
     {
-
-
         var query = _dbContext.Invoices
        .Include(p => p.Subscription)
        .ThenInclude(p => p.Customer)
        .Include(p => p.Visits)
        .ThenInclude(p => p.TimeShift)
-       .Where(p => p.Status != GeneralStatus.Deleted && p.Subscription.Customer.Name.Contains(request.CustomerName));
-        if(request.StartDate != null && request.EndDate != null)
-            query=query.Where(p => p.Date.Date >= request.StartDate.Value.Date && p.Date.Date <= request.EndDate.Value.Date);
+       .Where(p => p.Status != GeneralStatus.Deleted);
+        if (request.CustomerName != null)
+                query = query.Where(p => p.Subscription.Customer.Name.Contains(request.CustomerName));
+        if (request.StartDate != null && request.EndDate != null)
+                query = query.Where(p => p.Date.Date >= request.StartDate.Value.Date && p.Date.Date <= request.EndDate.Value.Date);
         var queryResult = await query.OrderBy(p => p.Id)
             .Skip(request.PageSize * (request.PageNumber - 1))
             .Take(request.PageSize)
@@ -120,5 +126,26 @@ public class InvoiceService : IInvoiceService
             Msg = $"بنجاح  {id} تم تعديل الفاتورة"
         };
         
+    }
+
+    private static string GenerateInvoiceNo()
+    {
+        string numbers = "1234567890";
+
+        string characters = numbers;
+        int length = 10;
+        string id = string.Empty;
+        for (int i = 0; i < length; i++)
+        {
+            string character = string.Empty;
+            do
+            {
+                int index = new Random().Next(0, characters.Length);
+                character = characters.ToCharArray()[index].ToString();
+            } while (id.IndexOf(character) != -1);
+            id += character;
+        }
+        
+       return "FF" + id;
     }
 }

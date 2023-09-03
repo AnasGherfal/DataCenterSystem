@@ -3,6 +3,6 @@
 public abstract class BaseModel
 {
     public DateTime CreatedOn { get; set; }
-    public Guid? CreatedById { get; set; } = Guid.Parse("b6f745f0-1778-434c-a1bd-08dba7b058fc");
+    public Guid? CreatedById { get; set; } = Guid.Parse("891690d5-1f72-48ce-ace9-08dba9486e55");
     public User CreatedBy { get; set; } = default!;
 }

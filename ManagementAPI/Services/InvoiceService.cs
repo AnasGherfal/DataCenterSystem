@@ -75,7 +75,7 @@ public class InvoiceService : IInvoiceService
                 query = query.Where(p => p.Subscription.Customer.Name.Contains(request.CustomerName));
         if (request.StartDate != null && request.EndDate != null)
                 query = query.Where(p => p.Date.Date >= request.StartDate.Value.Date && p.Date.Date <= request.EndDate.Value.Date);
-        var queryResult = await query.OrderBy(p => p.Id)
+        var queryResult = await query.OrderBy(p => p.Date)
             .Skip(request.PageSize * (request.PageNumber - 1))
             .Take(request.PageSize)
             .ProjectTo<InvoiceResponseDto>(_mapper.ConfigurationProvider)
@@ -89,7 +89,12 @@ public class InvoiceService : IInvoiceService
     public async Task<InvoiceResponseDto> GetById(Guid id)
     {
         
-        var data = await _dbContext.Invoices.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted).Include(p=>p.Visits).SingleOrDefaultAsync()?? throw new BadHttpRequestException("عذرًا لا وجود لفاتورة بهذا الرقم");
+        var data = await _dbContext.Invoices.Where(p => p.Id == id && p.Status != GeneralStatus.Deleted)
+            .Include(p => p.Subscription)
+            .ThenInclude(p => p.Customer)
+            .Include(p=>p.Visits)
+            .ThenInclude(p => p.TimeShift)
+            .SingleOrDefaultAsync()?? throw new BadHttpRequestException("عذرًا لا وجود لفاتورة بهذا الرقم");
         var result = _mapper.Map<InvoiceResponseDto>(data);
         return result;
     }

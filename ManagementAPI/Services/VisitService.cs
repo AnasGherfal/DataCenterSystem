@@ -89,22 +89,16 @@ public class VisitService : IVisitService
                         partVisit.TimeShift = anotherTimeShift;
                         partVisit.TimeShiftId = anotherTimeShift.Id;
                         partVisit.TotalMin = timeInAnotherShift;
-                        
-
+                        var representatives = request.Representatives
+                            .Select(p => new RepresentativeVisit() { RepresentativeId = p }).ToList();
+                        partVisit.RepresentativesVisits= representatives;
                         request.EndTime = DateOnly.FromDateTime(request.StartTime).ToDateTime(firstEndTime);
                         var data = _mapper.Map<Visit>(request) ?? throw new BadHttpRequestException("! عذرًا طلبك غير صالح يرجى إعادة المحاولة");
                         data.TimeShift = shift;
                         data.TimeShiftId = shift.Id;
                         var companion = _mapper.Map<IList<Companion>>(request.Companions);
                         data.Companions = companion;
-                        var representatives = request.Representatives
-                            .Select(p => new RepresentativeVisit() { RepresentativeId = p }).ToList();
-                        foreach (var representative in representatives)
-                        {
-                            if (representative.Representative.CustomerId != subscription.CustomerId)
-                                throw new BadHttpRequestException(
-                                    $"عذرًا المخول {representative.Representative.FullName} ليس مخولًا للزبون {subscription.Customer.Name}");
-                        }
+                    
 
                         data.RepresentativesVisits = representatives;
                         data.TotalMin = timeInThisShift;

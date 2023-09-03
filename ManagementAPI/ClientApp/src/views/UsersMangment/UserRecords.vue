@@ -1,0 +1,263 @@
+<script setup lang="ts">
+import { user } from "../../api/user";
+import AddButtonF from "../../components/AddButton.vue";
+import { useUserStore } from "@/stores/user";
+import { ref } from "vue";
+import { useToast } from "primevue/usetoast";
+import LockButton from "@/components/LockButton.vue";
+import DeleteCustomer from "../../components/DeleteButton.vue";
+
+const store = useUserStore();
+const toast = useToast();
+
+const rotName = ref();
+const loading = ref(false);
+const userDialog = ref(false);
+function getId(index: {}) {
+  rotName.value = index;
+  userDialog.value = true;
+}
+
+const deleteUser = () => {
+  loading.value = true;
+
+  user
+    .remove(rotName.value.id)
+    .then((response) => {
+      store.getUsers();
+      toast.add({
+        severity: "success",
+        summary: "تم الحذف",
+        detail: response.data,
+        life: 3000,
+      });
+      userDialog.value = false;
+    })
+    .catch(() => {})
+    .finally(() => {
+      loading.value = false;
+    });
+};
+const statuses = ref([
+  { value: 1, label: "نشط" },
+  { value: 5, label: "مقفل" },
+]);
+
+const trans = (value: string) => {
+  if (value == "1") return "نشط";
+  else if (value == "2") return "غير نشط";
+  else if (value == "5") return "مقفل";
+};
+
+const getSeverity = (status: any) => {
+  switch (trans(status)) {
+    case "نشط":
+      return "success";
+    case "غير نشط":
+      return "danger";
+    case "مقفل":
+      return "danger";
+  }
+};
+const getSelectedStatusLabel = (value: any) => {
+  const status = statuses.value.find((s) => s.value === value);
+  return status ? status.label : "";
+};
+
+const goToNextPage = () => {
+  if (store.currentPage < store.totalPages) {
+    store.currentPage += 1;
+    store.pageNumber += 1; // Increment the pageNumber value
+    store.loading = true;
+    store.getUsers();
+  }
+};
+
+const goToPreviousPage = () => {
+  if (store.currentPage > 1) {
+    store.currentPage -= 1;
+    store.pageNumber -= 1; // Decrement the pageNumber value
+    store.loading = true;
+
+    store.getUsers();
+  }
+};
+</script>
+
+<template>
+  <RouterView></RouterView>
+
+  <div v-if="$route.path === '/UsersRecord'">
+    <card>
+      <template #title>
+        سجل المستخدمين
+        <AddButton name-button="اضافة عميل" rout-name="/UsersRecord/AddUser" />
+
+        <Divider />
+      </template>
+      <template #content>
+        <div
+          v-if="store.loading"
+          class="border-round border-1 surface-border p-4 surface-card"
+        >
+          <div class="grid p-fluid">
+            <div v-for="n in 9" class="field col-12 md:col-6 lg:col-4">
+              <span class="p-float-label">
+                <Skeleton width="100%" height="2rem"></Skeleton>
+              </span>
+            </div>
+          </div>
+
+          <Skeleton width="100%" height="100px"></Skeleton>
+          <div class="flex justify-content-between mt-3">
+            <Skeleton width="100%" height="2rem"></Skeleton>
+          </div>
+        </div>
+        <DataTable
+          v-else
+          ref="dt"
+          :value="store.userData"
+          dataKey="id"
+          :paginator="true"
+          :rows="5"
+          paginatorTemplate=""
+          :rowsPerPageOptions="[5, 10, 25]"
+          currentPageReportTemplate="عرض {first} الى {last} من {totalRecords} عميل"
+          responsiveLayout="scroll"
+          :pageLinkSize="store.totalPages"
+          :currentPage="store.currentPage - 1"
+        >
+        <template #paginatorstart>
+              <Button
+                icon="pi pi-angle-right"
+                class="p-button-rounded p-button-primary p-paginator-element"
+                :disabled="store.currentPage === 1"
+                @click="goToPreviousPage"
+              />
+              <span class="p-paginator-pages">
+                الصفحة {{ store.currentPage }} من {{ store.totalPages }}
+              </span>
+            </template>
+            <template #paginatorend>
+              <Button
+                icon="pi pi-angle-left"
+                class="p-button-rounded p-button-primary p-paginator-element"
+                :disabled="store.currentPage === store.totalPages"
+                @click="goToNextPage"
+              />
+            </template>
+          <template #empty>
+            <div
+              class="no-data-message"
+              style="
+                height: 100px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                background-color: #f9f9f9;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              "
+            >
+              <p style="font-size: 18px; font-weight: bold; color: #888">
+                لا يوجد بيانات
+              </p>
+            </div>
+          </template>
+
+          <Column
+            field="fullName"
+            header="اسم المستخدم"
+            style="min-width: 10rem"
+            class="font-bold"
+          ></Column>
+
+          <Column
+            field="status"
+            header="  الحاله "
+            filterField="status"
+            style="width: 2rem"
+            :showFilterMenu="false"
+            :filterMenuStyle="{ width: '4rem' }"
+          >
+            <template #body="{ data }">
+              <Tag
+                :value="getSelectedStatusLabel(data.status)"
+                :severity="getSeverity(data.status)"
+              />
+            </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <Dropdown
+                v-model="filterModel.value"
+                @change="filterCallback()"
+                :options="statuses"
+                optionLabel="label"
+                option-value="value"
+                placeholder="اختر الحالة"
+                class="p-column-filter"
+                style="min-width: 12rem"
+                :showClear="true"
+              >
+                <template #option="slotProps">
+                  <Tag
+                    :value="slotProps.option.label"
+                    :severity="getSeverity(slotProps.option.value)"
+                  />
+                </template>
+              </Dropdown>
+            </template>
+          </Column>
+
+          <Column
+            field="empId"
+            header="الرقم الوظيفي"
+            style="min-width: 7rem"
+          ></Column>
+
+          <Column
+            field="email"
+            header="البريد الإلكتروني"
+            style="min-width: 10rem"
+          ></Column>
+
+          <Column style="min-width: 13rem">
+            <template #body="slotProps">
+              <span v-if="slotProps.data.status !== 5">
+                <DeleteCustomer
+                  :name="slotProps.data.fullName"
+                  :id="slotProps.data.id"
+                  type="User"
+                >
+                </DeleteCustomer>
+              </span>
+              <RouterLink
+                :key="slotProps.data.id"
+                :to="'/UsersRecord/UsersProfile/' + slotProps.data.id"
+                style="text-decoration: none"
+              >
+                <Button
+                  icon="fa-solid fa-circle-info"
+                  severity="info"
+                  text
+                  rounded
+                  v-tooltip="{ value: 'التفاصيل', fitContent: true }"
+                />
+              </RouterLink>
+              <LockButton
+                typeLock="User"
+                :id="slotProps.data.id"
+                :name="slotProps.data.id"
+                :status="slotProps.data.status"
+                @getdata="store.getUsers()"
+              />
+            </template>
+          </Column>
+        </DataTable>
+      </template>
+    </card>
+  </div>
+</template>
+
+<style></style>

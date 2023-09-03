@@ -1,0 +1,248 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "اشرف",
+      "status": "نشط",
+      "email": "tortor.at@outlook.edu",
+      "address": "Moss",
+      "phoneNumber1": "091-644-4376",
+      "phoneNumber2": "092-273-7547",
+      "startDate": "2022,03,23",
+      "endDate": "2023,01,10"
+    },
+    {
+      "id": 2,
+      "name": "Evan Brock",
+      "status": "نشط",
+      "email": "lectus.rutrum@aol.couk",
+      "address": "Bremen",
+      "phoneNumber1": "091-717-3554",
+      "phoneNumber2": "092-736-8496",
+      "startDate": "2022,09,8",
+      "endDate": "2023,04,20"
+    },
+    {
+      "id": 3,
+      "name": "Willa Preston",
+      "status": "نشط",
+      "email": "mauris.molestie.pharetra@protonmail.org",
+      "address": "Lauw",
+      "phoneNumber1": "091-576-9665",
+      "phoneNumber2": "092-932-5659",
+      "startDate": "2022,04,13",
+      "endDate": "2023,03,24"
+    },
+    {
+      "id": 4,
+      "name": "William Newton",
+      "status": "نشط",
+      "email": "tincidunt.aliquam@yahoo.edu",
+      "address": "Zwolle",
+      "phoneNumber1": "092-469-1634",
+      "phoneNumber2": "091-454-2353",
+      "startDate": "2022,05,4",
+      "endDate": "2024,02,6"
+    },
+    {
+      "id": 5,
+      "name": "Hilda Fox",
+      "status": "غير نشط",
+      "email": "posuere.enim.nisl@aol.com",
+      "address": "Cusco",
+      "phoneNumber1": "092-025-5732",
+      "phoneNumber2": "092-831-2356",
+      "startDate": "2022,11,9",
+      "endDate": "2022,12,18"
+    },
+    {
+      "id": 6,
+      "name": "Jolene Richmond",
+      "status": "غير نشط",
+      "email": "erat.volutpat@google.edu",
+      "address": "Stockholm",
+      "phoneNumber1": "092-368-6156",
+      "phoneNumber2": "091-544-7663",
+      "startDate": "2022,11,8",
+      "endDate": "2024,02,11"
+    },
+    {
+      "id": 7,
+      "name": "Hector Alvarez",
+      "status": "نشط",
+      "email": "nisi.dictum@outlook.org",
+      "address": "Halesowen",
+      "phoneNumber1": "092-875-2101",
+      "phoneNumber2": "091-148-2224",
+      "startDate": "2022,09,29",
+      "endDate": "2024,01,21"
+    },
+    {
+      "id": 8,
+      "name": "Amity Spence",
+      "status": "نشط",
+      "email": "non@hotmail.ca",
+      "address": "Murcia",
+      "phoneNumber1": "091-541-7787",
+      "phoneNumber2": "091-287-3707",
+      "startDate": "2023,02,6",
+      "endDate": "2024,03,1"
+    },
+    {
+      "id": 9,
+      "name": "Olympia Guerrero",
+      "status": "نشط",
+      "email": "eget@yahoo.couk",
+      "address": "Aydın",
+      "phoneNumber1": "091-584-3312",
+      "phoneNumber2": "092-985-8245",
+      "startDate": "2022,03,26",
+      "endDate": "2023,03,1"
+    },
+    {
+      "id": 10,
+      "name": "Wyatt Schwartz",
+      "status": "نشط",
+      "email": "rutrum@outlook.ca",
+      "address": "Tây Ninh",
+      "phoneNumber1": "091-474-0750",
+      "phoneNumber2": "091-560-4627",
+      "startDate": "2022,12,24",
+      "endDate": "2023,06,17"
+    },
+    {
+      "name": "انس قرفال",
+      "email": "anas@dd.ly",
+      "phoneNumber1": "094-232-3232",
+      "phoneNumber2": " 093-232-3232",
+      "address": "dsds",
+      "File": "",
+      "subscriptionType": "",
+      "numberOfHours": "",
+      "id": 11
+    },
+    {
+      "name": "jj",
+      "email": "anas@dd.ly",
+      "phoneNumber1": "092-121-2212",
+      "phoneNumber2": " 029-121-9212",
+      "address": "wewe",
+      "file": "",
+      "id": 12
+    }
+  ],
+  "visitHours": [
+    {
+      "id": 1,
+      "name": "ساعات الدوام",
+      "startTime": "11:05 am",
+      "endTime": "0911",
+      "priceFirstHour": 100,
+      "priceAfter": 21
+    },
+    {
+      "id": 2,
+      "name": "ساعات بعد الدوام",
+      "startTime": "11:20 am",
+      "endTime": "22",
+      "priceFirstHour": 33,
+      "priceAfter": 43
+    },
+    {
+      "id": 3,
+      "name": "ساعات الليل",
+      "startTime": "12:00 am",
+      "endTime": "7:30 am",
+      "priceFirstHour": 95.64,
+      "priceAfter": 275.85
+    }
+  ],
+  "visits": [
+    {
+    "id": "1",
+    "name": "anas",
+    "authorizedName":"koko"
+
+    }
+
+  ],
+  "services": [
+    {
+      "id": "U1",
+      "name": "استضافة مكانية (U1)",
+      "amountOfPower": "6امبير- 230 فولت",
+      "AddamountOfPower": "",
+      "AcpPort": "1",
+      "Dns": "(rDNS&DNS)1",
+      "monthlyVistsShare": "2",
+      "pricePerYear": "2000"
+    },
+    {
+      "id": "U2",
+      "name": "استضافة مكانية (U2)",
+      "amountOfPower": "10امبير- 230 فولت",
+      "AddamountOfPower": "",
+      "AcpPort": "2",
+      "Dns": "(rDNS&DNS)2",
+      "monthlyVistsShare": "2",
+      "pricePerYear": "3400"
+    },
+    {
+      "id": "Full Rack",
+      "name": "استضافة  الخزانة(FR)",
+      "amountOfPower": "32امبير- 230 فولت",
+      "AddamountOfPower": "32امبير- 230 فولت",
+      "AcpPort": "12 منفذ اضافي  12 منفذ اساسي",
+      "Dns": "(rDNS&DNS)12",
+      "monthlyVistsShare": "10",
+      "pricePerYear": "22000"
+    },
+    {
+      "id": "Cabinet 2",
+      "name": "غرف مخصصة لعدد 2 Cabinet",
+      "amountOfPower": "28 امبير ,230 فولت رئيسية عدد 2",
+      "AddamountOfPower": "32امبير- 230 فولت",
+      "AcpPort": "",
+      "Dns": "(rDNS&DNS)13",
+      "monthlyVistsShare": "15",
+      "pricePerYear": "46000"
+    },
+    {
+      "id": "Cabinet 4",
+      "name": "غرف مخصصة لعدد 4 Cabinet",
+      "amountOfPower": "28 امبير ,230 فولت رئيسية عدد 3",
+      "AddamountOfPower": "32امبير- 230 فولت",
+      "AcpPort": "",
+      "Dns": "(rDNS&DNS)29",
+      "monthlyVistsShare": "25",
+      "pricePerYear": "89000"
+    },
+    {
+      "name": "مكانية",
+      "amountOfPower": "123",
+      "AcpPort": "1643",
+      "Dns": "12",
+      "monthlyVistsShare": "30",
+      "pricePerYear": "22033",
+      "id": "l5LtXNr"
+    },
+    {
+      "name": "باقة خاصة بـ(احميدة)",
+      "amountOfPower": "10000000",
+      "AcpPort": "3",
+      "Dns": "11",
+      "monthlyVistsShare": "0",
+      "pricePerYear": "10000000",
+      "id": "tkCTY5J"
+    },
+    {
+      "name": "v cc",
+      "amountOfPower": "cxvcx",
+      "AcpPort": "zxcc",
+      "Dns": "saa",
+      "monthlyVistsShare": "hj",
+      "pricePerYear": "zxc",
+      "id": "mGg5Oq2"
+    }
+  ]
+}

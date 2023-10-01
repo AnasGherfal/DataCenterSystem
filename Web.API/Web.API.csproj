@@ -27,4 +27,8 @@
     <ItemGroup>
       <None Remove="Templates\SubscriptionAlert.html" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Client\" />
+    </ItemGroup>
 </Project>

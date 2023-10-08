@@ -27,7 +27,7 @@ public class TokenService : ITokenService
         var token = new JwtSecurityToken(
             issuer: _option.ValidIssuer,
             audience: _option.ValidAudience,
-            expires: DateTime.UtcNow.AddDays(_option.TokenValidityInSecond),
+            expires: DateTime.UtcNow.AddDays(60),
             claims: userClaims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
         );

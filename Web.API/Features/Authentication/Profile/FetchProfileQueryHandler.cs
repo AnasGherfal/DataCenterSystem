@@ -1,5 +1,7 @@
 using Core.Constants;
+using Core.Exceptions;
 using Core.Helpers;
+using Core.Interfaces.Services;
 using Core.Wrappers;
 using Infrastructure.Persistence;
 using MediatR;
@@ -10,21 +12,26 @@ namespace Web.API.Features.Authentication.Profile;
 public sealed record FetchProfileQueryHandler : IRequestHandler<FetchProfileQuery, ContentResponse<FetchProfileQueryResponse>>
 {
     private readonly AppDbContext _dbContext;
+    private readonly IClientService _client;
 
-    public FetchProfileQueryHandler(AppDbContext dbContext)
+    public FetchProfileQueryHandler(AppDbContext dbContext, IClientService client)
     {
         _dbContext = dbContext;
+        _client = client;
     }
 
     public async Task<ContentResponse<FetchProfileQueryResponse>> Handle(FetchProfileQuery request, CancellationToken cancellationToken)
     {
+        var profile = await _dbContext.Users.AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == _client.GetIdentifier(), cancellationToken);
+        if (profile == null) throw new NotFoundException("PROFILE_NOT_FOUND");
         return new ContentResponse<FetchProfileQueryResponse>("", new FetchProfileQueryResponse()
         {
-            Id = Guid.NewGuid(),
-            DisplayName = "N/A",
-            Email = "admin@ltt.ly",
-            CreatedOn = DateTime.Now,
-            Permissions = SystemPermissions.SuperAdmin,
+            Id = profile.Id,
+            DisplayName = profile.DisplayName,
+            Email = profile.Email ?? "",
+            CreatedOn = profile.CreatedOn,
+            Permissions = profile.Permissions,
         });
     }
 }

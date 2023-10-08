@@ -16,8 +16,7 @@ public class ClientService: IClientService
     {
         try
         {
-            return Guid.Empty;
-            // return Guid.Parse(IdentityId);
+            return Guid.Parse(IdentityId);
         }
         catch
         {
@@ -27,15 +26,10 @@ public class ClientService: IClientService
     
     public ClientService(IHttpContextAccessor httpContextAccessor)
     {
-        // IdentityId = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimsKey.IdentityId.Key())?.Value ?? "";
-        IdentityId = Guid.Empty.ToString();
-        // DisplayName = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimsKey.DisplayName.Key())?.Value ?? "User";
-        DisplayName = "User";
-        // Email = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimsKey.Email.Key())?.Value ?? "";
-        Email = "admin@ltt.ly";
-        // Permission = long.Parse(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimsKey.Permissions.Key())?.Value ?? "0");
-        Permission = (long) SystemPermissions.SuperAdmin;
-        // EmailVerified = bool.Parse(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimsKey.EmailVerified.Key())?.Value ?? "False");
-        EmailVerified = true;
+        IdentityId = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimsKey.IdentityId.Key())?.Value ?? "";
+        DisplayName = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimsKey.DisplayName.Key())?.Value ?? "User";
+        Email = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimsKey.Email.Key())?.Value ?? "";
+        Permission = long.Parse(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimsKey.Permissions.Key())?.Value ?? "0");
+        EmailVerified = bool.Parse(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimsKey.EmailVerified.Key())?.Value ?? "False");
     }
 }

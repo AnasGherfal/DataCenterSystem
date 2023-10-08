@@ -30,9 +30,6 @@ public static class IdentityExtension
             .AddJwtBearer(options =>
             {
                 options.SaveToken = true;
-                // options.RequireHttpsMetadata = true;
-                // options.Audience = authOption.ValidAudience;
-                // options.Authority = authOption.ValidIssuer;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -43,11 +40,11 @@ public static class IdentityExtension
                     ValidIssuer = authOption.ValidIssuer,
                     ClockSkew = TimeSpan.Zero,
                 };
-                // options.Events = new JwtBearerEvents
-                // {
-                //     OnAuthenticationFailed = context => throw new NotAuthenticatedException("FAILED"),
-                //     OnForbidden = context => throw new ForbiddenException("FORBIDDEN"),
-                // };
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context => throw new NotAuthenticatedException("FAILED"),
+                    OnForbidden = context => throw new ForbiddenException("FORBIDDEN"),
+                };
             });
         services.AddIdentityCore<Admin>(options =>
                 {

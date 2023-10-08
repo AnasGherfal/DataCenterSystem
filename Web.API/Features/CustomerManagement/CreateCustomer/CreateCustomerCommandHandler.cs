@@ -31,9 +31,11 @@ public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustom
             .AnyAsync(p => p.PrimaryPhone == request.PrimaryPhone!
                 || p.Email == request.Email!, cancellationToken: cancellationToken);
         if (customerExists) throw new BadRequestException("العميل موجود بالفعل");
-        var fileRequests = request.Documents!
-            .Select(p => new FileStorageUploadRequest(Guid.NewGuid(), p.File!, (short) p.DocType!.Value))
-            .ToList();
+        var fileRequests = new List<FileStorageUploadRequest>()
+        {
+            new(Guid.NewGuid(), request.IdentityDocument!, (short) DocumentType.IdentityDocument),
+            new(Guid.NewGuid(), request.CompanyDocuments!, (short) DocumentType.CompanyDocument)
+        };
         var uploadPath = await _uploadFile.UploadFiles(StorageType.CustomerFile, fileRequests);
         if (uploadPath == null) throw new BadRequestException("حدث خطأ أثناء رفع الملف");
         var @event = new CustomerCreatedEvent(_client.GetIdentifier(), Guid.NewGuid(), new CustomerCreatedEventData()
@@ -47,7 +49,7 @@ public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustom
             Documents = fileRequests.Select(p => new FileStorageData()
             {
                 FileIdentifier = p.Id,
-                FileType = request.Documents!.First(q => q.File == p.File).DocType!.Value,
+                FileType = (DocumentType) p.FileType,
                 FileLink = uploadPath.First(q => q.Id == p.Id).Link,
             }).ToList()
         });

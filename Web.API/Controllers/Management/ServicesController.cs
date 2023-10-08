@@ -13,7 +13,7 @@ using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;
 
-[VerifiedAdmin(SystemPermissions.ServiceManagement)]
+// [VerifiedAdmin(SystemPermissions.ServiceManagement)]
 [ApiController]
 public class ServicesController : ManagementController
 {

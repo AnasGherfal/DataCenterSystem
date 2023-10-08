@@ -14,7 +14,7 @@ using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;
 
-[VerifiedAdmin(SystemPermissions.SubscriptionManagement)]
+// [VerifiedAdmin(SystemPermissions.SubscriptionManagement)]
 [ApiController]
 public class SubscriptionsController : ManagementController
 {

@@ -1,4 +1,4 @@
-﻿# Created by https://www.toptal.com/developers/gitignore/api/aspnetcore,dotnetcore,intellij,visualstudio,visualstudiocode
+# Created by https://www.toptal.com/developers/gitignore/api/aspnetcore,dotnetcore,intellij,visualstudio,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=aspnetcore,dotnetcore,intellij,visualstudio,visualstudiocode
 
 ### ASPNETCore ###
@@ -668,3 +668,5 @@ SecretFirebase.json
 Infrastructure/Models/BaseModel.cs
 ManagementAPI/appsettings.Development.json
 ManagementAPI/appsettings.json
+.DS_Store
+Web.API/wwwroot/Files/

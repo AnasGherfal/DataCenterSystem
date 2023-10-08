@@ -34,9 +34,11 @@ public sealed record CreateRepresentativeCommandHandler : IRequestHandler<Create
         var countRepresentatives = await _dbContext.Representatives
             .CountAsync(p => p.CustomerId == customerId, cancellationToken: cancellationToken);
         if (countRepresentatives >= 2) throw new BadRequestException("العميل لديه الحد الأقصى من المخولين");
-        var fileRequests = request.Documents!
-            .Select(p => new FileStorageUploadRequest(Guid.NewGuid(), p.File!, (short) p.DocType!.Value))
-            .ToList();
+        var fileRequests = new List<FileStorageUploadRequest>()
+        {
+            new(Guid.NewGuid(), request.IdentityDocument!, (short) DocumentType.IdentityDocument),
+            new(Guid.NewGuid(), request.RepresentationDocument!, (short) DocumentType.CompanyDocument)
+        };
         var uploadPath = await _uploadFile.UploadFiles(StorageType.RepresentativeFile, fileRequests);
         if (uploadPath == null) throw new BadRequestException("حدث خطأ أثناء رفع الملف");
         var @event = new RepresentativeCreatedEvent(_client.GetIdentifier(), Guid.NewGuid(), new RepresentativeCreatedEventData()
@@ -51,7 +53,7 @@ public sealed record CreateRepresentativeCommandHandler : IRequestHandler<Create
             Documents = fileRequests.Select(p => new FileStorageData()
             {
                 FileIdentifier = p.Id,
-                FileType = request.Documents!.First(q => q.File == p.File).DocType!.Value,
+                FileType = (DocumentType) p.FileType,
                 FileLink = uploadPath.First(q => q.Id == p.Id).Link,
             }).ToList()
         });

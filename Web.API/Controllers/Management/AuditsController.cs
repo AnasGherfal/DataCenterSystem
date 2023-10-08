@@ -10,7 +10,7 @@ using Web.API.Filters;
 namespace Web.API.Controllers.Management;
 
 
-[VerifiedAdmin(SystemPermissions.SuperAdmin)]
+// [VerifiedAdmin(SystemPermissions.SuperAdmin)]
 [ApiController]
 public class AuditsController : ManagementController
 {

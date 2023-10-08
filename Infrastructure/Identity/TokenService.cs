@@ -19,13 +19,13 @@ public class TokenService : ITokenService
         _userManager = userManager;
         _option = authenticationsOption.Value;
     }
-    
+
     public async Task<JwtSecurityToken> GenerateAccessToken(Admin admin)
     {
         var userClaims = await _userManager.GetClaimsAsync(admin);
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_option.Secret));
         var token = new JwtSecurityToken(
-            _option.ValidIssuer,
+            issuer: _option.ValidIssuer,
             audience: _option.ValidAudience,
             expires: DateTime.UtcNow.AddDays(_option.TokenValidityInSecond),
             claims: userClaims,

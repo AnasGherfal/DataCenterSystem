@@ -14,15 +14,13 @@ namespace Web.API.Features.InvoiceManagement.MarkInvoiceAsPaid;
 public sealed record MarkInvoiceAsPaidCommandHandler : IRequestHandler<MarkInvoiceAsPaidCommand, MessageResponse>
 {
     private readonly IClientService _client;
-    private readonly SignInManager<Admin> _signInManager;
     private readonly UserManager<Admin> _userManager;
     private readonly AppDbContext _dbContext;
 
-    public MarkInvoiceAsPaidCommandHandler(AppDbContext dbContext, IClientService client, SignInManager<Admin> signInManager, UserManager<Admin> userManager)
+    public MarkInvoiceAsPaidCommandHandler(AppDbContext dbContext, IClientService client, UserManager<Admin> userManager)
     {
         _dbContext = dbContext;
         _client = client;
-        _signInManager = signInManager;
         _userManager = userManager;
     }
 
@@ -30,8 +28,8 @@ public sealed record MarkInvoiceAsPaidCommandHandler : IRequestHandler<MarkInvoi
     {
         var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Email == _client.Email, cancellationToken);
         if (user == null) throw new NotFoundException("USER_NOT_EXIST");
-        var result = await _signInManager.PasswordSignInAsync(user, request.AdminPassword!, false, true);
-        if (!result.Succeeded) throw new BadRequestException("INCORRECT_CREDENTIALS_COMBINATION");
+        var result = await _userManager.CheckPasswordAsync(user, request.AdminPassword!);
+        if (!result) throw new BadRequestException("INCORRECT_CREDENTIALS_COMBINATION");
         var id = Guid.Parse(request.Id!);
         var data = await _dbContext.Invoices.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("INVOICE_NOT_FOUND");

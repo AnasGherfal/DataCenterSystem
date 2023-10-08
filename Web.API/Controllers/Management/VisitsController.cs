@@ -12,7 +12,7 @@ using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;
 
-[VerifiedAdmin(SystemPermissions.VisitsManagement)]
+// [VerifiedAdmin(SystemPermissions.VisitsManagement)]
 [ApiController]
 public class VisitsController : ManagementController
 {

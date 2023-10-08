@@ -6,7 +6,7 @@ public class CreateTimeShiftCommandValidator: AbstractValidator<CreateTimeShiftC
 {
     public CreateTimeShiftCommandValidator()
     {
-        When((p, _) => string.IsNullOrWhiteSpace(p.Date.ToString()), () =>
+        When((p, _) => p.Date == null, () =>
         {
             RuleFor(x => x.Day)
                 .NotNull()
@@ -16,7 +16,7 @@ public class CreateTimeShiftCommandValidator: AbstractValidator<CreateTimeShiftC
             RuleFor(x => x.EndTime)
                 .NotNull();
         });
-        When((p, _) => string.IsNullOrWhiteSpace(p.Date.ToString()), () =>
+        When((p, _) => p.Day == null, () =>
         {
             RuleFor(x => x.Date)
                 .NotNull();

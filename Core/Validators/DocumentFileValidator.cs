@@ -10,6 +10,20 @@ public class DocumentFileValidator : AbstractValidator<IFormFile?>
     private readonly string[] _allowedExtensions =
     {
         ".pdf",
+        ".doc",
+        ".docx",
+        ".xls",
+        ".xlsx",
+        ".ppt",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".bmp",
+        ".tiff",
+        ".tif",
+        ".txt",
+        ".rtf",
     };
 
     public DocumentFileValidator(string errorMessage)
@@ -33,6 +47,6 @@ public class DocumentFileValidator : AbstractValidator<IFormFile?>
     private static bool HaveValidSize(IFormFile? file)
     {
         if (file == null) return true;
-        return file.Length <= MaxFileSizeInKb * 1024;
+        return file.Length <= MaxFileSizeInKb * 102400;
     }
 }

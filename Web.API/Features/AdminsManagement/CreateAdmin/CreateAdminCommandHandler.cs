@@ -44,6 +44,7 @@ public sealed record CreateAdminCommandHandler : IRequestHandler<CreateAdminComm
         data.Apply(@event);
         //TODO: Not Idempotent - Use Transaction Instead
         var result = await _userManager.CreateAsync(data, password);
+        if (!result.Succeeded) throw new BadRequestException(result.Errors.FirstOrDefault()!.Description);
         await _userManager.AddClaimsAsync(data, new List<Claim>()
         {
             new(ClaimsKey.IdentityId.Key(), data.Id.ToString()),
@@ -52,7 +53,6 @@ public sealed record CreateAdminCommandHandler : IRequestHandler<CreateAdminComm
             new(ClaimsKey.Permissions.Key(), data.Permissions.ToString("D")),
             new(ClaimsKey.EmailVerified.Key(), data.EmailConfirmed.ToString()),
         });
-        if (!result.Succeeded) throw new BadRequestException(result.Errors.FirstOrDefault()!.Description);
         await _dbContext.Events.AddAsync(@event, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         var responseContent = new CreateAdminCommandResponse()

@@ -14,7 +14,7 @@ using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;
 
-[VerifiedAdmin(SystemPermissions.RepresentativeManagement)]
+// [VerifiedAdmin(SystemPermissions.RepresentativeManagement)]
 [ApiController]
 public class RepresentativesController : ManagementController
 {

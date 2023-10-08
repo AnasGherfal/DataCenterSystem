@@ -32,24 +32,12 @@ public class CreateRepresentativeCommandValidator: AbstractValidator<CreateRepre
             .NotEmpty().WithMessage("Phone Number must be not empty")
             .Matches(RegexValidation.PhoneNumber.Rule()).WithMessage("Phone Number is not valid, Must be +218920000000");
 
-        RuleFor(p => p.Documents)
-            .NotNull().WithMessage("Documents must be not empty")
-            .NotEmpty().WithMessage("Documents must be not empty");
+        RuleFor(p => p.IdentityDocument)
+            .NotNull()
+            .SetValidator(new DocumentFileValidator("Identity File must not be null."));
         
-        RuleForEach(p => p.Documents)
-            .SetValidator(new CreateRepresentativeCommandItemValidator());
-    }
-}
-
-class CreateRepresentativeCommandItemValidator : AbstractValidator<CreateRepresentativeCommandItem>
-{
-    public CreateRepresentativeCommandItemValidator()
-    {
-        RuleFor(item => item.File)
-            .SetValidator(new DocumentFileValidator("Document File must not be null."));
-        
-        RuleFor(item => item.DocType)
-            .NotNull().WithMessage("Document Type must not be null.")
-            .IsInEnum().WithMessage("Document Type must not be null.");
+        RuleFor(item => item.RepresentationDocument)
+            .NotNull()
+            .SetValidator(new DocumentFileValidator("Representative File must not be null."));
     }
 }

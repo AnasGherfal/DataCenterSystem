@@ -2,9 +2,12 @@
 
 public enum DocumentType: byte
 {
-    IdCard = 1,
-    Passport = 2,
-    CompanyLicense = 3,
-    CompanyPermit = 4,
-    SubscriptionFile = 5,
+    IdentityDocument = 0,
+    CompanyDocument = 1,
+    RepresentationDocument = 2,
+    IdCard = 3,
+    Passport = 4,
+    CompanyLicense = 5,
+    CompanyPermit = 6,
+    SubscriptionFile = 7,
 }

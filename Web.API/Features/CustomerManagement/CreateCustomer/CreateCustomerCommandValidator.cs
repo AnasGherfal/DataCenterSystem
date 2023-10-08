@@ -26,24 +26,13 @@ public class CreateCustomerCommandValidator: AbstractValidator<CreateCustomerCom
         RuleFor(a => a.Email)
             .NotEmpty()
             .EmailAddress();
-        RuleFor(p => p.Documents)
-            .NotNull().WithMessage("Documents must be not empty")
-            .NotEmpty().WithMessage("Documents must be not empty");
         
-        RuleForEach(p => p.Documents)
-            .SetValidator(new CreateCustomerCommandItemValidator());
-    }
-}
-
-class CreateCustomerCommandItemValidator : AbstractValidator<CreateCustomerCommandItem>
-{
-    public CreateCustomerCommandItemValidator()
-    {
-        RuleFor(item => item.File)
+        RuleFor(item => item.IdentityDocument)
+            .NotNull()
             .SetValidator(new DocumentFileValidator("Document File must not be null."));
         
-        RuleFor(item => item.DocType)
-            .NotNull().WithMessage("Document Type must not be null.")
-            .IsInEnum().WithMessage("Document Type must not be null.");
+        RuleFor(item => item.CompanyDocuments)
+            .NotNull()
+            .SetValidator(new DocumentFileValidator("Document File must not be null."));
     }
 }

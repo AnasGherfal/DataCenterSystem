@@ -12,7 +12,7 @@ namespace Web.API.Controllers.Management;
 [ApiController]
 public class AnalyticsController : ManagementController
 {
-    [HttpPost("Dashboard-Counters")]
+    [HttpGet("Dashboard-Counters")]
     public async Task<ContentResponse<FetchDashboardStatisticsQueryResponse>> DashboardCounters() 
         => await Mediator.Send(new FetchDashboardStatisticsQuery());
 }

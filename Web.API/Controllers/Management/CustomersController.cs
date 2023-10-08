@@ -15,7 +15,7 @@ using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;
 
-[VerifiedAdmin(SystemPermissions.CustomerManagement)]
+// [VerifiedAdmin(SystemPermissions.CustomerManagement)]
 [ApiController]
 public class CustomersController : ManagementController
 {

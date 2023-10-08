@@ -53,7 +53,7 @@ public class AppDbContext : IdentityDbContext<Admin, AdminRole, Guid>
     public void InitAdmin()
     {
         
-        var @event = new AdminCreatedEvent(Guid.Empty, Guid.NewGuid(), new AdminCreatedEventData()
+        var @event = new AdminCreatedEvent(Guid.Empty, Guid.Empty, new AdminCreatedEventData()
         {
             FullName = "Super Admin",
             UserName = Guid.NewGuid().ToString().Replace("-", ""),
@@ -63,6 +63,7 @@ public class AppDbContext : IdentityDbContext<Admin, AdminRole, Guid>
             EmpId = 1,
             Password = "Password12345"
         });
+        
         var userManager = new UserManager<Admin>(
             new UserStore<Admin, IdentityRole<Guid>, AppDbContext, Guid>(this),
             null,

@@ -2,6 +2,8 @@
 
 public enum IdentityType : short
 {
-    IdCard = 1,
-    Passsport = 2
+    IdentityDocument = 1,
+    CompanyDocuments = 2,
+    IdCard = 3,
+    Passsport = 4
 }

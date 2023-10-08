@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using System.Text;
 using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces.Services;
 using Core.Options;
 using Infrastructure.ClientInfo;
@@ -20,27 +22,36 @@ public static class IdentityExtension
         services.AddScoped<ITokenService, TokenService>();
         services.AddHttpContextAccessor();
         var authOption = section.Get<AuthenticationOption>()!;
-        services.AddAuthentication(opt => {
-                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
                 options.SaveToken = true;
-                options.RequireHttpsMetadata = true;
-                options.Authority = authOption.ValidIssuer;
+                // options.RequireHttpsMetadata = true;
+                // options.Audience = authOption.ValidAudience;
+                // options.Authority = authOption.ValidIssuer;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = authOption.ValidIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOption.Secret)),
                     ValidAudience = authOption.ValidAudience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOption.Secret))
+                    ValidIssuer = authOption.ValidIssuer,
+                    ClockSkew = TimeSpan.Zero,
                 };
+                // options.Events = new JwtBearerEvents
+                // {
+                //     OnAuthenticationFailed = context => throw new NotAuthenticatedException("FAILED"),
+                //     OnForbidden = context => throw new ForbiddenException("FORBIDDEN"),
+                // };
             });
-        services.AddIdentity<Admin, AdminRole>(options =>
+        services.AddIdentityCore<Admin>(options =>
                 {
+                    options.SignIn.RequireConfirmedAccount = false;
                     options.Password.RequireDigit = false;
                     options.Password.RequiredLength = 8;
                     options.Password.RequireNonAlphanumeric = false;
@@ -51,6 +62,12 @@ public static class IdentityExtension
                     options.Lockout.MaxFailedAccessAttempts = authOption.LockoutCount;
                     options.SignIn.RequireConfirmedEmail = false;
                     options.User.RequireUniqueEmail = true;
+                    options.ClaimsIdentity.EmailClaimType = ClaimTypes.Email;
+                    options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
+                    options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
+                    options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Name;
+                    options.ClaimsIdentity.SecurityStampClaimType = ClaimTypes.Sid;
+                    options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
                 }
             )
             .AddEntityFrameworkStores<AppDbContext>()

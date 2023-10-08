@@ -12,11 +12,6 @@ public sealed record CreateCustomerCommand : IRequest<MessageResponse>
     public string? PrimaryPhone { get; set; }
     public string? SecondaryPhone { get; set; }
     public string? Email { get; set; }
-    public IList<CreateCustomerCommandItem>? Documents { get; set; }
-}
-
-public sealed record CreateCustomerCommandItem
-{
-    public IFormFile? File { get; private set; }
-    public DocumentType? DocType { get; private set; }
+    public IFormFile? IdentityDocument { get; set; }
+    public IFormFile? CompanyDocuments { get; set; }
 }

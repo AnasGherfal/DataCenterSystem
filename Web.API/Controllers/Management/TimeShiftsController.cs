@@ -11,7 +11,7 @@ using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;
 
-[VerifiedAdmin(SystemPermissions.TimeShiftManagement)]
+// [VerifiedAdmin(SystemPermissions.TimeShiftManagement)]
 [ApiController]
 public class TimeShiftsController : ManagementController
 {

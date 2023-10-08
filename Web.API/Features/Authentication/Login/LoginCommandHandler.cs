@@ -15,14 +15,12 @@ public sealed record LoginCommandHandler : IRequestHandler<LoginCommand, Content
 {
     private readonly AuthenticationOption _option;
     private readonly UserManager<Admin> _userManager;
-    private readonly SignInManager<Admin> _signInManager;
     private readonly ITokenService _tokenService;
 
-    public LoginCommandHandler(UserManager<Admin> userManager, SignInManager<Admin> signInManager,
+    public LoginCommandHandler(UserManager<Admin> userManager,
         IOptions<AuthenticationOption> options, ITokenService tokenService)
     {
         _userManager = userManager;
-        _signInManager = signInManager;
         _option = options.Value;
         _tokenService = tokenService;
     }
@@ -43,14 +41,6 @@ public sealed record LoginCommandHandler : IRequestHandler<LoginCommand, Content
         {
             await _userManager.AccessFailedAsync(user);
             throw new NotFoundException("INCORRECT_CREDENTIALS_COMBINATION");
-        }
-        var result = await _signInManager.PasswordSignInAsync(user, request.Password!, false, true);
-        if (!result.Succeeded)
-        {
-            if (result.IsLockedOut)
-                throw new BadRequestException($"USER_ACCOUNT_IS_LOCKED_FOR_{_option.LockoutTimeInMinute}_MINUTES");
-            if (result.IsNotAllowed)
-                throw new BadRequestException("USER_ACCOUNT_IS_NOT_ALLOWED");
         }
         var token = await _tokenService.GenerateAccessToken(user);
         var responseContent = new LoginCommandResponse()

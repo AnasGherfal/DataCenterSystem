@@ -13,6 +13,6 @@ public sealed record CreateRepresentativeCommand : IRequest<MessageResponse>
     public IdentityType? IdentityType { get; set; }
     public string? Email { get; set; }
     public string? PhoneNo { get; set; }
-    public IFormFile? IdentityDocument { get; private set; }
-    public IFormFile? RepresentationDocument { get; private set; }
+    public IFormFile? IdentityDocument { get; set; }
+    public IFormFile? RepresentationDocument { get; set; }
 }

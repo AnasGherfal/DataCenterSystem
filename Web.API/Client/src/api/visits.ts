@@ -6,8 +6,13 @@ import { useHttpClient } from "@/network/httpClient";
 const httpClient = useHttpClient();
 
 export const visitApi = {
-  get: async function () {
-    const response = await httpClient.get(`/Visits`);
+  get: async function (CustomerId?: string, SubscriptionId?: string) {
+    const response = await httpClient.get(`/Visits`, {
+      params: {
+        CustomerId: CustomerId,
+        SubscriptionId: SubscriptionId,
+      },
+    });
     return response;
   },
 
@@ -18,6 +23,10 @@ export const visitApi = {
         PageSize: pageSize,
       },
     });
+    return response;
+  },
+  getTypes: async function () {
+    const response = await httpClient.get(`/VisitTypes`);
     return response;
   },
   getById: async function (id: any) {

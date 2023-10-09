@@ -27,7 +27,13 @@ const getTimeShifts = async () => {
   timeShiftsApi
     .get()
     .then((response) => {
-      timeShifts.value = response.data.content;
+      timeShifts.value = response.data.content.map((item:any) => {
+        return {
+          ...item,
+          day: days.find((day) => day.value === item.day)?.name,
+          date: item.date ? moment(item.date).format("YYYY-MM-DD") : "-",
+        }
+      });
     })
     .catch(function (error) {
       toast.add({
@@ -113,16 +119,16 @@ const getIndex = (index: any) => {
 
           <Column
             v-for="(head, index) in [
-              'day',
-              'startTime',
-              'endTime',
-              'date',
-              'priceForFirstHour',
-              'priceForRemainingHours',
+              {key: 'day', label: 'اليوم'},
+              {key: 'startTime', label: 'تاريخ البداية'},
+              {key: 'endTime', label: 'تاريخ النهاية'},
+              {key: 'date', label: 'التاريخ'},
+              {key: 'priceForFirstHour', label: 'السعر مقابل الساعة الاولى'},
+              {key: 'priceForRemainingHours', label: 'السعر مقابل باقي الساعات'},
             ]"
             :key="index"
-            :field="head"
-            :header="head"
+            :field="head.key"
+            :header="head.label"
             style="min-width: 6rem"
             class="font-bold"
             frozen

@@ -3,57 +3,18 @@ import { onMounted, ref, watch } from "vue";
 import { FilterMatchMode } from "primevue/api";
 import AddButton from "@/components/AddButton.vue";
 import { useVistisStore } from "@/stores/visits";
-import { useToast } from "primevue/usetoast";
-import DeleteV from "../../components/DeleteButton.vue";
-import LockButton from "@/components/LockButton.vue";
 import { visitApi } from "@/api/visits";
 import { formatTotalMin } from "@/tools/formatTime";
+import moment from "moment";
+import { useToast } from "primevue/usetoast";
+import DeleteAdmin from "../../components/DeleteButton.vue";
+
 const store = useVistisStore();
-
 const toast = useToast();
-const visitsDialog = ref(false);
-
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
-const columns = ref([
-  { field: "address", header: "تاريخ بداية الاشتراك" },
-  { field: "phoneNumber1", header: "تاريخ انتهاء الاشتراك" },
-  { field: "phoneNumber2", header: "الباقه" },
-]);
-const selectedColumns = ref(columns.value);
-
-const statuses = ref([
-  { value: 1, label: "نشط" },
-  { value: 5, label: "مقفل" },
-]);
-const visitReasons = [
-  { value: "7adbcf6d-e06f-410c-8a41-5857dadb0792", text: "صيانه" }, // Ensure the value is in quotes
-  { value: "be05cdb1-03e4-4899-a910-662a79d8653e", text: "انهاء عمل" }, // Make sure other values are also strings if needed
-];
-const getVisitReasonText = (visitType: string) => {
-  const visitReason = visitReasons.find((reason) => reason.value === visitType);
-  return visitReason ? visitReason.text : "";
-};
-
-const getSeverity = (status: any) => {
-  switch (trans(status)) {
-    case "نشط":
-      return "success";
-    case "مقفل":
-      return "danger";
-  }
-};
-
-const trans = (value: string) => {
-  if (value == "1") return "نشط";
-  else if (value == "5") return "مقفل";
-};
-const getSelectedStatusLabel = (value: any) => {
-  const status = statuses.value.find((s) => s.value === value);
-  return status ? status.label : "";
-};
 onMounted(async () => {
   try {
     const response = await visitApi.get();
@@ -89,6 +50,26 @@ const goToPreviousPage = () => {
     store.getVisits();
   }
 };
+
+async function deleteVisit(id: string) {
+  try {
+    const response = await visitApi.remove(id);
+    toast.add({
+      severity: "success",
+      summary: "رسالة نجاح",
+      detail: `${response.data.msg}`,
+      life: 3000,
+    });
+    store.getVisits();
+  } catch (error: any) {
+    toast.add({
+      severity: "error",
+      summary: "رسالة تحذير",
+      detail: error.response.data.msg,
+      life: 3000,
+    });
+  }
+}
 </script>
 
 <template>
@@ -195,14 +176,18 @@ const goToPreviousPage = () => {
             field="visitType"
             header="سبب الزياره"
             style="min-width: 8rem"
+            frozen
+          />
+
+          <Column
+            field="totalMinutes"
+            header="مدة الزيارة"
+            style="min-width: 8rem"
           >
             <template #body="{ data }">
-              {{ getVisitReasonText(data.visitType) }}
-            </template></Column
-          >
-          <Column field="totalMin" header="مدة الزيارة" style="min-width: 8rem">
-            <template #body="{ data }">
-              {{ data?.totalMin ? formatTotalMin(data.totalMin) : "" }}
+              {{
+                data?.totalMinutes ? formatTotalMin(data.totalMinutes) : "- "
+              }}
             </template>
           </Column>
           <Column
@@ -214,18 +199,42 @@ const goToPreviousPage = () => {
               {{ slotProps.data.price }} د.ل
             </template></Column
           >
-          <Column field="status" header="الحاله" style="min-width: 1rem">
+          <Column field="visitStatus" header="الحاله" style="min-width: 1rem" />
+
+          <Column
+            field="expectedStartTime"
+            header="تاريخ بداية الزياره"
+            style="min-width: 8rem"
+            class="font-bold"
+            frozen
+          >
             <template #body="{ data }">
-              <Tag
-                :value="getSelectedStatusLabel(data.status)"
-                :severity="getSeverity(data.status)"
-              /> </template
-          ></Column>
+              {{ moment(data.expectedStartTime).format("YYYY-MM-DD HH:MM") }}
+            </template></Column
+          >
+          <Column
+            field="expectedEndTime"
+            header="تاريخ انتهاء الزياره"
+            style="min-width: 8rem"
+            class="font-bold"
+            frozen
+          >
+            <template #body="{ data }">
+              {{ moment(data.expectedEndTime).format("YYYY-MM-DD HH:MM") }}
+            </template>
+          </Column>
 
           <Column style="min-width: 11rem">
             <template #body="slotProps">
+              <DeleteAdmin
+                :name="slotProps.data.customerName"
+                :id="slotProps.data.id"
+                @submit="() => deleteVisit(slotProps.data.id)"
+                type="User"
+              >
+              </DeleteAdmin>
               <RouterLink
-                :to="'/visitsRecords/visitDetails/' + slotProps.data.id"
+                :to="'/visitDetails/' + slotProps.data.id"
                 style="text-decoration: none"
               >
                 <Button
@@ -234,15 +243,8 @@ const goToPreviousPage = () => {
                   text
                   rounded
                   v-tooltip="{ value: 'التفاصيل', fitContent: true }"
-                /> </RouterLink
-              >{{ slotProps.data.name }}
-              <LockButton
-                typeLock="Visit"
-                :id="slotProps.data.id"
-                :name="slotProps.data.id"
-                :status="slotProps.data.status"
-                @getdata="store.getVisits"
-              />
+                />
+              </RouterLink>
             </template>
           </Column>
           <Toast position="bottom-left" />

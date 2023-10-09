@@ -9,7 +9,7 @@ import { admin } from "@/api/admin";
 const prop = defineProps<{
   id: string;
   name: string;
-  status: boolean;
+  status: number;
   typeLock: string;
 }>();
 
@@ -26,12 +26,12 @@ const toast = useToast();
 const status = reactive({ value: prop.status });
 
 const lockedIcon = computed(() =>
-  status.value === false ? "fa-solid fa-lock" : "fa-solid fa-lock-open"
+  status.value === 1 ? "fa-solid fa-lock" : "fa-solid fa-lock-open"
 );
 
-const buttonColor = computed(() => (status.value === false ? "green" : "red"));
+const buttonColor = computed(() => (status.value === 2 ? "green" : "red"));
 const tooltipValue = computed(() =>
-  status.value === false ? "الغاء تقييد" : "تقييد "
+  status.value === 2 ? "الغاء تقييد" : "تقييد "
 );
 </script>
 

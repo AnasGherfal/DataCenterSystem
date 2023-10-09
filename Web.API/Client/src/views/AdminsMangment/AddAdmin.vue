@@ -13,10 +13,10 @@ import { RequestAdminModel } from "../../Modules/AdminModule/AdminModuleRequest"
 const loading = ref(false);
 const store = useAdminStore();
 
-const state: RequestAdminModel = reactive({
+const state = reactive({
   fullName: "",
   email: "",
-  empId: 0,
+  empId: null,
   permissions: 0,
 });
 
@@ -106,7 +106,7 @@ const submitForm = async () => {
 };
 
 const resetForm = () => {
-  state.empId = 0;
+  state.empId = null;
   state.fullName = "";
   state.email = "";
   state.permissions = 0;

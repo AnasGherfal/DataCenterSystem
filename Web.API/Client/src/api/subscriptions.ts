@@ -1,3 +1,4 @@
+import { SubscriptionStatus } from "@/constant/SubscriptionStatus";
 import type { Subscription } from "../Modules/SubscriptionModule/SubscriptionsRequestModule";
 import { useHttpClient } from "@/network/httpClient";
 
@@ -21,13 +22,13 @@ export const subscriptionApi = {
   getFiltered: async function (
     pageNumber: number,
     pageSize: number,
-    CustomerId: string
+    status: SubscriptionStatus
   ) {
     const response = await httpClient.get(`/Subscriptions`, {
       params: {
         pageNumber: pageNumber,
         pageSize: pageSize,
-        CustomerId: CustomerId,
+        status,
       },
     });
     return response;
@@ -35,7 +36,7 @@ export const subscriptionApi = {
 
   getFile: async function (id: string, fileId: string) {
     const response = await httpClient.get(
-      `/Subscriptions/${id}/Download/${fileId}`,
+      `/Subscriptions/${id}/document/${fileId}`,
       {
         responseType: "arraybuffer",
       }
@@ -52,11 +53,23 @@ export const subscriptionApi = {
     return response;
   },
   create: async function (subscription: FormData) {
-    const response = await httpClient.post(`/subscriptions`, subscription);
+    const response = await httpClient.post(`/subscriptions`, subscription, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response;
   },
-  renew: async function (id: string | null) {
-    const response = await httpClient.put(`/subscriptions/${id}/Renew`);
+  renew: async function (id: string, payload: FormData) {
+    const response = await httpClient.put(
+      `/subscriptions/${id}/Renew`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     return response;
   },
   block: async function (id: string) {
@@ -66,6 +79,10 @@ export const subscriptionApi = {
 
   unblock: async function (id: string) {
     const response = await httpClient.put(`/subscriptions/${id}/unlock`);
+    return response;
+  },
+  remove: async function (id: string) {
+    const response = await httpClient.delete(`/subscriptions/${id}`);
     return response;
   },
 };

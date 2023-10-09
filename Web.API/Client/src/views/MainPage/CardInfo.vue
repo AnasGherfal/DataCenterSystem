@@ -2,35 +2,20 @@
 import { subscriptionApi } from "@/api/subscriptions";
 import DialogCard from "./CardInfo/DialogCard.vue";
 import Vue3autocounter from "vue3-autocounter";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, reactive } from "vue";
 import { analyticsApi } from "../../api/analytics";
+import { SubscriptionStatus } from "../../constant/SubscriptionStatus";
 
 const active = ref();
 const aboutToExpire = ref();
 const expired = ref();
 
-interface DashboardCounters {
-  totalSubscriptions: number;
-  totalExpireThisMonth: number;
-  totalExpired: number;
-  totalVisits: number;
-  totalVisitsExpectedThisMonth: number;
-  totalOccuring: number;
-}
-
 onMounted(async () => {
   analyticsApi.DashboardCounters().then((response) => {
-    active.value = response.data.activeSubscriptions;
-    aboutToExpire.value = response.data.aboutToExpireSubscriptions;
-    expired.value = response.data.expiredSubscriptions;
+    active.value = response.data.totalActiveSubscriptions;
+    aboutToExpire.value = response.data.totalSubscriptionsExpireThisMonth;
+    expired.value = response.data.totalExpiredSubscriptions;
   });
-  // subscriptionApi.getFilteredCount()
-  // .then((response ) => {
-  //     active.value = response.data.filteredContent[0].count;
-  //     aboutToExpire.value = response.data.filteredContent[1].count
-  //     expired.value = response.data.filteredContent[2].count
-
-  // })
 });
 </script>
 <template>
@@ -54,7 +39,10 @@ onMounted(async () => {
                 >الاشتراكات الصالحة</span
               >
             </div>
-            <DialogCard iconShape="fa-solid fa-check" :stateCheck="1" />
+            <DialogCard
+              iconShape="fa-solid fa-check"
+              :stateCheck="SubscriptionStatus.Active"
+            />
           </div>
         </div>
 
@@ -91,7 +79,7 @@ onMounted(async () => {
             </div>
             <DialogCard
               iconShape="fa-solid fa-hourglass-half"
-              :stateCheck="5"
+              :stateCheck="SubscriptionStatus.ExpireThisMonth"
             />
           </div>
         </div>
@@ -127,7 +115,10 @@ onMounted(async () => {
                 >الاشتراكات المنتهية صلاحيتها</span
               >
             </div>
-            <DialogCard iconShape="fa-solid fa-circle-xmark" :stateCheck="4" />
+            <DialogCard
+              iconShape="fa-solid fa-circle-xmark"
+              :stateCheck="SubscriptionStatus.Expired"
+            />
           </div>
         </div>
 

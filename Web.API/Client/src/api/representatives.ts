@@ -5,7 +5,11 @@ const httpClient = useHttpClient();
 
 export const representativesApi = {
   get: async function (CustomerId: string) {
-    const response = await httpClient.get(`/Representatives`);
+    const response = await httpClient.get(`/Representatives`, {
+      params: {
+        CustomerId: CustomerId,
+      },
+    });
     return response;
   },
   getById: async function (id: string) {

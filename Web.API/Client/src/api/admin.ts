@@ -18,7 +18,7 @@ export const admin = {
     const response = await httpClient.get(`/Admins/${id}`);
     return response;
   },
-  create: async function (admin: RequestAdminModel) {
+  create: async function (admin: any) {
     const response = await httpClient.post(`/Admins`, admin);
     return response;
   },

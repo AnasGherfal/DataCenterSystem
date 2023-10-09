@@ -167,6 +167,30 @@ const openModal = () => {
       class="font-bold"
     ></Column>
     <Column
+      field="email"
+      header="البريد الالكتروني"
+      style="min-width: 6rem"
+      class="font-bold"
+    ></Column>
+    <Column
+      field="firstName"
+      header="الاسم الاول"
+      style="min-width: 6rem"
+      class="font-bold"
+    ></Column>
+    <Column
+      field="lastName"
+      header="الاسم الاخير"
+      style="min-width: 6rem"
+      class="font-bold"
+    ></Column>
+    <Column
+      field="phoneNo"
+      header="رقم الهاتف"
+      style="min-width: 6rem"
+      class="font-bold"
+    ></Column>
+    <Column
       field="status"
       header="  الحاله "
       filterField="status"
@@ -194,21 +218,7 @@ const openModal = () => {
           @getdata="emit('getRepresentatives')"
         />
 
-        <RouterLink
-          :key="slotProps.data.id"
-          :to="
-            '/subscriptionsRecord/SubscriptionsDetaView/' + slotProps.data.id
-          "
-          style="text-decoration: none"
-        >
-          <Button
-            icon="fa-solid fa-circle-info"
-            severity="info"
-            text
-            rounded
-            v-tooltip="{ value: 'التفاصيل', fitContent: true }"
-          />
-        </RouterLink>
+        
       </template>
     </Column>
   </DataTable>

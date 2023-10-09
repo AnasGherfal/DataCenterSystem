@@ -1,3 +1,4 @@
+using Core.Constants;
 using Core.Wrappers;
 using MediatR;
 
@@ -7,4 +8,5 @@ public sealed record FetchSubscriptionsQuery : IRequest<PagedResponse<FetchSubsc
     public string? CustomerId { get; set; }
     public int? PageNumber { get; set; }
     public int? PageSize { get; set; }
+    public SubscriptionStatus? Status { get; set; }
 }

@@ -1,3 +1,4 @@
+using Core.Constants;
 using Core.Wrappers;
 using Infrastructure;
 using Infrastructure.Persistence;
@@ -21,6 +22,18 @@ public sealed record FetchSubscriptionsQueryHandler : IRequestHandler<FetchSubsc
         var pageSize = request.PageSize ?? 5;
         var query = _dbContext.Subscriptions
             .Where(p => string.IsNullOrWhiteSpace(request.CustomerId) || p.CustomerId == Guid.Parse(request.CustomerId!));
+        switch (request.Status)
+        {
+            case SubscriptionStatus.Active:
+                query = query.Where(p => p.EndDate < DateTime.Now);
+                break;
+            case SubscriptionStatus.ExpireIn30Days:
+                query = query.Where(p => p.EndDate > DateTime.Now && p.EndDate < DateTime.Now.AddDays(30));
+                break;
+            case SubscriptionStatus.Expired:
+                query = query.Where(p => p.EndDate < DateTime.Now);
+                break;
+        }
         var data = await query.Include(p => p.Customer)
             .Include(p => p.Service)
             .OrderBy(p => p.CreatedOn)

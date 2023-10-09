@@ -12,6 +12,7 @@ namespace Web.API.Features.VisitsManagement.FetchVisits
         public decimal Price { get; set; }
         public string Notes { get; set; } = string.Empty;
         public VisitType VisitType { get; set; } = VisitType.Other;
+        public string VisitStatus { get; set; } = string.Empty;
         public DateTime CreatedOn { get; set; }
     }
 }

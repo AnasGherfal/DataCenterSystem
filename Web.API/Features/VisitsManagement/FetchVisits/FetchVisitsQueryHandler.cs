@@ -38,10 +38,19 @@ public sealed record FetchVisitsQueryHandler : IRequestHandler<FetchVisitsQuery,
                 Price = p.VisitPrice,
                 Notes = p.Notes ?? "",
                 VisitType = p.VisitType,
+                VisitStatus = GetStatus(p.StartTime, p.EndTime),
                 CreatedOn = p.CreatedOn,
             })
             .ToListAsync(cancellationToken: cancellationToken);
         var count = await query.CountAsync(cancellationToken: cancellationToken);
         return new PagedResponse<FetchVisitsQueryResponse>("", data, count, pageNumber, pageSize);
+    }
+
+    public static string GetStatus(DateTime? startTime, DateTime? endTime)
+    {
+        if (startTime == null & endTime == null) return "Not Started";
+        if (startTime != null & endTime == null) return "In Progress";
+        if (startTime != null & endTime != null) return "Completed";
+        return "Not Started";
     }
 }

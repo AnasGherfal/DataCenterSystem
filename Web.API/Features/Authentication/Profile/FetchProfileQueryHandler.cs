@@ -28,6 +28,7 @@ public sealed record FetchProfileQueryHandler : IRequestHandler<FetchProfileQuer
         return new ContentResponse<FetchProfileQueryResponse>("", new FetchProfileQueryResponse()
         {
             Id = profile.Id,
+            EmpId = profile.EmployeeId,
             DisplayName = profile.DisplayName,
             Email = profile.Email ?? "",
             CreatedOn = profile.CreatedOn,

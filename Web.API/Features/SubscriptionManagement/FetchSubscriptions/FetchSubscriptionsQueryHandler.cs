@@ -25,7 +25,7 @@ public sealed record FetchSubscriptionsQueryHandler : IRequestHandler<FetchSubsc
         switch (request.Status)
         {
             case SubscriptionStatus.Active:
-                query = query.Where(p => p.EndDate < DateTime.Now);
+                query = query.Where(p => p.EndDate > DateTime.Now);
                 break;
             case SubscriptionStatus.ExpireIn30Days:
                 query = query.Where(p => p.EndDate > DateTime.Now && p.EndDate < DateTime.Now.AddDays(30));

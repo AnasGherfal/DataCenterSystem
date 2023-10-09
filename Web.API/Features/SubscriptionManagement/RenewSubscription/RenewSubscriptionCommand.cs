@@ -5,5 +5,11 @@ namespace Web.API.Features.SubscriptionManagement.RenewSubscription;
 
 public sealed record RenewSubscriptionCommand : IRequest<MessageResponse>
 {
-    public string? Id { get; set; } = string.Empty;
+    public string? Id { get; private set; } = string.Empty;
+    public IFormFile? File { get; set; }
+    
+    public void SetId(string? value)
+    {
+        Id = value;
+    }
 }

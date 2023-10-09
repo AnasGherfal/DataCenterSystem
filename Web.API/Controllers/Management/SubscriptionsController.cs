@@ -41,13 +41,13 @@ public class SubscriptionsController : ManagementController
             FileId = fileId,
         });
 
-    
+
     [HttpPut("{id}/renew")]
-    public async Task<MessageResponse> Renew(string id, [FromBody] RenewSubscriptionCommand request)
-        => await Mediator.Send(new RenewSubscriptionCommand()
-        {
-            Id = id,
-        });
+    public async Task<MessageResponse> Renew(string id, [FromForm] RenewSubscriptionCommand request)
+    {
+        request.SetId(id);
+        return await Mediator.Send(request);
+    }
 
     [HttpPut("{id}/lock")]
     public async Task<MessageResponse> Lock(string id) 

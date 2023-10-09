@@ -11,5 +11,4 @@ public sealed record CreateSubscriptionCommand : IRequest<MessageResponse>
     public string? StartDate { get; set; }
     public string? EndDate { get; set; }
     public IFormFile? File { get; private set; }
-    public DocumentType? FileType { get; private set; }
 }

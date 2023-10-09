@@ -36,7 +36,7 @@ public sealed record CreateSubscriptionCommandHandler : IRequestHandler<CreateSu
         if (!customerExists) throw new BadRequestException("العميل غير موجود");
         var uploadPath = await _uploadFile.UploadFiles(StorageType.SubscriptionFile, new List<FileStorageUploadRequest>()
         {
-            new(Guid.NewGuid(), request.File!, (short) request.FileType!.Value)
+            new(Guid.NewGuid(), request.File!,(short)DocumentType.SubscriptionFile)
         });
         if (uploadPath == null) throw new BadRequestException("حدث خطأ أثناء رفع الملف");
         var @event = new SubscriptionCreatedEvent(_client.GetIdentifier(), Guid.NewGuid(), new SubscriptionCreatedEventData()
@@ -48,7 +48,7 @@ public sealed record CreateSubscriptionCommandHandler : IRequestHandler<CreateSu
             Documents = new() 
             {
                 FileIdentifier = uploadPath.First().Id,
-                FileType = request.FileType!.Value,
+                FileType = DocumentType.SubscriptionFile,
                 FileLink = uploadPath.First().Link,
             },
         });

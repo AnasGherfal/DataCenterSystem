@@ -19,10 +19,6 @@ public class CreateSubscriptionCommandValidator: AbstractValidator<CreateSubscri
         RuleFor(a => a.EndDate)
             .NotEmpty()
             .Must(p => DateTime.TryParse(p, out _));
-
-        RuleFor(x => x.FileType)
-            .NotNull()
-            .IsInEnum();
         
         RuleFor(x => x.File)
             .SetValidator(new DocumentFileValidator("Document File Invalid"));

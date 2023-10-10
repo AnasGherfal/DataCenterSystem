@@ -32,8 +32,11 @@ public sealed record EndVisitCommandHandler : IRequestHandler<EndVisitCommand, M
         if (data.EndTime != null) throw new BadRequestException("VISIT_ALREADY_ENDED");
         var endDate = DateTime.Parse(request.EndTime ?? "");// ?? DateTime.UtcNow);
         if (endDate < data.StartTime) throw new BadRequestException("VISIT_END_TIME_IS_BEFORE_START_TIME");
-        if ((endDate.Date.DayOfWeek != data.StartTime.Value.Date.DayOfWeek) || (endDate.Date.AddDays(-1).DayOfWeek != data.StartTime.Value.Date.DayOfWeek)) 
-            throw new BadRequestException("VISIT_DAY_DIFFERENCE_MORE_THAN_ONE_DAY");
+        if (endDate.Date != data.StartTime.Value.Date)
+        {
+            var afterEndDayNotStartDay = endDate.Date.AddDays(-1).DayOfWeek != data.StartTime.Value.Date.DayOfWeek;
+            if (afterEndDayNotStartDay) throw new BadRequestException("VISIT_DAY_DIFFERENCE_MORE_THAN_ONE_DAY");
+        }
         var totalPrice = 0M;
         // if (data.StartTime.Value.Date == DateTime.UtcNow.Date)
         // {

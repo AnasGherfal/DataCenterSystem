@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { FilterMatchMode } from "primevue/api";
 import AddButton from "@/components/AddButton.vue";
 import { useVistisStore } from "@/stores/visits";
@@ -8,29 +8,57 @@ import { formatTotalMin } from "@/tools/formatTime";
 import moment from "moment";
 import { useToast } from "primevue/usetoast";
 import DeleteAdmin from "../../components/DeleteButton.vue";
-
+import { customersApi } from "@/api/customers";
+import { subscriptionApi } from "@/api/subscriptions";
+import VisitStartPause from "./VisitStartPause.vue";
 const toast = useToast();
+const loading = ref(false);
 
-const startDate = ref();
-const stopDate = ref();
-
-const showDialog = ref(false);
-
+const customers = ref();
+const visits = ref();
+const name = ref<string>("");
+const customerSubscriptions = ref();
+let customerId = ""
+let subsId = ""
+let subscriptionId = ""
 const store = useVistisStore();
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
+const filteredCustomer = ref();
+
+
 
 onMounted(async () => {
+  getVisits(customerId, subscriptionId);
+  getCustomers();
+});
+
+async function getVisits(customerId: string, subscriptionId:string) {
   try {
-    const response = await visitApi.get();
-    store.visits = response.data.content;
+    console.log( subsId)
+    const response = await visitApi.get(customerId, subscriptionId );
+    visits.value = response.data.content;
   } catch (error) {
     console.log(error);
   } finally {
     store.loading = false;
   }
-});
+}
+
+const search = (event: any) => {
+  setTimeout(() => {
+    if (!event.query.trim().length) {
+      filteredCustomer.value = [...customers.value];
+    } else {
+      filteredCustomer.value = customers.value.filter(
+        (users: { name: String }) => {
+          return users.name.toLowerCase().startsWith(event.query.toLowerCase());
+        }
+      );
+    }
+  }, 250);
+};
 
 // Watch for changes in filters and trigger server-side search
 watch(filters, (newFilters) => {
@@ -77,42 +105,72 @@ async function deleteVisit(id: string) {
   }
 }
 
-const startVisit = (id: string) => {
-  visitApi
-    .start(id, moment(startDate.value).format("YYYY-MM-DD HH:mm:ss"))
-    .then((response) => {
-      toast.add({
-        severity: "success",
-        summary: "رسالة نجاح",
-        detail: `${response.data.msg}`,
-      });
+async function getCustomers() {
+  await customersApi
+    .get(1, 50, name.value)
+    .then(function (response) {
+      customers.value = response.data.content;
     })
-    .catch((error) => {
-      toast.add({
-        severity: "error",
-        summary: "رسالة فشل",
-        detail: error.response.data.msg,
-      });
+    .catch(function (error) {
+      console.log(error);
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+}
+
+const getSubscriptions = (id: string) => {
+  subscriptionApi
+    .get(1, 50, id)
+    .then(function (response) {
+      customerSubscriptions.value = response.data.content;
+    })
+    .catch(function (error) {
+      console.log(error);
     });
 };
 
-const stopVisit = (id: string) => {
-  visitApi
-    .stop(id, moment(stopDate.value).format("YYYY-MM-DD HH:mm:ss"))
-    .then((response) => {
-      toast.add({
-        severity: "success",
-        summary: "رسالة نجاح",
-        detail: `${response.data.msg}`,
-      });
-    })
-    .catch((error) => {
-      toast.add({
-        severity: "error",
-        summary: "رسالة فشل",
-        detail: error.response.data.msg,
-      });
-    });
+const customerselect = ref();
+
+watch(customerselect, async (newValue) => {
+   customerId = newValue.id;
+
+  if (newValue && customerId !== undefined ) {
+    try {
+      loading.value = true;
+      await getSubscriptions(customerId);
+      loading.value = false;
+    } catch (error) {
+      console.error("Error fetching representatives:", error);
+    }
+  }
+});
+
+const statuses = ref([
+  { value: "Not Started", label: "لم تبدأ" },
+  { value: "In Progress", label: "بدأت" },
+]);
+
+// Declare the trans function before getSeverity
+const trans = (value: any) => {
+  if (value == "not Started") return "لم تبدأ";
+  else if (value == "In Progress") return "بدأت";
+};
+
+const getSelectedStatusLabel = (value: any) => {
+  const status = statuses.value.find((s) => s.value === value);
+  return status ? status.label : "";
+};
+
+const getSeverity = (status: any) => {
+  switch (trans(status)) {
+    case "بدأت":
+      return "success";
+    case "لم تبدأ":
+      return "danger";
+    default:
+      return ""; // Return an empty string for other cases
+  }
 };
 </script>
 
@@ -143,7 +201,7 @@ const stopVisit = (id: string) => {
         </div>
         <DataTable
           v-else
-          :value="store.visits"
+          :value="visits"
           dataKey="id"
           ref="dt"
           :globalFilterFields="['customerName', 'visitReason']"
@@ -174,18 +232,41 @@ const stopVisit = (id: string) => {
             />
           </template>
           <template #header>
-            <div class="grid p-fluid">
+            <div class="grid p-fluid mt-1">
               <div class="field col-12 md:col-6 lg:col-4">
-                <!-- <span class="p-input-icon-left p-float-label"> -->
-                <!-- <i class="fa-solid fa-magnifying-glass" /> -->
-                <!-- <InputText
-                    v-model="filters['global'].value"
-                    placeholder="Search..."
+                <div
+                  class="table-header flex flex-column md:flex-row justiify-content-between"
+                >
+                  <span class="p-input-icon-left p-float-label">
+                    <i class="fa-solid fa-magnifying-glass" />
+                    <AutoComplete
+                      v-model="customerselect"
+                      optionLabel="name"
+                      :suggestions="filteredCustomer"
+                      @complete="search"
+                    />
+                    <label for="customerName">العملاء</label>
+                  </span>
+                </div>
+              </div>
+
+              <div class="field col-12 md:col-6 lg:col-4">
+                <span class="p-float-label">
+                  <MultiSelect
+                    v-model="subscriptionId"
+                    :options="customerSubscriptions"
+                    optionLabel="serviceName"
+                    emptyMessage="هاذا العميل ليس لديه اشتراكات"
+                    placeholder=" اختر اشتراك"
+                    :selectionLimit="1"
+                    :loading="loading"
                   />
-                  <label for="search" style="font-weight: lighter">
-                    البحث
-                  </label> -->
-                <!-- </span> -->
+                  <label for="customerName">اشتراكات</label>
+                </span>
+              </div>
+
+              <div class="field col-12 md:col-6 lg:col-4">
+                <Button label="بحث" @click="getVisits(customerId, subscriptionId)" />
               </div>
             </div>
           </template>
@@ -221,7 +302,18 @@ const stopVisit = (id: string) => {
             header="سبب الزياره"
             style="min-width: 8rem"
             frozen
-          />
+          >
+            <template #body="{ data }">
+              <Tag
+                :value="
+                  store.visitReasons && store.visitReasons[data.visitType - 1]
+                    ? store.visitReasons[data.visitType - 1].name
+                    : ''
+                "
+              >
+              </Tag>
+            </template>
+          </Column>
 
           <Column
             field="totalMinutes"
@@ -243,8 +335,15 @@ const stopVisit = (id: string) => {
               {{ slotProps.data.price }} د.ل
             </template></Column
           >
-          <Column field="visitStatus" header="الحاله" style="min-width: 1rem" />
-
+          <Column field="visitStatus" header="الحاله" style="min-width: 1rem">
+            <template #body="{ data }">
+              <Tag
+                :value="getSelectedStatusLabel(data.visitStatus)"
+                :severity="getSeverity(data.visitStatus)"
+              />
+            </template>
+            <template #filter="{ filterModel, filterCallback }"> </template>
+          </Column>
           <Column
             field="expectedStartTime"
             header="تاريخ بداية الزياره"
@@ -290,77 +389,10 @@ const stopVisit = (id: string) => {
                 />
               </RouterLink>
 
-              <Button
-                icon="fa-solid fa-circle-info"
-                severity="info"
-                text
-                rounded
-                v-tooltip="{
-                  value: 'وقت الزبارة',
-                  fitContent: true,
-                }"
-                @click="showDialog = !showDialog"
-              >
-              </Button>
-              <Dialog
-                v-model:visible="showDialog"
-                :style="{ width: '450px' }"
-                header="وقت الزيارة"
-                :modal="true"
-              >
-                <div class="grid p-fluid my-5">
-                  <div class="field col-12 md:col-6">
-                    <span class="">
-                      <label for="startTime">تاريخ بداية الزيارة </label>
-                      <Calendar
-                        inputId="startTime"
-                        v-model="startDate"
-                        dateFormat="yy/mm/dd"
-                        :showTime="true"
-                        selectionMode="single"
-                        :showButtonBar="true"
-                        :manualInput="true"
-                        :stepMinute="5"
-                        hourFormat="12"
-                      />
-                    </span>
-                    <Button text @click="() => startVisit(slotProps.data.id)">
-                      <i class="fa-solid fa-check mx-2"></i>
-                      <span> تأكيد </span>
-                    </Button>
-                  </div>
-
-                  <div class="field col-12 md:col-6">
-                    <span class="">
-                      <label for="stopDate">تاريخ انتهاء الزيارة </label>
-                      <Calendar
-                        inputId="stopDate"
-                        v-model="stopDate"
-                        dateFormat="yy/mm/dd"
-                        :showTime="true"
-                        selectionMode="single"
-                        :showButtonBar="true"
-                        :manualInput="true"
-                        :stepMinute="5"
-                        hourFormat="12"
-                      />
-                    </span>
-                    <Button text @click="() => stopVisit(slotProps.data.id)">
-                      <i class="fa-solid fa-check mx-2"></i>
-                      <span> تأكيد </span>
-                    </Button>
-                  </div>
-                </div>
-
-                <template #footer>
-                  <Button
-                    label="تراجع"
-                    icon="pi pi-times"
-                    text
-                    @click="showDialog = false"
-                  />
-                </template>
-              </Dialog>
+              <VisitStartPause
+                :id="slotProps.data.id"
+                :visitStatus="slotProps.data.visitStatus"
+              />
             </template>
           </Column>
           <Toast position="bottom-left" />

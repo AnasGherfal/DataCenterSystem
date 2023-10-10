@@ -9,8 +9,14 @@ import moment from "moment";
 import { useToast } from "primevue/usetoast";
 import DeleteAdmin from "../../components/DeleteButton.vue";
 
-const store = useVistisStore();
 const toast = useToast();
+
+const startDate = ref();
+const stopDate = ref();
+
+const showDialog = ref(false);
+
+const store = useVistisStore();
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -70,6 +76,44 @@ async function deleteVisit(id: string) {
     });
   }
 }
+
+const startVisit = (id: string) => {
+  visitApi
+    .start(id, moment(startDate.value).format("YYYY-MM-DD HH:mm:ss"))
+    .then((response) => {
+      toast.add({
+        severity: "success",
+        summary: "رسالة نجاح",
+        detail: `${response.data.msg}`,
+      });
+    })
+    .catch((error) => {
+      toast.add({
+        severity: "error",
+        summary: "رسالة فشل",
+        detail: error.response.data.msg,
+      });
+    });
+};
+
+const stopVisit = (id: string) => {
+  visitApi
+    .stop(id, moment(stopDate.value).format("YYYY-MM-DD HH:mm:ss"))
+    .then((response) => {
+      toast.add({
+        severity: "success",
+        summary: "رسالة نجاح",
+        detail: `${response.data.msg}`,
+      });
+    })
+    .catch((error) => {
+      toast.add({
+        severity: "error",
+        summary: "رسالة فشل",
+        detail: error.response.data.msg,
+      });
+    });
+};
 </script>
 
 <template>
@@ -245,6 +289,78 @@ async function deleteVisit(id: string) {
                   v-tooltip="{ value: 'التفاصيل', fitContent: true }"
                 />
               </RouterLink>
+
+              <Button
+                icon="fa-solid fa-circle-info"
+                severity="info"
+                text
+                rounded
+                v-tooltip="{
+                  value: 'وقت الزبارة',
+                  fitContent: true,
+                }"
+                @click="showDialog = !showDialog"
+              >
+              </Button>
+              <Dialog
+                v-model:visible="showDialog"
+                :style="{ width: '450px' }"
+                header="وقت الزيارة"
+                :modal="true"
+              >
+                <div class="grid p-fluid my-5">
+                  <div class="field col-12 md:col-6">
+                    <span class="">
+                      <label for="startTime">تاريخ بداية الزيارة </label>
+                      <Calendar
+                        inputId="startTime"
+                        v-model="startDate"
+                        dateFormat="yy/mm/dd"
+                        :showTime="true"
+                        selectionMode="single"
+                        :showButtonBar="true"
+                        :manualInput="true"
+                        :stepMinute="5"
+                        hourFormat="12"
+                      />
+                    </span>
+                    <Button text @click="() => startVisit(slotProps.data.id)">
+                      <i class="fa-solid fa-check mx-2"></i>
+                      <span> تأكيد </span>
+                    </Button>
+                  </div>
+
+                  <div class="field col-12 md:col-6">
+                    <span class="">
+                      <label for="stopDate">تاريخ انتهاء الزيارة </label>
+                      <Calendar
+                        inputId="stopDate"
+                        v-model="stopDate"
+                        dateFormat="yy/mm/dd"
+                        :showTime="true"
+                        selectionMode="single"
+                        :showButtonBar="true"
+                        :manualInput="true"
+                        :stepMinute="5"
+                        hourFormat="12"
+                      />
+                    </span>
+                    <Button text @click="() => stopVisit(slotProps.data.id)">
+                      <i class="fa-solid fa-check mx-2"></i>
+                      <span> تأكيد </span>
+                    </Button>
+                  </div>
+                </div>
+
+                <template #footer>
+                  <Button
+                    label="تراجع"
+                    icon="pi pi-times"
+                    text
+                    @click="showDialog = false"
+                  />
+                </template>
+              </Dialog>
             </template>
           </Column>
           <Toast position="bottom-left" />

@@ -4,6 +4,6 @@ export interface Service {
   amountOfPower: string;
   acpPort: string;
   dns: string;
-  monthlyVisits: number|null;
-  price: number|null;
+  monthlyVisits: number;
+  price: number;
 }

@@ -10,5 +10,8 @@ public class EndVisitCommandValidator: AbstractValidator<EndVisitCommand>
         RuleFor(c => c.Id)
             .NotEmpty()
             .IsGuid();
+        RuleFor(c => c.EndTime)
+            .NotEmpty()
+            .Must((p => DateTime.TryParse(p, out _)));
     }
 }

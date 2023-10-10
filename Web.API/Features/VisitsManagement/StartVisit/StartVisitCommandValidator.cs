@@ -10,5 +10,9 @@ public class StartVisitCommandValidator: AbstractValidator<StartVisitCommand>
         RuleFor(c => c.Id)
             .NotEmpty()
             .IsGuid();
+        
+        RuleFor(c => c.StartTime)
+            .NotEmpty()
+            .Must((p => DateTime.TryParse(p, out _)));
     }
 }

@@ -92,19 +92,19 @@ const v$ = useVuelidate(rules, visit);
 
 onMounted(async () => {
   getCustomers();
-  // getTypes();
+  getTypes();
 });
 
-// async function getTypes() {
-//   await visitApi
-//     .getTypes()
-//     .then(function (response) {
-//       visitReasons.value = response.data.content;
-//     })
-//     .catch(function (error) {
-//       console.log(error);
-//     });
-// }
+async function getTypes() {
+  await visitApi
+    .getTypes()
+    .then(function (response) {
+      visitReasons.value = response.data.content;
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
 async function getCustomers() {
   if (name.value === undefined || name.value === null) {
     name.value = "";
@@ -213,7 +213,11 @@ const resetForm = () => {
     (visit.companions = []);
 };
 
-
+// const search = async (query: string) => {
+//   await searchByName(query); // Call the searchByName function
+//   filteredCustomer.value = customers.value; // Use the updated customers list
+//   customerSelected.value = true;
+// };
 
 const search = (event: any) => {
   setTimeout(() => {
@@ -251,7 +255,14 @@ const search = (event: any) => {
                   @complete="search"
                 />
                 <label for="customerName">العملاء</label>
-
+                <!-- <div style="height: 2px">
+                  <error
+                    v-for="error in v$.customer.$errors"
+                    :key="error.$uid"
+                    class="p-error"
+                    >{{ error.$message }}</error
+                  >
+                </div> -->
               </span>
             </div>
 
@@ -311,7 +322,7 @@ const search = (event: any) => {
                 <Dropdown
                   id="visitType"
                   v-model="visit.visitType"
-                  :options="store.visitReasons"
+                  :options="visitReasons"
                   optionValue="id"
                   optionLabel="name"
                 />

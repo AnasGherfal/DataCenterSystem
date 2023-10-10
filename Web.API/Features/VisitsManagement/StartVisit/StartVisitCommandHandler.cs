@@ -31,7 +31,7 @@ public sealed record StartVisitCommandHandler : IRequestHandler<StartVisitComman
         if (data.StartTime != null) throw new BadRequestException("VISIT_ALREADY_STARTED");
         var @event = new VisitStartedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new VisitStartedEventData()
         {
-            StartTime = request.StartTime?.ToUniversalTime() ?? DateTime.UtcNow,
+            StartTime = DateTime.Parse(request.StartTime ?? "").ToUniversalTime(),
         });
         data.Apply(@event);
         _dbContext.Entry(data).State = EntityState.Modified;

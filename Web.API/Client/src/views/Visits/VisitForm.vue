@@ -92,19 +92,8 @@ const v$ = useVuelidate(rules, visit);
 
 onMounted(async () => {
   getCustomers();
-  getTypes();
 });
 
-async function getTypes() {
-  await visitApi
-    .getTypes()
-    .then(function (response) {
-      visitReasons.value = response.data.content;
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-}
 async function getCustomers() {
   if (name.value === undefined || name.value === null) {
     name.value = "";
@@ -125,11 +114,14 @@ async function getCustomers() {
 }
 
 watch(customerselect, async (newValue) => {
-  if (newValue) {
+  const customerId = newValue.id;
+
+  if (newValue && customerId !== undefined) {
     try {
       loading.value = true;
-      await getRepresentatives(newValue.id);
-      await getSubscriptions(newValue.id);
+      console.log(customerId);
+      await getRepresentatives(customerId);
+      await getSubscriptions(customerId);
       loading.value = false;
     } catch (error) {
       console.error("Error fetching representatives:", error);
@@ -141,6 +133,7 @@ const getRepresentatives = (id: string) => {
   representativesApi
     .get(id)
     .then(function (response) {
+      console.log(response);
       customerRepresentatives.value = response.data.content;
     })
     .catch(function (error) {
@@ -322,7 +315,7 @@ const search = (event: any) => {
                 <Dropdown
                   id="visitType"
                   v-model="visit.visitType"
-                  :options="visitReasons"
+                  :options="store.visitReasons"
                   optionValue="id"
                   optionLabel="name"
                 />

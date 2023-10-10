@@ -12,7 +12,7 @@ const loading = ref(false);
 const emit = defineEmits(["getList"]);
 // define opject
 const state: Service = reactive({
-  id: null,
+  id: "",
   name: "",
   amountOfPower: "",
   acpPort: "",

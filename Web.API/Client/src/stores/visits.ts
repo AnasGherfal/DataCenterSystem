@@ -6,6 +6,8 @@ import { representativesApi } from "@/api/representatives";
 export const useVistisStore = defineStore("visit", () => {
   const visits = ref();
   const representatives = ref([{}]);
+  const visitReasons = ref();
+
   const loading = ref(true);
   const totalPages = ref(1);
   const pageNumber = ref(1);
@@ -15,6 +17,7 @@ export const useVistisStore = defineStore("visit", () => {
   onMounted(async () => {
     await getVisits(); // Add await here
     await getRepresentativeData(); // Add await here
+    await getTypes();
   });
 
   async function getVisits() {
@@ -43,6 +46,18 @@ export const useVistisStore = defineStore("visit", () => {
     }
   }
 
+  async function getTypes() {
+    await visitApi
+      .getTypes()
+      .then(function (response) {
+        visitReasons.value = response.data.content;
+
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    }
+
   return {
     visits,
     getVisits,
@@ -53,5 +68,6 @@ export const useVistisStore = defineStore("visit", () => {
     pageNumber,
     currentPage,
     pageSize,
+    visitReasons
   };
 });

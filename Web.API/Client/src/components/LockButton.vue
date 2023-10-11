@@ -33,6 +33,7 @@ const buttonColor = computed(() => (status.value === 2 ? "green" : "red"));
 const tooltipValue = computed(() =>
   status.value === 2 ? "الغاء تقييد" : "تقييد "
 );
+
 </script>
 
 <template>

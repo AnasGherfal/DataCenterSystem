@@ -10,6 +10,6 @@ export function formatTotalMin(totalMin: string) {
 }
 
 export function formatTime(date: string): string {
-  return moment(date).format("hh:mm A");
+  return moment(date).format("YYYY/MM/DD hh:mm a");
 
 }

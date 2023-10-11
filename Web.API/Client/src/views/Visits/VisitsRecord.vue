@@ -175,9 +175,9 @@ const getSeverity = (status: any) => {
     case "بدأت":
       return "success";
     case "لم تبدأ":
-      return "info";
+      return "warning";
     case " منتهية":
-      return "error";
+      return "danger";
     default:
       return ""; // Return an empty string for other cases
   }
@@ -317,7 +317,7 @@ const getSeverity = (status: any) => {
             frozen
           >
             <template #body="{ data }">
-              <Tag
+              <Tag severity="info"
                 :value="
                   store.visitReasons && store.visitReasons[data.visitType - 1]
                     ? store.visitReasons[data.visitType - 1].name
@@ -359,7 +359,7 @@ const getSeverity = (status: any) => {
           </Column>
           <Column
             field="expectedStartTime"
-            header="تاريخ بداية الزياره"
+            header=" التاريخ بداية الزياره"
             style="min-width: 8rem"
             class="font-bold"
             frozen

@@ -49,11 +49,6 @@ const items = ref([
         icon: "fa-solid fa-users-gear",
         to: "/AdminsRecord",
       },
-      {
-        label: "سجل الحركات",
-        icon: "fa-solid fa-clock-rotate-left",
-        to: "/AuditsRecord",
-      },
     ],
   },
 

@@ -4,7 +4,7 @@ import { onMounted, reactive, ref } from "vue";
 import axios from "axios";
 import moment from "moment";
 import type { VisitHours } from "@/Modules/TimeShiftsModule/TimeShiftsModule";
-import DeleteTimeShifts from "./DeleteTimeShifts.vue";
+import Delete from "@/components/DeleteButton.vue";
 import AddTimeShifts from "./AddTimeShiftsView.vue";
 import { timeShiftsApi } from "@/api/timeShifts";
 import { days } from "@/tools/days";
@@ -53,6 +53,34 @@ let selected = 1;
 const getIndex = (index: any) => {
   selected = index;
 };
+
+
+const deleteTimeShift = (id: string) => {
+  loading.value = true;
+  timeShiftsApi
+    .remove(id)
+    .then((response) => {
+      toast.add({
+        severity: "success",
+        summary: "تم الحذف",
+        detail: response.data.msg,
+        life: 3000,
+      });
+    })
+    .catch((e) => {
+      toast.add({
+        severity: "error",
+        summary: "رسالة خطأ",
+        detail: e.response.data.msg,
+        life: 3000,
+      });
+    })
+    .finally(() => {
+      getTimeShifts();
+      loading.value = false;
+    });
+};
+
 </script>
 
 <template>
@@ -77,6 +105,8 @@ const getIndex = (index: any) => {
             <Skeleton width="100%" height="2rem"></Skeleton>
           </div>
         </div>
+
+
         <DataTable
           :value="timeShifts"
           dataKey="id"
@@ -129,10 +159,33 @@ const getIndex = (index: any) => {
             :key="index"
             :field="head.key"
             :header="head.label"
-            style="min-width: 6rem"
+            style="min-width: 6rem; text-align:start"
             class="font-bold"
             frozen
           ></Column>
+          <Column style="min-width: 11rem" header="  الاجراءات ">
+              <template #body="slotProps">
+                  <Delete
+                    :name="slotProps.data.day"
+                    :id="slotProps.data.id"
+                    @submit="() => deleteTimeShift(slotProps.data.id)"
+                    type="TimeShifts"
+                  >
+                  </Delete>
+
+                <RouterLink :to="'CustomerProfile/' + slotProps.data.id">
+                  <Button
+                    v-tooltip="{ value: 'البيانات الشخصية', fitContent: true }"
+                    icon="fa-solid fa-user"
+                    severity="info"
+                    text
+                    rounded
+                    aria-label="Cancel"
+                  />
+                </RouterLink>
+
+              </template>
+            </Column>
 
           <Toast position="bottom-left" />
         </DataTable>

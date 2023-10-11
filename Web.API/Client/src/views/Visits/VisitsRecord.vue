@@ -380,7 +380,7 @@ const getSeverity = (status: any) => {
             </template>
           </Column>
 
-          <Column style="min-width: 11rem">
+          <Column style="min-width: 11rem; text-align-last:start;">
             <template #body="slotProps">
               <DeleteAdmin
                 :name="slotProps.data.customerName"

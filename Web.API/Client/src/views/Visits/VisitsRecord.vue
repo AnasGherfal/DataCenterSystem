@@ -173,7 +173,7 @@ const getSeverity = (status: any) => {
     case "بدأت":
       return "success";
     case "لم تبدأ":
-      return "danger";
+      return "error";
     default:
       return ""; // Return an empty string for other cases
   }
@@ -398,6 +398,7 @@ const getSeverity = (status: any) => {
               <VisitStartPause
                 :id="slotProps.data.id"
                 :visitStatus="slotProps.data.visitStatus"
+                @visits="getVisits(customerId, subscriptionId)"
               />
             </template>
           </Column>

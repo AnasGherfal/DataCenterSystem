@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export function formatTotalMin(totalMin: string) {
   const timeParts = totalMin.split(":");
   const hours = parseInt(timeParts[0]);
@@ -5,4 +7,9 @@ export function formatTotalMin(totalMin: string) {
 
   const formattedTime = `${hours}h  ${minutes}m `;
   return formattedTime;
+}
+
+export function formatTime(date: string): string {
+  return moment(date).format("hh:mm A");
+
 }

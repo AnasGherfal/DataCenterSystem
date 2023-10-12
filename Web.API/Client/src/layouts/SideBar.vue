@@ -91,7 +91,7 @@ const toggle = (event: any) => {
       v-tooltip="{ value: 'الشريط الجانبي', fitContent: true }"
     />
 
-    <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
+  
   </div>
 </template>
 
@@ -114,25 +114,26 @@ const toggle = (event: any) => {
   font-family: "tajawal";
   font-weight: 800 !important;
 }
-.p-menuitem {
-  .router-link-active {
+.p-menuitem
+ { .router-link-active:active {
     border-radius: 20px;
     border-color: #175deb46;
     border-style: solid;
     border-width: 3px;
-  }
-}
+  }}
+
 .p-menuitem-link:hover {
   border-radius: 20px;
 }
-.router-link-active {
-  .p-menuitem-icon {
+
+.router-link-active :active
+  {.p-menuitem-icon {
     color: var(--primary-color) !important;
-  }
-  .p-menuitem-text {
+    .p-menuitem-text {
     font-weight: 600;
-  }
-}
+    }
+  }}
+
 
 .p-menu
   .p-menuitem:not(.p-highlight):not(.p-disabled)
@@ -143,7 +144,7 @@ const toggle = (event: any) => {
 
 .p-menu
   .p-menuitem:not(.p-highlight):not(.p-disabled).p-focus
-  > .p-menuitem-content {
+  >.p-menuitem-content {
   background-color: rgba(84, 118, 199, 0.386);
   border-radius: 20px;
 }

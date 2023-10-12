@@ -74,16 +74,65 @@ public sealed record EndVisitCommandHandler : IRequestHandler<EndVisitCommand, M
         var totalPrice = 0M;
         var startTimeSpan = start.TimeOfDay;
         var endTimeSpan = end.TimeOfDay;
-        foreach (var timeShift in timeShifts)
+        //[Edited!] checking visit duration if its Greater than one hour Deal with it
+        //& if its less than or equal to one hour even with overlap just take FirstHourTimeShiftPrice
+        var visitDuration = (endTimeSpan - startTimeSpan).TotalMinutes;
+        if (visitDuration <= 60)
         {
-            var overlapStart = startTimeSpan < timeShift.EndTime ? timeShift.StartTime : startTimeSpan;
-            var overlapEnd = endTimeSpan > timeShift.StartTime ? timeShift.EndTime : endTimeSpan;
-            var overlapDuration = overlapEnd - overlapStart;
-            if (overlapDuration <= TimeSpan.Zero) continue;
-            var firstHourPrice = timeShift.PriceForFirstHour;
-            var remainingHoursPrice = timeShift.PriceForRemainingHours * (decimal)(overlapDuration.TotalHours - 1);
-            var timeShiftPrice = firstHourPrice + remainingHoursPrice;
-            totalPrice += timeShiftPrice;
+            var timeShiftOfVisit = timeShifts.Single(p => startTimeSpan >= p.StartTime && endTimeSpan <= p.EndTime);
+            if (timeShiftOfVisit == null) throw new NotFoundException("Time_Shift_Not_Founded");
+            totalPrice += timeShiftOfVisit.PriceForFirstHour;
+        }
+        else
+        {
+            //[Edited!]Check if there An OverLap exist before dealing with it
+            // checking TimeShifts That Included in the Visit
+           var timeShiftsIncluded= timeShifts.Where(p => startTimeSpan >= p.StartTime || (startTimeSpan+TimeSpan.FromMinutes(visitDuration))>=p.StartTime).ToList().OrderBy(p=>p.StartTime);
+            if (timeShiftsIncluded.Count() >= 2){
+                var firstTimeShift = timeShiftsIncluded.Single(p => startTimeSpan >= p.StartTime);
+                var secondTimeShift = timeShiftsIncluded.Single(p => firstTimeShift.Id != p.Id);
+                var firstVisitPartation =  (firstTimeShift.EndTime-startTimeSpan).TotalMinutes;
+                var secondVisitPartation = visitDuration - firstVisitPartation;
+                if (firstVisitPartation <= 60)
+                {
+                    totalPrice += firstTimeShift.PriceForFirstHour;
+                }
+                else
+                {
+                    int hours = (int)(firstVisitPartation / 60);
+                    totalPrice += firstTimeShift.PriceForRemainingHours*hours;
+                }
+
+                if (secondVisitPartation <= 60)
+                {
+                    totalPrice += secondTimeShift.PriceForFirstHour;
+                }
+                else
+                {
+                    int hours = (int)(secondVisitPartation / 60);
+                    totalPrice += secondTimeShift.PriceForRemainingHours*hours;
+                }
+
+
+
+
+                /* foreach (var timeShift in timeShiftsIncluded)
+                 {
+
+                     var overlapStart = startTimeSpan < timeShift.EndTime ? timeShift.StartTime : startTimeSpan;
+                     var overlapEnd = endTimeSpan > timeShift.StartTime ? endTimeSpan : timeShift.EndTime ;
+                     var overlapDuration = overlapEnd - overlapStart;
+                     if (overlapDuration <= TimeSpan.Zero) continue;
+                     var firstHourPrice = timeShift.PriceForFirstHour;
+                     var remainingHoursPrice = timeShift.PriceForRemainingHours * (decimal)(overlapDuration.TotalHours - 1);
+                     var timeShiftPrice = firstHourPrice + remainingHoursPrice;
+                     totalPrice += timeShiftPrice;
+                 }*/
+            }
+            else
+            {
+                totalPrice += timeShiftsIncluded.Single().PriceForRemainingHours;
+            }
         }
         return totalPrice;
     }

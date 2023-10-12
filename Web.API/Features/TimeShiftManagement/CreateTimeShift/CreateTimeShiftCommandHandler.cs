@@ -26,10 +26,10 @@ public sealed record CreateTimeShiftCommandHandler : IRequestHandler<CreateTimeS
         if (isDaySchedule)
         {
             var overlappingShiftExists = await _dbContext.TimeShifts
-                .AnyAsync(p => p.Day == request.Day
+                .AnyAsync(p => (p.Day == request.Day)
                                && ((request.StartTime >= p.StartTime && request.StartTime <= p.EndTime) 
-                                   || (request.EndTime >= p.StartTime && request.EndTime <= p.EndTime))
-                               || (request.StartTime <= p.StartTime && request.EndTime >= p.EndTime)
+                                   || (request.EndTime >= p.StartTime && request.EndTime <= p.EndTime)
+                               || (request.StartTime <= p.StartTime && request.EndTime >= p.EndTime))
                     , cancellationToken: cancellationToken);
             if (overlappingShiftExists) throw new BadRequestException("TIME_SHIFT_ALREADY_EXISTS_OR_OVERLAPS");
         }

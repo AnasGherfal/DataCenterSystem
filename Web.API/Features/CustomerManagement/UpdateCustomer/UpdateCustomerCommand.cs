@@ -10,10 +10,8 @@ public sealed record UpdateCustomerCommand : IRequest<MessageResponse>
     public string? Name { get; set; }
     public string? Email { get; set; }
     public string? PrimaryPhone { get; set; }
+    public string? SecondPhoneNo { get; set; }
     public string? Address { get; set; }
     public string? City { get; set; }
-    public string? SecondPhoneNo { get; set; }
-    public IFormFile? IdentityDocument { get; set; }
-    public IFormFile? CompanyDocument { get; set; }
     public void SetId(string id) => Id = id;
 }

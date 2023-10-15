@@ -32,13 +32,7 @@ public sealed record UpdateCustomerCommandHandler : IRequestHandler<UpdateCustom
         var data = await _dbContext.Customers
             .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("customer not found");
-        var fileRequests = new List<FileStorageUploadRequest>()
-        {
-            new(Guid.NewGuid(), request.IdentityDocument!, (short) DocumentType.IdentityDocument),
-            new(Guid.NewGuid(), request.CompanyDocument!, (short) DocumentType.CompanyDocument)
-        };
-        var uploadPath = await _uploadFile.UploadFiles(StorageType.CustomerFile, fileRequests);
-        if (uploadPath == null) throw new BadRequestException("حدث خطأ أثناء رفع الملف");
+       
         var @event = new CustomerUpdatedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new CustomerUpdatedEventData()
         {
             Name=request.Name,
@@ -47,12 +41,6 @@ public sealed record UpdateCustomerCommandHandler : IRequestHandler<UpdateCustom
             Address = request.Address!,
             Email = request.Email!,
             PrimaryPhone = request.PrimaryPhone!,
-            Files = fileRequests.Select(p => new FileStorageData()
-            {
-                FileIdentifier = p.Id,
-                FileType = (DocumentType)p.FileType,
-                FileLink = uploadPath.First(q => q.Id == p.Id).Link,
-            }).ToList()
 
         });
         data.Apply(@event);

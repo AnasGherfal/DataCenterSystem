@@ -22,7 +22,6 @@ public class CustomerUpdatedEventData : IEventData
     public string? SecondaryPhone { get; set; }
     public string? City { get; set; }
     public string Email { get; set; } =string.Empty;
-    public IList<FileStorageData> Files { get; set; }=new List<FileStorageData>();
     [JsonIgnore]
     public EventType Type => EventType.CustomerUpdated;
 }

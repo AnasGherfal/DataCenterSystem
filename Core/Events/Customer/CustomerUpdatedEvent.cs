@@ -20,6 +20,7 @@ public class CustomerUpdatedEventData : IEventData
     public string? Address { get; set; }
     public string PrimaryPhone { get; set; } = string.Empty;
     public string? SecondaryPhone { get; set; }
+    public string? City { get; set; }
     public string Email { get; set; } =string.Empty;
     public IList<FileStorageData> Files { get; set; }=new List<FileStorageData>();
     [JsonIgnore]

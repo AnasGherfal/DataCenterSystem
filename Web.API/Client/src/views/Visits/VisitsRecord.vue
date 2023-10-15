@@ -185,11 +185,13 @@ const getSeverity = (status: any) => {
 </script>
 
 <template>
-  <div>
+    <RouterView></RouterView>
+
+<div v-if="$route.path === '/VisitsRecords'">
     <Card>
       <template #title>
         سجل الزيارات
-        <AddButton name-button="إنشاء زياره" rout-name="/createVisit" />
+        <AddButton name-button="إنشاء زياره" rout-name="/visitsRecords/createVisit" />
       </template>
       <template #content>
         <div
@@ -390,7 +392,7 @@ const getSeverity = (status: any) => {
               >
               </DeleteAdmin>
               <RouterLink
-                :to="'/visitDetails/' + slotProps.data.id"
+                :to="'/visitsRecords/visitDetails/' + slotProps.data.id"
                 style="text-decoration: none"
               >
                 <Button

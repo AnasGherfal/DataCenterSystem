@@ -1,53 +1,84 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useVistisStore } from "@/stores/visits";
 import BackButton from "@/components/BackButton.vue";
-import type Textarea from "primevue/textarea";
-import { visitApi } from "@/api/visits";
-import { formatTotalMin } from "@/tools/formatTime";
 
-import { formatTime } from "@/tools/formatTime";
 import "vue-select/dist/vue-select.css";
 
-import moment from "moment";
+import { timeShiftsApi } from "@/api/timeShifts";
 
 const store = useVistisStore();
-const props = defineProps<{ visit: VisitModel }>();
 const editable = ref(true);
 const loading = ref(true);
-const visitReasons = ref<visitReason[]>([]);
 
-type visitReason = {
-  value: number;
-  text: string;
+const props = defineProps<{ timeShiftData: any }>();
+
+const timeShift = reactive({
+  id: props.timeShiftData.id,
+  startTime: props.timeShiftData.startTime,
+  endTime: props.timeShiftData.endTime,
+  priceForFirstHour: props.timeShiftData.priceForFirstHour,
+  priceForRemainingHours: props.timeShiftData.priceForRemainingHours,
+});
+const originalTimeShift = { ...timeShift };
+
+const toast = useToast();
+
+const onFormSubmit = async () => {
+  // const result = await v$.value.$validate();
+  // if (result) {
+    if (
+      JSON.stringify(timeShift) !== JSON.stringify(originalTimeShift)
+    ) {
+    console.log(timeShift)
+  timeShiftsApi
+    .edit(timeShift.id, timeShift)
+    .then((response) => {
+      toast.add({
+        severity: "success",
+        summary: "رسالة تأكيد",
+        detail: response.data.msg,
+        life: 3000,
+      });
+      editable.value = true;
+    })
+    .catch(() => {
+      toast.add({
+        severity: "error",
+        summary: "خطأ",
+        detail: "",
+        life: 3000,
+      });
+    });
+  // } else {
+  // toast.add({
+  //   severity: "error",
+  //   summary: "رسالة خطأ",
+  //   detail: "يرجى تعبئة الحقول",
+  //   life: 3000,
+  // });
+    }
 };
-// Array of identity type options
-
-onMounted(async () => {});
-
-const formattedStartTime = computed({
-  get: () => formatTime(props.visit.startTime),
-  set: (newValue) => {
-    // If you want to update the startTime when the user selects a new value
-    props.visit.startTime = newValue;
-  },
-});
-const formattedEndTime = computed({
-  get: () => formatTime(props.visit.endTime),
-  set: (newValue) => {
-    // If you want to update the startTime when the user selects a new value
-    props.visit.endTime = newValue;
-  },
-});
 </script>
 
 <template>
   <div>
     <Card>
       <template #title>
-        تفاصيل الزيارة
+        تفاصيل التوقيت
         <BackButton style="float: left" />
+        <Button
+          @click="editable = !editable"
+          icon=" fa-solid fa-pen"
+          text
+          rounded
+          class="p-button-primary p-button-text"
+          v-tooltip.top="{
+            value: 'تعديل بيانات التوقيت',
+            fitContent: true,
+          }"
+        />
       </template>
       <template #content>
         <div v-if="store.loading">
@@ -107,107 +138,70 @@ const formattedEndTime = computed({
           </div>
         </div>
         <div v-else>
-          <div class="grid p-fluid my-5">
-            <div class="field col-12 md:col-6 lg:col-4">
-              <span class="">
-                <label for="startTime">تاريخ بداية الزيارة </label>
-                <InputText
-                  inputId="startTime"
-                  :value="formatTime(visit.startTime)"
-                  :disabled="editable"
-                />
-              </span>
-            </div>
+          <form @submit.prevent="onFormSubmit" :disabled="editable">
+            <div class="grid p-fluid my-5">
+              <div class="field col-12 md:col-6 lg:col-4">
+                <span class="">
+                  <label for="startTime">بداية التوقيت </label>
+                  <Calendar
+                    inputId="startTime"
+                    v-model="timeShift.startTime"
+                    :timeOnly="true"
+                    :disabled="editable"
+                  />
+                </span>
+              </div>
+              <div class="field col-12 md:col-6 lg:col-4">
+                <span class="">
+                  <label for="stopDate"> نهاية التوقيت </label>
+                  <Calendar
+                    inputId="stopDate"
+                    v-model="timeShift.endTime"
+                    :timeOnly="true"
 
-            <div class="field col-12 md:col-6 lg:col-4">
-              <span class="">
-                <label for="stopDate">تاريخ انتهاء الزيارة </label>
-                <InputText
-                  inputId="stopDate"
-                  :value="
-                    visit.endTime
-                      ? formatTime(visit.endTime)
-                      : 'الزيارة غير منتهية'
-                  "
-                  :disabled="editable"
-                />
-              </span>
+                    :disabled="editable"
+                  />
+                </span>
+              </div>
             </div>
-          </div>
-          <div class="grid p-fluid">
-            <div class="field col-12 md:col-6 lg:col-4">
-              <span class="">
-                <label for="customerName">العميل</label>
-                <InputText
-                  v-model="visit.customer"
-                  optionLabel="customerName"
-                  :disabled="true"
-                />
-              </span>
-            </div>
-            <div class="field col-12 md:col-6 lg:col-4">
-              <span class="">
-                <label for="customerName">الاشتراك</label>
-                <InputText
-                  v-model="visit.service"
-                  optionLabel="customerName"
-                  :disabled="true"
-                />
-              </span>
-            </div>
+            <div class="grid p-fluid">
+              <div class="field col-12 md:col-6 lg:col-4">
+                <span class="">
+                  <label for="customerName">السعر مقابل الساعة الاولى</label>
+                  <InputNumber
+                    v-model="timeShift.priceForFirstHour"
+                    :disabled="editable"
+                    suffix="د.ل" 
+                  />
+                </span>
+              </div>
+              <div class="field col-12 md:col-6 lg:col-4">
+                <span class="">
+                  <label for="customerName">السعر مقابل باقي الساعات </label>
+                  <InputNumber
+                    v-model="timeShift.priceForRemainingHours"
+                    :disabled="editable"
+                    suffix="د.ل" 
 
-            <div class="field col-12 md:col-6 lg:col-4">
-              <span class="">
-                <label for="companionName"> مدة الزيارة </label>
-                <InputText
-                  id="companionName"
-                  :value="
-                    visit.totalTime
-                      ? formatTotalMin(visit.totalTime)
-                      : 'الزيارة غير منتهة'
-                  "
-                  :readonly="true"
-                  :disabled="true"
-                />
-              </span>
+                  />
+                </span>
+              </div>
             </div>
-
-            <div class="field col-12 md:col-6 lg:col-4">
-              <span class="">
-                <label for="visitPrice"> السعر </label>
-                <InputText
-                  id="visitPrice"
-                  :value="visit.visitPrice + ' دينار'"
-                  :readonly="true"
-                  :disabled="true"
-                />
-              </span>
+            <div v-if="!editable">
+              <Button
+                @click="onFormSubmit"
+                icon="fa-solid fa-check"
+                label="تعديل"
+              />
+              <Button
+                @click="editable = !editable"
+                icon="fa-solid fa-ban"
+                label="إلغاء التعديل"
+                class="p-button-danger"
+                style="margin-right: 0.5em"
+              />
             </div>
-            <div class="field col-12 md:col-6 lg:col-4">
-              <span class="">
-                <label
-                  style="color: black; top: -0.75rem; font-size: 12px"
-                  for="visitType"
-                  >سبب الزيارة
-                </label>
-                <Dropdown
-                  id="visitType"
-                  v-model="visit.visitType"
-                  :options="store.visitReasons"
-                  optionValue="id"
-                  optionLabel="name"
-                  :disabled="true"
-                />
-              </span>
-            </div>
-
-            <div class="field col-8 md:col-3 lg:col-4">
-              <span class="">
-                <label for="notes"> الملاحظات </label>
-                <Textarea id="notes" v-model="visit.notes" :disabled="true" />
-              </span>
-            </div>
-          </div>
+          </form>
         </div>
       </template>
     </Card>

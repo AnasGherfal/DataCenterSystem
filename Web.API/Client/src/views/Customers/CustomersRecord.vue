@@ -173,11 +173,14 @@ const onSearch = (event: KeyboardEvent) => {
 </script>
 
 <template>
-  <div>
+    <RouterView></RouterView>
+
+  <div  v-if="$route.path === '/customersRecord'">
     <Card>
       <template #title>
         سجل العملاء
-        <AddButton name-button="اضافة عميل" rout-name="/addCustomer" />
+        <AddButton name-button="اضافة عميل"  rout-name="/customersRecord/addCustomer"
+ />
       </template>
       <template #content>
         <div>
@@ -334,7 +337,7 @@ const onSearch = (event: KeyboardEvent) => {
                   </DeleteCustomer>
                 </span>
 
-                <RouterLink :to="'CustomerProfile/' + slotProps.data.id">
+                <RouterLink :to="'customersRecord/CustomerProfile/' + slotProps.data.id">
                   <Button
                     v-tooltip="{ value: 'البيانات الشخصية', fitContent: true }"
                     icon="fa-solid fa-user"

@@ -58,7 +58,7 @@ public class CustomersController : ManagementController
     }
 
     [HttpPut("{id}")]
-    public async Task<MessageResponse> Update(string id, [FromBody] UpdateCustomerCommand request)
+    public async Task<MessageResponse> Update(string id, [FromForm] UpdateCustomerCommand request)
     {
         request.SetId(id);
         return await Mediator.Send(request);

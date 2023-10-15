@@ -8,7 +8,7 @@ import Delete from "@/components/DeleteButton.vue";
 import AddTimeShifts from "./AddTimeShiftsView.vue";
 import { timeShiftsApi } from "@/api/timeShifts";
 import { days } from "@/tools/days";
-
+import TimeShiftsDetails from "./TimeShiftDetails.vue"
 const timeShifts = ref([]);
 const selectedHours = ref();
 const loading = ref(false);
@@ -150,8 +150,8 @@ const deleteTimeShift = (id: string) => {
           <Column
             v-for="(head, index) in [
               {key: 'day', label: 'اليوم'},
-              {key: 'startTime', label: 'تاريخ البداية'},
-              {key: 'endTime', label: 'تاريخ النهاية'},
+              {key: 'startTime', label: 'وقت البداية'},
+              {key: 'endTime', label: 'وقت النهاية'},
               {key: 'date', label: 'التاريخ'},
               {key: 'priceForFirstHour', label: 'السعر مقابل الساعة الاولى'},
               {key: 'priceForRemainingHours', label: 'السعر مقابل باقي الساعات'},
@@ -173,15 +173,16 @@ const deleteTimeShift = (id: string) => {
                   >
                   </Delete>
 
-                <RouterLink :to="'CustomerProfile/' + slotProps.data.id">
+                <RouterLink  :to=" '/timeShiftDetails/' + slotProps.data.id ">
                   <Button
-                    v-tooltip="{ value: 'البيانات الشخصية', fitContent: true }"
-                    icon="fa-solid fa-user"
+                    v-tooltip="{ value: 'التفاصيل', fitContent: true }"
+                    icon="fa-solid fa-circle-info"
                     severity="info"
                     text
                     rounded
                     aria-label="Cancel"
                   />
+
                 </RouterLink>
 
               </template>

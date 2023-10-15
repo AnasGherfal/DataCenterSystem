@@ -42,7 +42,20 @@ public class Customer: Entity
             CreatedOn = @event.DateTime,
         }).ToList();
     }
-    
+    public void Apply(CustomerUpdatedEvent @event)
+    {
+        Name=@event.Data.Name;
+        Address = @event.Data.Address;
+        PrimaryPhone=@event.Data.PrimaryPhone;
+        SecondaryPhone = @event.Data.SecondaryPhone;
+        City = @event.Data.City;
+        Email= @event.Data.Email;
+        Sequence = @event.Sequence;
+        UpdatedOn = @event.DateTime;
+        Status = GeneralStatus.Active;
+
+    }
+
     public void Apply(CustomerLockedEvent @event)
     {
         Sequence = @event.Sequence;

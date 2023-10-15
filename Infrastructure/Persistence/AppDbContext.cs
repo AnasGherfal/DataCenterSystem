@@ -14,7 +14,6 @@ namespace Infrastructure.Persistence;
 public class AppDbContext : IdentityDbContext<Admin, AdminRole, Guid>
 {
     public DbSet<Event> Events => Set<Event>();
-    public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Service> Services => Set<Service>();
     public DbSet<Subscription> Subscriptions => Set<Subscription>();
     public DbSet<Representative> Representatives => Set<Representative>();
@@ -40,7 +39,6 @@ public class AppDbContext : IdentityDbContext<Admin, AdminRole, Guid>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         this.AddEventBuilder(modelBuilder);
-        this.AddCustomerBuilder(modelBuilder);
         this.AddRepresentativeBuilder(modelBuilder);
         this.AddServiceBuilder(modelBuilder);
         this.AddSubscriptionBuilder(modelBuilder);
@@ -87,6 +85,7 @@ public class AppDbContext : IdentityDbContext<Admin, AdminRole, Guid>
             new(ClaimsKey.Email.Key(), user.Email ?? ""),
             new(ClaimsKey.Permissions.Key(), user.Permissions.ToString("D")),
             new(ClaimsKey.EmailVerified.Key(), user.EmailConfirmed.ToString()),
+            new(ClaimsKey.UserType.Key(), UserType.Admin.ToString("D")),
         };
         userManager.AddClaimsAsync(user, authClaims).Wait();
     }

@@ -4,17 +4,11 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Core.Entities;
 
-public class Admin : IdentityUser<Guid>, IBaseEntity
+public class Admin : Account
 {
     public string DisplayName { get; set; } = string.Empty;
     public int EmployeeId { get; set; } = 0;
     public SystemPermissions Permissions { get; set; } = SystemPermissions.None;
-    public bool Enabled { get; set; } = true;
-    public DateTime CreatedOn { get; set; } = DateTime.UtcNow; 
-    public DateTime UpdatedOn { get; set; } = DateTime.UtcNow;
-    public bool IsDeleted { get; set; } = false;
-    public long Sequence { get; set; } = 1;
-    public byte[] RowVersion { get; set; } = { 1 };
     
     public void Apply(AdminCreatedEvent @event)
     {
@@ -54,8 +48,4 @@ public class Admin : IdentityUser<Guid>, IBaseEntity
         Permissions = @event.Data.Permissions;
     }
     
-}
-
-public class AdminRole : IdentityRole<Guid>
-{
 }

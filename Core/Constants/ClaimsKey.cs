@@ -7,6 +7,7 @@ public enum ClaimsKey
     Permissions,
     Email,
     EmailVerified,
+    UserType,
 }
 
 public static class ClaimsKeyExtension
@@ -18,6 +19,7 @@ public static class ClaimsKeyExtension
             ClaimsKey.Permissions => "permissions",
             ClaimsKey.Email => "email",
             ClaimsKey.EmailVerified => "email_verified",
+            ClaimsKey.UserType => "user_type",
             _ => throw new NotImplementedException(),
         };
 }

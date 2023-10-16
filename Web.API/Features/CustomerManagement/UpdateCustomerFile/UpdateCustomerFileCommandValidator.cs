@@ -12,9 +12,6 @@ public class UpdateCustomerFileCommandValidator: AbstractValidator<UpdateCustome
             RuleFor(p => p.FileId)
                 .IsGuid();
         });
-        RuleFor(x => x.DocType)
-            .NotNull().WithMessage("DocType is required.")
-            .IsInEnum().WithMessage("DocType Not allowed");
 
         RuleFor(x => x.File)
             .SetValidator(new DocumentFileValidator("File is required."));

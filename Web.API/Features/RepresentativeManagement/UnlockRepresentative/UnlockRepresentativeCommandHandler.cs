@@ -1,4 +1,5 @@
 ﻿using Core.Constants;
+using Core.Events.Representative;
 using Core.Events.Subscription;
 using Core.Exceptions;
 using Core.Interfaces.Services;
@@ -24,17 +25,17 @@ public sealed record UnlockRepresentativeCommandHandler : IRequestHandler<Unlock
     public async Task<MessageResponse> Handle(UnlockRepresentativeCommand request, CancellationToken cancellationToken)
     {
         var id = Guid.Parse(request.Id!);
-        var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
-        if (data == null) throw new NotFoundException("subscription not found");
-        if (data.Status != GeneralStatus.Locked) throw new BadRequestException("subscription is not locked");
-        var @event = new SubscriptionUnlockedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new SubscriptionUnlockedEventData());
+        var data = await _dbContext.Representatives.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
+        if (data == null) throw new NotFoundException("Representative not found");
+        if (data.Status != GeneralStatus.Locked) throw new BadRequestException("Representative is not locked");
+        var @event = new RepresentativeUnlockedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new RepresentativeUnlockedEventData());
         data.Apply(@event);
         _dbContext.Entry(data).State = EntityState.Modified;
         await _dbContext.Events.AddAsync(@event, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return new MessageResponse()
         {
-            Msg = "subscription unlocked successfully!"
+            Msg = "Representative unlocked successfully!"
         };
     }
 }

@@ -35,9 +35,9 @@ public sealed record UpdateCustomerCommandHandler : IRequestHandler<UpdateCustom
        
         var @event = new CustomerUpdatedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new CustomerUpdatedEventData()
         {
-            Name=request.Name,
-            City=request.City,
-            SecondaryPhone= request.SecondPhoneNo,
+            Name=request.Name!,
+            City=request.City!,
+            SecondaryPhone= request.SecondaryPhone!,
             Address = request.Address!,
             Email = request.Email!,
             PrimaryPhone = request.PrimaryPhone!,

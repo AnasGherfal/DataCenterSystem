@@ -126,7 +126,17 @@ const router = createRouter({
       name: "SettingsView",
 
       component: () => import("../views/Settings/SettingsView.vue"),
+      
+      children:[
+        {
+          path:"timeShiftDetails/:id",
+          props:true,
+          component:() => import("../views/Settings/TimeShift/TimeShiftDetailsView.vue")
+        }
+        
+      ]
     },
+
     {
       path: "/adminProfile",
       name: "AdminProfile",

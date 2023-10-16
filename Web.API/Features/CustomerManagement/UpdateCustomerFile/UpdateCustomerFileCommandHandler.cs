@@ -30,11 +30,12 @@ public sealed record UpdateCustomerFileCommandHandler : IRequestHandler<UpdateCu
         var data = await _dbContext.Customers
             .Include(p => p.Documents)
             .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
+        var docType = data.Documents.FirstOrDefault(p => p.Id.Equals(request.FileId)).FileType!;
         if (data == null) throw new NotFoundException("Customer not found");
         if (data.Status != GeneralStatus.Active) throw new BadRequestException("Sorry, this Customer is not active");
         var uploadPath = await _uploadFile.UploadFiles(StorageType.RepresentativeFile, new List<FileStorageUploadRequest>()
         {
-            new(Guid.NewGuid(), request.File!, (short) request.DocType!.Value)
+            new(Guid.NewGuid(), request.File!, (short) docType)
         });
         if (uploadPath == null) throw new BadRequestException("حدث خطأ أثناء رفع الملف");
         var @event = new CustomerFileUpdatedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new CustomerFileUpdatedEventData()
@@ -42,8 +43,10 @@ public sealed record UpdateCustomerFileCommandHandler : IRequestHandler<UpdateCu
             OldFileIdentifier = string.IsNullOrWhiteSpace(request.FileId) ? null : Guid.Parse(request.FileId!),
             FileIdentifier = uploadPath.First().Id,
             FileLink = uploadPath.First().Link,
-            FileType = request.DocType!.Value,
-        });
+            FileType = docType!,
+        })
+        {
+        };
         data.Apply(@event);
         _dbContext.Entry(data).State = EntityState.Modified;
         await _dbContext.Events.AddAsync(@event, cancellationToken);

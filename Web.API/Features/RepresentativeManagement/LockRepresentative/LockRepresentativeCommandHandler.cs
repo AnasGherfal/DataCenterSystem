@@ -1,4 +1,5 @@
 ﻿using Core.Constants;
+using Core.Events.Representative;
 using Core.Events.Subscription;
 using Core.Exceptions;
 using Core.Interfaces.Services;
@@ -24,18 +25,18 @@ public sealed record LockRepresentativeCommandHandler : IRequestHandler<LockRepr
     public async Task<MessageResponse> Handle(LockRepresentativeCommand request, CancellationToken cancellationToken)
     {
         var id = Guid.Parse(request.Id!);
-        var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
-        if (data == null) throw new NotFoundException("Subscription not found");
-        if (data.Status == GeneralStatus.Locked) throw new BadRequestException("Sorry, this subscription is already locked");
+        var data = await _dbContext.Representatives.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
+        if (data == null) throw new NotFoundException("Representative not found");
+        if (data.Status == GeneralStatus.Locked) throw new BadRequestException("Sorry, this Representative is already locked");
         if (data.Status != GeneralStatus.Active) throw new BadRequestException("Sorry, this cannot be locked");
-        var @event = new SubscriptionLockedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new SubscriptionLockedEventData());
+        var @event = new RepresentativeLockedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new RepresentativeLockedEventData());
         data.Apply(@event);
         _dbContext.Entry(data).State = EntityState.Modified;
         await _dbContext.Events.AddAsync(@event, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return new MessageResponse()
         {
-            Msg = "Subscription locked successfully!",
+            Msg = "Representative locked successfully!",
         };
     }
 }

@@ -327,7 +327,7 @@ const onSearch = (event: KeyboardEvent) => {
 
             <Column style="min-width: 11rem" header="  الاجراءات ">
               <template #body="slotProps">
-                <span v-if="slotProps.data.status !== 5">
+                <span v-if="slotProps.data.status !== 2">
                   <DeleteCustomer
                     :name="slotProps.data.name"
                     :id="slotProps.data.id"

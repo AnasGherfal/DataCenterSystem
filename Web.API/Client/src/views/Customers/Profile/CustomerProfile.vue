@@ -173,7 +173,7 @@ const downloadFile = async (fileId: any) => {
 
           <!-- المخولون الخاصون بالعميل -->
           <Representative
-            @getRepresentatives="getCustomers()"
+            @getRepresentatives="getRepresentatives()"
             :customerStatus="1"
             :CustomerId="customer.id"
             :representatives="customer.representative"

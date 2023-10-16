@@ -84,7 +84,9 @@ const deleteTimeShift = (id: string) => {
 </script>
 
 <template>
-  <div>
+      <RouterView></RouterView>
+
+      <div  v-if="$route.path === '/SettingsView'">
     <AddTimeShifts @getTimeShifts="getTimeShifts"> </AddTimeShifts>
 
       <div>
@@ -173,7 +175,7 @@ const deleteTimeShift = (id: string) => {
                   >
                   </Delete>
 
-                <RouterLink  :to=" '/timeShiftDetails/' + slotProps.data.id ">
+                <RouterLink  :to=" '/SettingsView/timeShiftDetails/' + slotProps.data.id ">
                   <Button
                     v-tooltip="{ value: 'التفاصيل', fitContent: true }"
                     icon="fa-solid fa-circle-info"

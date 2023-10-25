@@ -29,7 +29,6 @@ const hide2 = ref(false);
 const screenWidth = ref(window.innerWidth);
 const koko = ref("koko");
 
-
 const customer = reactive({
   id: props.customer.id,
   name: props.customer.name,
@@ -274,8 +273,7 @@ const downloadFile = async (id: any, fileId: string) => {
         البيانات الشخصية
 
         <BackButton style="float: left" />
-
-        <div v-if="customer.status === 5">
+        <div v-if="customer.status == 2">
           <div class="warning-message">
             <div class="warning-message-icon"></div>
             <div class="warning-message-text">
@@ -285,7 +283,7 @@ const downloadFile = async (id: any, fileId: string) => {
         </div>
 
         <span
-          v-else-if="customer.status !== 5"
+          v-else-if="customer.status !== 2"
           style="width: 30px; height: 30px; margin-right: 10px; margin-top: 0px"
         >
           <Button

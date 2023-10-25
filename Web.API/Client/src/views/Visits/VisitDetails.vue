@@ -115,7 +115,7 @@ const formattedEndTime = computed({
                 <label for="startTime">تاريخ بداية الزيارة </label>
                 <InputText
                   inputId="startTime"
-                  :value=" formatTime(visit.startTime)"
+                  :value=" visit.startTime ? formatTime(visit.startTime): 'الزيارة لم تبدأ'"
     
                   :disabled="editable"
                 />

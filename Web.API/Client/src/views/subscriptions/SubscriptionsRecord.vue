@@ -316,7 +316,7 @@ const deleteSubs = (id: string) => {
                 </DeleteSubscription>
               </span>
               <LockButton
-                typeLock="Subscription"
+                typeLock="Subscriptions"
                 :id="slotProps.data.id"
                 :name="slotProps.data.id"
                 :status="slotProps.data.status"

@@ -2,9 +2,15 @@
 import { RouterView } from "vue-router";
 import SideBar from "./layouts/SideBar.vue";
 import TopBar from "./layouts/TopBar.vue";
+
+import LoginPage from "./views/LoginPage.vue";
+import { useAuthStore } from "./stores/auth";
+const authorized = useAuthStore();
 </script>
 
 <template>
+      <!-- <LoginPage v-if="!authorized.userData" /> -->
+
   <main>
     <TopBar />
 
@@ -15,7 +21,7 @@ import TopBar from "./layouts/TopBar.vue";
         <SideBar />
       </div>
 
-      <div
+      <div v-if="authorized.userData"
         class="content"
         style="
           transition: all 0.5s ease;

@@ -38,10 +38,10 @@ visitStatus.value == "Not Started" ? " ابدأ الزيارة" : "انهي "
 );
 
 onMounted(async () => {
-  getVisitById();
 });
 async function getVisitById() {
   await visitApi.getById(props.id).then((response) => {
+    showDialog.value = true;
     visitById.value = response.data.content;
   });
 }
@@ -119,7 +119,7 @@ const stopVisit = (id: string) => {
     text
     rounded
     v-tooltip="{ value: tooltipValue, fitContent: true }"
-    @click="showDialog = !showDialog"
+    @click=getVisitById()
   >
   </Button>
   <Dialog

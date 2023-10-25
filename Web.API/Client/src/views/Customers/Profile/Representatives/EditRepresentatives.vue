@@ -157,14 +157,13 @@ const onSubmitForm = async () => {
 
   // formData.append("firstName", representatives.firstName);
   // formData.append("lastName", representatives.lastName);
-  formData.append("email", representatives.email);
-  formData.append("phoneNo", representatives.phoneNo);
-  formData.append("identityNo", representatives.identityNo);
-  formData.append(
-    "identityType",
-    representatives.identityType?.toString() || ""
-  );
 
+  const requestBody = {
+  email: representatives.email,
+  phoneNo: representatives.phoneNo,
+  identityNo: representatives.identityNo,
+  identityType: (representatives.identityType)
+};
   // Append the first file as FormFile
   // if (representatives.files[0].file instanceof File) {
   //   formData.append(
@@ -189,15 +188,9 @@ const onSubmitForm = async () => {
   //     representatives.files[1].docType.toString()
   //   );
   // }
-  const formDataObject: { [key: string]: string } = {};
-  formData.forEach((value, key) => {
-    formDataObject[key] = value.toString();
-  });
-
-  console.log("formData:", formDataObject);
 
   representativesApi
-    .edit(props.id, formData)
+    .edit(props.id, requestBody)
     .then((response) => {
       emit("getRepresentatives");
       toast.add({

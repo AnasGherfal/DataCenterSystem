@@ -14,7 +14,7 @@ import LockButton from "@/components/LockButton.vue";
 import EditRepresentatives from "./EditRepresentatives.vue";
 const route = useRoute();
 const prop = defineProps<{
-  customerStatus: number | undefined;
+  customerStatus: number;
   CustomerId: string;
   representatives: RepresentativeModel[];
 }>();
@@ -186,7 +186,7 @@ const goToPreviousPage = () => {
       @click="openModal"
       class="p-button-primary mb-4"
       style="display: flex"
-      :disabled="prop.customerStatus == 5 || prop.representatives.length >= 2"
+      :disabled="prop.customerStatus == 2 || prop.representatives.length >= 2"
     >
       اضافة مُخول
     </Button>
@@ -245,7 +245,6 @@ const goToPreviousPage = () => {
                 @click="goToNextPage"
               />
             </template> -->
-
 
     <template #empty>
       <div
@@ -314,6 +313,12 @@ const goToPreviousPage = () => {
             type="Representative"
           >
           </DeleteButton>
+
+          <EditRepresentatives
+            :id="slotProps.data.id"
+            :representatives="representativesById"
+            @get-representatives="emit('getRepresentatives')"
+          />
         </span>
         <LockButton
           typeLock="Representatives"
@@ -322,18 +327,9 @@ const goToPreviousPage = () => {
           :status="slotProps.data.status"
           @getdata="emit('getRepresentatives')"
         />
-        <EditRepresentatives
-          :id="slotProps.data.id"
-          :representatives="representativesById"
-          @get-representatives="emit('getRepresentatives')"
-        />
       </template>
     </Column>
   </DataTable>
-
-
-
-  <Toast />
 </template>
 
 <style>

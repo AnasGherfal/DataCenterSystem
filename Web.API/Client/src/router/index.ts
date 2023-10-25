@@ -6,7 +6,6 @@ import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { ref } from "vue";
 
-
 NProgress.configure({ showSpinner: false });
 const loading = ref(false);
 
@@ -21,8 +20,6 @@ const router = createRouter({
         guest: true,
       },
     },
-
-
 
     {
       path: "/",
@@ -126,15 +123,15 @@ const router = createRouter({
       name: "SettingsView",
 
       component: () => import("../views/Settings/SettingsView.vue"),
-      
-      children:[
+
+      children: [
         {
-          path:"timeShiftDetails/:id",
-          props:true,
-          component:() => import("../views/Settings/TimeShift/TimeShiftDetailsView.vue")
-        }
-        
-      ]
+          path: "timeShiftDetails/:id",
+          props: true,
+          component: () =>
+            import("../views/Settings/TimeShift/TimeShiftDetailsView.vue"),
+        },
+      ],
     },
 
     {
@@ -162,12 +159,12 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach(async(to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // Check if the user is authorized/logged in (you can use your own logic here)
   const authorized = useAuthStore();
 
-   // if the route is guest only then let the user continue
-   if (to.meta.guest) {
+  // if the route is guest only then let the user continue
+  if (to.meta.guest) {
     document.getElementById("InitScreenDOM")?.remove();
     return next();
   }
@@ -194,15 +191,14 @@ router.beforeEach(async(to, from, next) => {
     return next("/Login");
   }
 
-    // otherwise continue to the route
-    document.getElementById("InitScreenDOM")?.remove();
-    next();
-  
-    // Scroll page to top on every route change
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 100);
-    
+  // otherwise continue to the route
+  document.getElementById("InitScreenDOM")?.remove();
+  next();
+
+  // Scroll page to top on every route change
+  setTimeout(() => {
+    window.scrollTo(0, 0);
+  }, 100);
 });
 router.beforeResolve((to, from, next) => {
   // If this isn't an initial page load.

@@ -68,10 +68,13 @@ onMounted(async () => {
   getCustomers();
 });
 async function searchByName(searchName: string) {
+  console.log("hi")
   name.value = searchName;
   await getCustomers(); // Await the getCustomers function to wait for the API call to complete
 }
 async function getCustomers() {
+  console.log('getCustomers method called from child');
+
   if (name.value === undefined || name.value === null) {
     name.value = "";
   }
@@ -179,7 +182,7 @@ const onSearch = (event: KeyboardEvent) => {
     <Card>
       <template #title>
         سجل العملاء
-        <AddButton name-button="اضافة عميل"  rout-name="/customersRecord/addCustomer"
+        <AddButton @getCustomers="getCustomers" name-button="اضافة عميل"  rout-name="/customersRecord/addCustomer"
  />
       </template>
       <template #content>

@@ -27,16 +27,20 @@ public sealed record UpdateTimeShiftCommandHandler : IRequestHandler<UpdateTimeS
                        .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("TIME_SHIFT_NOT_FOUND");
         if (data.Date != null && (request.StartTime != null || request.EndTime != null)) throw new NotFoundException("CANNOT_UPDATE_TIME_FOR_DAY_SHIFT");
-        if (data.Day != null && request.StartTime != null)
+        if (!(request.StartTime == data.StartTime && request.EndTime == data.EndTime))
         {
-            var overlappingShiftExists = await _dbContext.TimeShifts
-                .AnyAsync(p => (p.Day == data.Day)
-                               && ((request.StartTime >= p.StartTime && request.StartTime <= p.EndTime) 
-                                   || (request.EndTime >= p.StartTime && request.EndTime <= p.EndTime)
-                               || (request.StartTime <= p.StartTime && request.EndTime >= p.EndTime))
-                    , cancellationToken: cancellationToken);
-            if (overlappingShiftExists) throw new BadRequestException("TIME_SHIFT_ALREADY_EXISTS_OR_OVERLAPS");
+            if (data.Day != null && request.StartTime != null)
+            {
+                var overlappingShiftExists = await _dbContext.TimeShifts
+                    .AnyAsync(p => (p.Day == data.Day)
+                                   && ((request.StartTime >= p.StartTime && request.StartTime <= p.EndTime)
+                                       || (request.EndTime >= p.StartTime && request.EndTime <= p.EndTime)
+                                   || (request.StartTime <= p.StartTime && request.EndTime >= p.EndTime))
+                        , cancellationToken: cancellationToken);
+                if (overlappingShiftExists) throw new BadRequestException("TIME_SHIFT_ALREADY_EXISTS_OR_OVERLAPS");
+            }
         }
+        
         var @event = new TimeShiftUpdatedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new TimeShiftUpdatedEventData()
         {
             PriceForFirstHour = request.PriceForFirstHour!.Value,

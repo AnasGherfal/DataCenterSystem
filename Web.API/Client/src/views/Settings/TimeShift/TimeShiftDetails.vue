@@ -7,6 +7,7 @@ import BackButton from "@/components/BackButton.vue";
 import "vue-select/dist/vue-select.css";
 
 import { timeShiftsApi } from "@/api/timeShifts";
+import { formatTimeSpan } from "@/tools/formatTime";
 
 const store = useVistisStore();
 const editable = ref(true);
@@ -26,14 +27,22 @@ const originalTimeShift = { ...timeShift };
 const toast = useToast();
 
 const onFormSubmit = async () => {
-  // const result = await v$.value.$validate();
-  // if (result) {
-    if (
-      JSON.stringify(timeShift) !== JSON.stringify(originalTimeShift)
-    ) {
-    console.log(timeShift)
+  const requestBody = {
+    startTime: originalTimeShift.startTime,
+    endTime: originalTimeShift.endTime,
+    priceForFirstHour: timeShift.priceForFirstHour,
+    priceForRemainingHours: timeShift.priceForRemainingHours,
+  };
+
+  if (originalTimeShift.startTime !== timeShift.startTime) {
+    requestBody.startTime = formatTimeSpan(timeShift.startTime);
+  }
+  if (originalTimeShift.endTime !== timeShift.endTime) {
+    requestBody.endTime = formatTimeSpan(timeShift.endTime);
+  }
+  console.log(timeShift);
   timeShiftsApi
-    .edit(timeShift.id, timeShift)
+    .edit(timeShift.id, requestBody)
     .then((response) => {
       toast.add({
         severity: "success",
@@ -58,7 +67,6 @@ const onFormSubmit = async () => {
   //   detail: "يرجى تعبئة الحقول",
   //   life: 3000,
   // });
-    }
 };
 </script>
 
@@ -142,12 +150,18 @@ const onFormSubmit = async () => {
             <div class="grid p-fluid my-5">
               <div class="field col-12 md:col-6 lg:col-4">
                 <span class="">
-                  <label for="startTime">بداية التوقيت </label>
+                  <label for="startTime">بداية التوقيت </label
+                  >
                   <Calendar
                     inputId="startTime"
                     v-model="timeShift.startTime"
                     :timeOnly="true"
                     :disabled="editable"
+                    selectionMode="single"
+                    :manualInput="true"
+                    :stepMinute="15"
+                    :show-seconds="true"
+                    :step-second="60"
                   />
                 </span>
               </div>
@@ -158,8 +172,12 @@ const onFormSubmit = async () => {
                     inputId="stopDate"
                     v-model="timeShift.endTime"
                     :timeOnly="true"
-
                     :disabled="editable"
+                    selectionMode="single"
+                    :manualInput="true"
+                    :stepMinute="15"
+                    :show-seconds="true"
+                    :step-second="60"
                   />
                 </span>
               </div>
@@ -171,7 +189,7 @@ const onFormSubmit = async () => {
                   <InputNumber
                     v-model="timeShift.priceForFirstHour"
                     :disabled="editable"
-                    suffix="د.ل" 
+                    suffix="د.ل"
                   />
                 </span>
               </div>
@@ -181,8 +199,7 @@ const onFormSubmit = async () => {
                   <InputNumber
                     v-model="timeShift.priceForRemainingHours"
                     :disabled="editable"
-                    suffix="د.ل" 
-
+                    suffix="د.ل"
                   />
                 </span>
               </div>

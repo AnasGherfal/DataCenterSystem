@@ -47,26 +47,47 @@ public static class IdentityExtension
                 };
             });
         services.AddIdentityCore<Admin>(options =>
-                {
-                    options.SignIn.RequireConfirmedAccount = false;
-                    options.Password.RequireDigit = false;
-                    options.Password.RequiredLength = 8;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequireLowercase = false;
-                    options.Lockout.AllowedForNewUsers = true;
-                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(authOption.LockoutTimeInMinute);
-                    options.Lockout.MaxFailedAccessAttempts = authOption.LockoutCount;
-                    options.SignIn.RequireConfirmedEmail = false;
-                    options.User.RequireUniqueEmail = true;
-                    options.ClaimsIdentity.EmailClaimType = ClaimTypes.Email;
-                    options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
-                    options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
-                    options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Name;
-                    options.ClaimsIdentity.SecurityStampClaimType = ClaimTypes.Sid;
-                    options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
-                }
-            )
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(authOption.LockoutTimeInMinute);
+                options.Lockout.MaxFailedAccessAttempts = authOption.LockoutCount;
+                options.SignIn.RequireConfirmedEmail = false;
+                options.User.RequireUniqueEmail = true;
+                options.ClaimsIdentity.EmailClaimType = ClaimTypes.Email;
+                options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
+                options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
+                options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Name;
+                options.ClaimsIdentity.SecurityStampClaimType = ClaimTypes.Sid;
+                options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+            })
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
+        services.AddIdentityCore<Customer>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(authOption.LockoutTimeInMinute);
+                options.Lockout.MaxFailedAccessAttempts = authOption.LockoutCount;
+                options.SignIn.RequireConfirmedEmail = false;
+                options.User.RequireUniqueEmail = true;
+                options.ClaimsIdentity.EmailClaimType = ClaimTypes.Email;
+                options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
+                options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
+                options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Name;
+                options.ClaimsIdentity.SecurityStampClaimType = ClaimTypes.Sid;
+                options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+            })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
         services.AddAuthorization();

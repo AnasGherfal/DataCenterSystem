@@ -2,13 +2,13 @@
 using Core.Wrappers;
 using Microsoft.AspNetCore.Mvc;
 using Web.API.Abstracts;
-using Web.API.Features.AdminsManagement.CreateAdmin;
-using Web.API.Features.AdminsManagement.DeleteAdminById;
-using Web.API.Features.AdminsManagement.FetchAdminById;
-using Web.API.Features.AdminsManagement.FetchAdmins;
 using Web.API.Features.AdminsManagement.LockAdminById;
 using Web.API.Features.AdminsManagement.UnlockAdminById;
 using Web.API.Features.AdminsManagement.UpdateAdmin;
+using Web.API.Features.Management.AdminsManagement.CreateAdmin;
+using Web.API.Features.Management.AdminsManagement.DeleteAdminById;
+using Web.API.Features.Management.AdminsManagement.FetchAdminById;
+using Web.API.Features.Management.AdminsManagement.FetchAdmins;
 using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;

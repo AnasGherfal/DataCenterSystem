@@ -4,15 +4,13 @@ using Core.Events.Customer;
 
 namespace Core.Entities;
 
-public class Customer: Entity
+public class Customer: Account
 {
-    public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
     public string PrimaryPhone { get; set; } = string.Empty;
     public string SecondaryPhone { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
     public GeneralStatus Status { get; set; }
     //
     public ICollection<DocumentForCustomer> Documents { get; set; } = new List<DocumentForCustomer>();

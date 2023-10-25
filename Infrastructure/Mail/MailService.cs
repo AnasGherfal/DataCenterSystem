@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
+using Core.Interfaces.Services;
 using Core.Options;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using Web.API.Services.MailService;
 
 namespace Infrastructure.Mail;
 
@@ -19,6 +19,21 @@ public class MailService: IMailService
         _mailOption = settings.Value;
     }
 
+    public async Task<bool> SendWelcomeEmail(string fullName, string email, string password)
+    {
+        var mail = new MimeMessage();
+        mail.From.Add(new MailboxAddress(_mailOption.From, _mailOption.Email));
+        mail.To.Add(new MailboxAddress(fullName, email));
+        mail.Subject = "OTP";
+        var builder = new BodyBuilder();
+        using (var sourceReader = File.OpenText($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Mail/Templates/SubscriptionAlert.html"))
+        {
+            builder.HtmlBody = (await sourceReader.ReadToEndAsync()).Replace("{{FullName}}", fullName);
+        }
+        mail.Body = builder.ToMessageBody();
+        return await Send(mail);
+    }
+    
     public async Task<bool> SendSubscriptionExpiringAlertAsync(string fullName, string email)
     {
         var mail = new MimeMessage();

@@ -27,9 +27,10 @@ public sealed record DeleteCustomerCommandHandler : IRequestHandler<DeleteCustom
     public async Task<MessageResponse> Handle(DeleteCustomerCommand request, CancellationToken cancellationToken)
     {
         var id = Guid.Parse(request.Id!);
-        var data = await _customerManager.Users
-            .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
+        var data = await _customerManager.Users.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("Customer not found");
+        var hasSubscriptions = await _dbContext.Subscriptions.AnyAsync(p => p.CustomerId == id, cancellationToken: cancellationToken);
+        if (hasSubscriptions) throw new BadRequestException("Customer Cannot Be Deleted, He has subscriptions");
         var @event = new CustomerDeletedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new CustomerDeletedEventData());
         data.Apply(@event);
         _dbContext.Entry(data).State = EntityState.Modified;

@@ -26,6 +26,8 @@ public sealed record DeleteSubscriptionCommandHandler : IRequestHandler<DeleteSu
         var data = await _dbContext.Subscriptions
             .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("subscription not found");
+        var hasVisits = await _dbContext.Visits.AnyAsync(p => p.SubscriptionId == id, cancellationToken: cancellationToken);
+        if (hasVisits) throw new BadRequestException("Subscription Cannot Be Deleted, It has visits");
         var @event = new SubscriptionDeletedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new SubscriptionDeletedEventData());
         data.Apply(@event);
         _dbContext.Entry(data).State = EntityState.Modified;

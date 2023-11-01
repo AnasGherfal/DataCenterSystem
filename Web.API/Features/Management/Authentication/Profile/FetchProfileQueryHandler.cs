@@ -28,11 +28,11 @@ public sealed record FetchProfileQueryHandler : IRequestHandler<FetchProfileQuer
         return new ContentResponse<FetchProfileQueryResponse>("", new FetchProfileQueryResponse()
         {
             Id = profile.Id,
-            EmpId = profile.EmployeeId,
+            EmpId = 0,
             DisplayName = profile.DisplayName,
             Email = profile.Email ?? "",
             CreatedOn = profile.CreatedOn,
-            Permissions = profile.Permissions,
+            Permissions = 0,
         });
     }
 }

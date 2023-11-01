@@ -1,7 +1,7 @@
 using Core.Validators;
 using FluentValidation;
 
-namespace Web.API.Features.AuditManagement.FetchAudits;
+namespace Web.API.Features.Management.AuditManagement.FetchAudits;
 
 public class FetchAuditsQueryValidator: AbstractValidator<FetchAuditsQuery>
 {

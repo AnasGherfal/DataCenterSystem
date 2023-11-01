@@ -11,10 +11,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
 
-public class AppDbContext : IdentityDbContext<Admin, AdminRole, Guid>
+public class AppDbContext : IdentityDbContext<Account, AccountRole, Guid>
 {
     public DbSet<Event> Events => Set<Event>();
     public DbSet<Service> Services => Set<Service>();
+    public DbSet<Admin> Admins => Set<Admin>();
+    public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Subscription> Subscriptions => Set<Subscription>();
     public DbSet<Representative> Representatives => Set<Representative>();
     public DbSet<TimeShift> TimeShifts => Set<TimeShift>();
@@ -39,6 +41,8 @@ public class AppDbContext : IdentityDbContext<Admin, AdminRole, Guid>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         this.AddEventBuilder(modelBuilder);
+        this.AddAdminBuilder(modelBuilder);
+        this.AddCustomerBuilder(modelBuilder);
         this.AddRepresentativeBuilder(modelBuilder);
         this.AddServiceBuilder(modelBuilder);
         this.AddSubscriptionBuilder(modelBuilder);
@@ -62,10 +66,10 @@ public class AppDbContext : IdentityDbContext<Admin, AdminRole, Guid>
             Password = "Password12345"
         });
         
-        var userManager = new UserManager<Admin>(
-            new UserStore<Admin, IdentityRole<Guid>, AppDbContext, Guid>(this),
+        var userManager = new UserManager<Account>(
+            new UserStore<Account, IdentityRole<Guid>, AppDbContext, Guid>(this),
             null,
-            new PasswordHasher<Admin>(),
+            new PasswordHasher<Account>(),
             null,
             null,
             null,
@@ -75,7 +79,7 @@ public class AppDbContext : IdentityDbContext<Admin, AdminRole, Guid>
         );
         var user = userManager.FindByEmailAsync(@event.Data.Email).Result;
         if (user != null) return;
-        user = new Admin();
+        user = new Account();
         user.Apply(@event);
         userManager.CreateAsync(user, @event.Data.Password).Wait();
         var authClaims = new List<Claim>
@@ -85,7 +89,7 @@ public class AppDbContext : IdentityDbContext<Admin, AdminRole, Guid>
             new(ClaimsKey.Email.Key(), user.Email ?? ""),
             new(ClaimsKey.Permissions.Key(), user.Permissions.ToString("D")),
             new(ClaimsKey.EmailVerified.Key(), user.EmailConfirmed.ToString()),
-            new(ClaimsKey.UserType.Key(), UserType.Admin.ToString("D")),
+            new(ClaimsKey.UserType.Key(), AccountType.Admin.ToString("D")),
         };
         userManager.AddClaimsAsync(user, authClaims).Wait();
     }

@@ -1,7 +1,6 @@
 using Core.Constants;
 using Core.Entities;
 using Core.Events.Abstracts;
-using Core.Events.Service;
 using Core.Exceptions;
 using Core.Helpers;
 using Core.Wrappers;
@@ -11,7 +10,7 @@ using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-namespace Web.API.Features.AuditManagement.FetchProjectionById;
+namespace Web.API.Features.Management.AuditManagement.FetchProjectionById;
 
 public sealed record FetchProjectionByIdQueryHandler : IRequestHandler<FetchProjectionByIdQuery, ContentResponse<FetchProjectionByIdQueryResponse>>
 {
@@ -89,7 +88,7 @@ public sealed record FetchProjectionByIdQueryHandler : IRequestHandler<FetchProj
     {
         return obj switch
         {
-            Admin data => new
+            Account data => new
             {
                 data.Id,
                 data.DisplayName,

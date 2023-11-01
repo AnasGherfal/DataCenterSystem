@@ -17,14 +17,12 @@ public sealed record CreateSubscriptionCommandHandler : IRequestHandler<CreateSu
     private readonly IClientService _client;
     private readonly IUploadFileService _uploadFile;
     private readonly AppDbContext _dbContext;
-    private readonly UserManager<Customer> _customerManager;
 
-    public CreateSubscriptionCommandHandler(AppDbContext dbContext, IUploadFileService uploadFile, IClientService client, UserManager<Customer> customerManager)
+    public CreateSubscriptionCommandHandler(AppDbContext dbContext, IUploadFileService uploadFile, IClientService client, UserManager<Account> customerManager)
     {
         _dbContext = dbContext;
         _uploadFile = uploadFile;
         _client = client;
-        _customerManager = customerManager;
     }
 
     public async Task<MessageResponse> Handle(CreateSubscriptionCommand request, CancellationToken cancellationToken)
@@ -34,7 +32,7 @@ public sealed record CreateSubscriptionCommandHandler : IRequestHandler<CreateSu
             && p.Status == GeneralStatus.Active, cancellationToken: cancellationToken);
         if (!serviceExists) throw new BadRequestException("الخدمة غير موجودة");
         var customerId = Guid.Parse(request.CustomerId!);
-        var customerExists = await _customerManager.Users.AnyAsync(p => p.Id == customerId 
+        var customerExists = await _dbContext.Customers.AnyAsync(p => p.Id == customerId 
             && p.Status == GeneralStatus.Active, cancellationToken: cancellationToken);
         if (!customerExists) throw new BadRequestException("العميل غير موجود");
         var uploadPath = await _uploadFile.UploadFiles(StorageType.SubscriptionFile, new List<FileStorageUploadRequest>()

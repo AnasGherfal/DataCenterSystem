@@ -2,7 +2,7 @@
 using Core.Wrappers;
 using MediatR;
 
-namespace Web.API.Features.AdminsManagement.UpdateAdmin;
+namespace Web.API.Features.Management.AdminsManagement.UpdateAdmin;
 
 public sealed record UpdateAdminCommand : IRequest<MessageResponse>
 {

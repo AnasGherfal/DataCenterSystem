@@ -1,7 +1,7 @@
 ﻿using Core.Validators;
 using FluentValidation;
 
-namespace Web.API.Features.AdminsManagement.ResetAdminPasswordById;
+namespace Web.API.Features.Management.AdminsManagement.ResetAdminPasswordById;
 
 public class ResetAdminPasswordByIdCommandValidator: AbstractValidator<ResetAdminPasswordByIdCommand>
 {

@@ -5,6 +5,5 @@ namespace Core.Interfaces.Services;
 
 public interface ITokenService
 {
-    Task<JwtSecurityToken> GenerateAccessToken(Admin admin);
-    Task<JwtSecurityToken> GenerateAccessToken(Customer customer);
+    Task<JwtSecurityToken> GenerateAccessToken(Account admin);
 }

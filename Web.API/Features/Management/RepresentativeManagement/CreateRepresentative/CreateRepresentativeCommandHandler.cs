@@ -18,20 +18,18 @@ public sealed record CreateRepresentativeCommandHandler : IRequestHandler<Create
     private readonly IClientService _client;
     private readonly IUploadFileService _uploadFile;
     private readonly AppDbContext _dbContext;
-    private readonly UserManager<Customer> _customerManager;
 
-    public CreateRepresentativeCommandHandler(AppDbContext dbContext, IUploadFileService uploadFile, IClientService client, UserManager<Customer> customerManager)
+    public CreateRepresentativeCommandHandler(AppDbContext dbContext, IUploadFileService uploadFile, IClientService client)
     {
         _dbContext = dbContext;
         _uploadFile = uploadFile;
         _client = client;
-        _customerManager = customerManager;
     }
 
     public async Task<MessageResponse> Handle(CreateRepresentativeCommand request, CancellationToken cancellationToken)
     {
         var customerId = Guid.Parse(request.CustomerId!);
-        var customerExists = await _customerManager.Users
+        var customerExists = await _dbContext.Customers
             .AnyAsync(p => p.Id == customerId, cancellationToken: cancellationToken);
         if (!customerExists) throw new BadRequestException("العميل غير موجود");
         var countRepresentatives = await _dbContext.Representatives

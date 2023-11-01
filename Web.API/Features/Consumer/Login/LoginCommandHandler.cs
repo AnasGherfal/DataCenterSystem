@@ -14,10 +14,10 @@ namespace Web.API.Features.Consumer.Login;
 public sealed record LoginCommandHandler : IRequestHandler<LoginCommand, ContentResponse<LoginCommandResponse>>
 {
     private readonly AuthenticationOption _option;
-    private readonly UserManager<Customer> _userManager;
+    private readonly UserManager<Account> _userManager;
     private readonly ITokenService _tokenService;
 
-    public LoginCommandHandler(UserManager<Customer> userManager,
+    public LoginCommandHandler(UserManager<Account> userManager,
         IOptions<AuthenticationOption> options, ITokenService tokenService)
     {
         _userManager = userManager;

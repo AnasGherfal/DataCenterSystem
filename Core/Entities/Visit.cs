@@ -56,6 +56,46 @@ public class Visit : Entity
         VisitPrice = 0;
     }
     
+    public void Apply(VisitRequestedEvent @event)
+    {
+        Sequence = @event.Sequence;
+        CreatedOn = @event.DateTime;
+        UpdatedOn = @event.DateTime;
+        Id = @event.AggregateId;
+        CustomerId = @event.Data.CustomerId;
+        SubscriptionId = @event.Data.SubscriptionId;
+        VisitType = @event.Data.VisitType;
+        ExpectedStartTime = @event.Data.ExpectedStartTime;
+        ExpectedEndTime = @event.Data.ExpectedEndTime;
+        Notes = @event.Data.Notes;
+        Representatives = @event.Data.Representatives.Select(x => new RepresentativeForVisit()
+        {
+            Id = Guid.NewGuid(),
+            VisitId = @event.AggregateId,
+            RepresentativeId = x,
+        }).ToList();
+        Companions = @event.Data.Companions.Select(x => new CompanionForVisit()
+        {
+            Id = Guid.NewGuid(),
+            FirstName = x.FirstName,
+            LastName = x.LastName,
+            IdentityNo = x.IdentityNo,
+            IdentityType = x.IdentityType,
+            JobTitle = x.JobTitle
+        }).ToList();
+        Status = GeneralStatus.Requested;
+        VisitPrice = 0;
+    }
+    
+    public void Apply(VisitSignedEvent @event)
+    {
+        Sequence = @event.Sequence;
+        UpdatedOn = @event.DateTime;
+        StartTime = @event.Data.StartTime;
+        EndTime = @event.Data.EndTime;
+        TotalTime = @event.Data.TotalTime;
+        VisitPrice = @event.Data.Price;
+    }
     public void Apply(VisitStartedEvent @event)
     {
         Sequence = @event.Sequence;
@@ -70,6 +110,13 @@ public class Visit : Entity
         EndTime = @event.Data.EndTime;
         TotalTime = @event.Data.TotalTime;
         VisitPrice = @event.Data.Price;
+    }
+    
+    public void Apply(VisitCancelledEvent @event)
+    {
+        Sequence = @event.Sequence;
+        UpdatedOn = @event.DateTime;
+        IsDeleted = true;
     }
     
     public void Apply(VisitDeletedEvent @event)

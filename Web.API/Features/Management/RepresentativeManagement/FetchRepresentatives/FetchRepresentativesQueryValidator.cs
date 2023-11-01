@@ -1,5 +1,6 @@
 using Core.Validators;
 using FluentValidation;
+using Web.API.Features.Management.RepresentativeManagement.FetchRepresentatives;
 
 namespace Web.API.Features.RepresentativeManagement.FetchRepresentatives;
 

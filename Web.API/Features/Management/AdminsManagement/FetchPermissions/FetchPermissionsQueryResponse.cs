@@ -1,4 +1,4 @@
-namespace Web.API.Features.AdminsManagement.FetchPermissions
+namespace Web.API.Features.Management.AdminsManagement.FetchPermissions
 {
     public record FetchPermissionsQueryResponse
     {

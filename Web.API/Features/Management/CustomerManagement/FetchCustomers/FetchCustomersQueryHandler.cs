@@ -11,19 +11,17 @@ namespace Web.API.Features.CustomerManagement.FetchCustomers;
 public sealed record FetchCustomersQueryHandler : IRequestHandler<FetchCustomersQuery, PagedResponse<FetchCustomersQueryResponse>>
 {
     private readonly AppDbContext _dbContext;
-    private readonly UserManager<Customer> _customerManager;
 
-    public FetchCustomersQueryHandler(AppDbContext dbContext, UserManager<Customer> customerManager)
+    public FetchCustomersQueryHandler(AppDbContext dbContext)
     {
         _dbContext = dbContext;
-        _customerManager = customerManager;
     }
 
     public async Task<PagedResponse<FetchCustomersQueryResponse>> Handle(FetchCustomersQuery request, CancellationToken cancellationToken)
     {
         var pageNumber = request.PageNumber ?? 1;
         var pageSize = request.PageSize ?? 5;
-        var query = _customerManager.Users
+        var query = _dbContext.Customers
             .Where(p => string.IsNullOrWhiteSpace(request.Search)
                         || p.Name.Contains(request.Search)
                         || p.Email.Contains(request.Search)

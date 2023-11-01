@@ -16,22 +16,22 @@ public sealed record LockCustomerCommandHandler : IRequestHandler<LockCustomerCo
 {
     private readonly IClientService _client;
     private readonly AppDbContext _dbContext;
-    private readonly UserManager<Customer> _customerManager;
 
-    public LockCustomerCommandHandler(AppDbContext dbContext, IClientService client, UserManager<Customer> customerManager)
+    public LockCustomerCommandHandler(AppDbContext dbContext, IClientService client)
     {
         _dbContext = dbContext;
         _client = client;
-        _customerManager = customerManager;
     }
 
     public async Task<MessageResponse> Handle(LockCustomerCommand request, CancellationToken cancellationToken)
     {
         var id = Guid.Parse(request.Id!);
-        var data = await _customerManager.Users.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
+        var data = await _dbContext.Users
+            .Include(p => p.Customer)
+            .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("Customer not found");
-        if (data.Status == GeneralStatus.Locked) throw new BadRequestException("Sorry, this Customer is already locked");
-        if (data.Status != GeneralStatus.Active) throw new BadRequestException("Sorry, this cannot be locked");
+        if (data.Customer.Status == GeneralStatus.Locked) throw new BadRequestException("Sorry, this Customer is already locked");
+        if (data.Customer.Status != GeneralStatus.Active) throw new BadRequestException("Sorry, this cannot be locked");
         var @event = new CustomerLockedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new CustomerLockedEventData());
         data.Apply(@event);
         _dbContext.Entry(data).State = EntityState.Modified;

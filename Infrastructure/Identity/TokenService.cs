@@ -11,34 +11,18 @@ namespace Infrastructure.Identity;
 
 public class TokenService : ITokenService
 {
-    private readonly UserManager<Admin> _userManager;
-    private readonly UserManager<Customer> _customerManager;
+    private readonly UserManager<Account> _userManager;
     private readonly AuthenticationOption _option;
 
-    public TokenService(UserManager<Admin> userManager, IOptions<AuthenticationOption> authenticationsOption, UserManager<Customer> customerManager)
+    public TokenService(UserManager<Account> userManager, IOptions<AuthenticationOption> authenticationsOption)
     {
         _userManager = userManager;
-        _customerManager = customerManager;
         _option = authenticationsOption.Value;
     }
 
-    public async Task<JwtSecurityToken> GenerateAccessToken(Admin admin)
+    public async Task<JwtSecurityToken> GenerateAccessToken(Account admin)
     {
         var userClaims = await _userManager.GetClaimsAsync(admin);
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_option.Secret));
-        var token = new JwtSecurityToken(
-            issuer: _option.ValidIssuer,
-            audience: _option.ValidAudience,
-            expires: DateTime.UtcNow.AddDays(60),
-            claims: userClaims,
-            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-        );
-        return token;
-    }
-    
-    public async Task<JwtSecurityToken> GenerateAccessToken(Customer customer)
-    {
-        var userClaims = await _customerManager.GetClaimsAsync(customer);
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_option.Secret));
         var token = new JwtSecurityToken(
             issuer: _option.ValidIssuer,

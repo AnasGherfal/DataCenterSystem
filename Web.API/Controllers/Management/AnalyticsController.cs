@@ -2,7 +2,7 @@
 using Core.Wrappers;
 using Microsoft.AspNetCore.Mvc;
 using Web.API.Abstracts;
-using Web.API.Features.AnalyticsManagement.FetchDashboardStatistics;
+using Web.API.Features.Management.AnalyticsManagement.FetchDashboardStatistics;
 using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;

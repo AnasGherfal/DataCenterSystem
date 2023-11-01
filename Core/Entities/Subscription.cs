@@ -43,6 +43,30 @@ public class Subscription: Entity
         });
     }
     
+    public void Apply(SubscriptionRequestedEvent @event)
+    {
+        Sequence = @event.Sequence;
+        CreatedOn = @event.DateTime;
+        UpdatedOn = @event.DateTime;
+        Id = @event.AggregateId;
+        ServiceId = @event.Data.ServiceId;
+        CustomerId = @event.Data.CustomerId;
+        StartDate = @event.Data.StartDate;
+        EndDate = @event.Data.EndDate;
+        Status = GeneralStatus.Requested;
+        TotalPrice = 0;
+        MonthlyVisits = new TimeSpan(3,0,0);
+        Documents.Add(new DocumentForSubscription()
+        {
+            SubscriptionId = @event.AggregateId,
+            Id = @event.Data.Documents.FileIdentifier,
+            FileLink = @event.Data.Documents.FileLink,
+            FileType = @event.Data.Documents.FileType,
+            IsActive = true,
+            CreatedOn = @event.DateTime,
+        });
+    }
+    
     public void Apply(SubscriptionFileUpdatedEvent @event)
     {
         Sequence = @event.Sequence;
@@ -75,6 +99,20 @@ public class Subscription: Entity
         Sequence = @event.Sequence;
         UpdatedOn = @event.DateTime;
         Status = GeneralStatus.Locked;
+    }
+    
+    public void Apply(SubscriptionApprovedEvent @event)
+    {
+        Sequence = @event.Sequence;
+        UpdatedOn = @event.DateTime;
+        Status = GeneralStatus.Active;
+    }
+    
+    public void Apply(SubscriptionRejectedEvent @event)
+    {
+        Sequence = @event.Sequence;
+        UpdatedOn = @event.DateTime;
+        Status = GeneralStatus.Rejected;
     }
     
     public void Apply(SubscriptionUnlockedEvent @event)

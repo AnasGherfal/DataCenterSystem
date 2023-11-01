@@ -1,10 +1,9 @@
 using Core.Wrappers;
-using Infrastructure;
 using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Web.API.Features.AnalyticsManagement.FetchDashboardStatistics;
+namespace Web.API.Features.Management.AnalyticsManagement.FetchDashboardStatistics;
 
 public sealed record FetchDashboardStatisticsQueryHandler : IRequestHandler<FetchDashboardStatisticsQuery, ContentResponse<FetchDashboardStatisticsQueryResponse>>
 {

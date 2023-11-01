@@ -1,7 +1,7 @@
 ﻿using Core.Validators;
 using FluentValidation;
 
-namespace Web.API.Features.AdminsManagement.LockAdminById;
+namespace Web.API.Features.Management.AdminsManagement.LockAdminById;
 
 public class LockAdminByIdCommandValidator: AbstractValidator<LockAdminByIdCommand>
 {

@@ -1,4 +1,5 @@
 ﻿using Core.Constants;
+using Core.Entities;
 using Core.Events.Abstracts;
 using Core.Events.Customer;
 using Core.Events.Representative;
@@ -9,6 +10,7 @@ using Core.Wrappers;
 using Infrastructure;
 using Infrastructure.Persistence;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Web.API.Features.CustomerManagement.UpdateCustomer;
@@ -29,8 +31,7 @@ public sealed record UpdateCustomerCommandHandler : IRequestHandler<UpdateCustom
     public async Task<MessageResponse> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
     {
         var id = Guid.Parse(request.Id!);
-        var data = await _dbContext.Customers
-            .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
+        var data = await _dbContext.Users.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("customer not found");
        
         var @event = new CustomerUpdatedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new CustomerUpdatedEventData()

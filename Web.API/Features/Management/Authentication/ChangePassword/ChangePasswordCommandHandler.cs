@@ -14,9 +14,9 @@ public sealed record ChangePasswordCommandHandler : IRequestHandler<ChangePasswo
 {
     private readonly IClientService _client;
     private readonly AppDbContext _dbContext;
-    private readonly UserManager<Admin> _userManager;
+    private readonly UserManager<Account> _userManager;
 
-    public ChangePasswordCommandHandler(UserManager<Admin> userManager, AppDbContext dbContext, IClientService client)
+    public ChangePasswordCommandHandler(UserManager<Account> userManager, AppDbContext dbContext, IClientService client)
     {
         _userManager = userManager;
         _dbContext = dbContext;
@@ -25,7 +25,9 @@ public sealed record ChangePasswordCommandHandler : IRequestHandler<ChangePasswo
 
     public async Task<MessageResponse> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
-        var admin = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == _client.GetIdentifier(), cancellationToken);
+        var admin = await _userManager.Users
+            .Include(p => p.Admin)
+            .SingleOrDefaultAsync(u => u.Id == _client.GetIdentifier(), cancellationToken);
         if (admin == null) throw new NotFoundException("ADMIN_NOT_FOUND");
         var @event = new AdminPasswordChangedEvent(_client.GetIdentifier(), admin.Id, admin.Sequence + 1, new AdminPasswordChangedEventData()
         {

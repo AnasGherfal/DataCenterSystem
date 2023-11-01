@@ -1,11 +1,10 @@
-using Core.Constants;
 using Core.Helpers;
 using Core.Wrappers;
 using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Web.API.Features.AuditManagement.FetchAudits;
+namespace Web.API.Features.Management.AuditManagement.FetchAudits;
 
 public sealed record FetchAuditsQueryHandler : IRequestHandler<FetchAuditsQuery, PagedResponse<FetchAuditsQueryResponse>>
 {

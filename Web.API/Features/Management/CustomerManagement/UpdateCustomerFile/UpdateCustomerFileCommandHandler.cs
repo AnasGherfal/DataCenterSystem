@@ -18,25 +18,24 @@ public sealed record UpdateCustomerFileCommandHandler : IRequestHandler<UpdateCu
     private readonly IClientService _client;
     private readonly AppDbContext _dbContext;
     private readonly IUploadFileService _uploadFile;
-    private readonly UserManager<Customer> _customerManager;
     
-    public UpdateCustomerFileCommandHandler(AppDbContext dbContext, IUploadFileService uploadFile, IClientService client, UserManager<Customer> customerManager)
+    public UpdateCustomerFileCommandHandler(AppDbContext dbContext, IUploadFileService uploadFile, IClientService client)
     {
         _dbContext = dbContext;
         _uploadFile = uploadFile;
         _client = client;
-        _customerManager = customerManager;
     }
 
     public async Task<MessageResponse> Handle(UpdateCustomerFileCommand request, CancellationToken cancellationToken)
     {
         var id = Guid.Parse(request.FileId!);
-        var data = await _customerManager.Users
-            .Include(p => p.Documents)
+        var data = await _dbContext.Users
+            .Include(p => p.Customer)
+            .ThenInclude(p => p.Documents)
             .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
-        var docType = data.Documents.FirstOrDefault(p => p.Id.Equals(request.FileId)).FileType!;
+        var docType = data.Customer.Documents.FirstOrDefault(p => p.Id.Equals(request.FileId)).FileType!;
         if (data == null) throw new NotFoundException("Customer not found");
-        if (data.Status != GeneralStatus.Active) throw new BadRequestException("Sorry, this Customer is not active");
+        if (data.Customer.Status != GeneralStatus.Active) throw new BadRequestException("Sorry, this Customer is not active");
         var uploadPath = await _uploadFile.UploadFiles(StorageType.RepresentativeFile, new List<FileStorageUploadRequest>()
         {
             new(Guid.NewGuid(), request.File!, (short) docType)

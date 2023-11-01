@@ -4,9 +4,11 @@ using Core.Events.Customer;
 
 namespace Core.Entities;
 
-public class Customer: Account
+public class Customer: Entity
 {
+    public Guid Id { get; set; } = Guid.Empty;
     public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
     public string PrimaryPhone { get; set; } = string.Empty;
@@ -43,11 +45,11 @@ public class Customer: Account
     public void Apply(CustomerUpdatedEvent @event)
     {
         Name=@event.Data.Name;
-        Address = @event.Data.Address;
+        Address = @event.Data.Address ?? Address;
         PrimaryPhone=@event.Data.PrimaryPhone;
-        SecondaryPhone = @event.Data.SecondaryPhone;
-        City = @event.Data.City;
-        Email= @event.Data.Email;
+        SecondaryPhone = @event.Data.SecondaryPhone ?? SecondaryPhone;
+        City = @event.Data.City ?? City;
+        Email = @event.Data.Email;
         Sequence = @event.Sequence;
         UpdatedOn = @event.DateTime;
         Status = GeneralStatus.Active;

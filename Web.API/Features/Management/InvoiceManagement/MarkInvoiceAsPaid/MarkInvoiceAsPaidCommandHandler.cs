@@ -14,10 +14,10 @@ namespace Web.API.Features.InvoiceManagement.MarkInvoiceAsPaid;
 public sealed record MarkInvoiceAsPaidCommandHandler : IRequestHandler<MarkInvoiceAsPaidCommand, MessageResponse>
 {
     private readonly IClientService _client;
-    private readonly UserManager<Admin> _userManager;
+    private readonly UserManager<Account> _userManager;
     private readonly AppDbContext _dbContext;
 
-    public MarkInvoiceAsPaidCommandHandler(AppDbContext dbContext, IClientService client, UserManager<Admin> userManager)
+    public MarkInvoiceAsPaidCommandHandler(AppDbContext dbContext, IClientService client, UserManager<Account> userManager)
     {
         _dbContext = dbContext;
         _client = client;

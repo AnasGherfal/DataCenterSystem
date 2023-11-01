@@ -44,6 +44,31 @@ public class Representative: Entity
         }).ToList();
     }
     
+    public void Apply(RepresentativeRequestedEvent @event)
+    {
+        Sequence = @event.Sequence;
+        CreatedOn = @event.DateTime;
+        UpdatedOn = @event.DateTime;
+        Id = @event.AggregateId;
+        CustomerId = @event.Data.CustomerId;
+        FirstName = @event.Data.FirstName;
+        LastName = @event.Data.LastName;
+        IdentityNo = @event.Data.IdentityNo;
+        IdentityType = @event.Data.IdentityType;
+        Email = @event.Data.Email;
+        PhoneNo = @event.Data.PhoneNo;
+        Status = GeneralStatus.Requested;
+        Documents = @event.Data.Documents.Select(p => new DocumentForRepresentative()
+        {
+            RepresentativeId = @event.AggregateId,
+            Id = p.FileIdentifier,
+            FileLink = p.FileLink,
+            FileType = p.FileType,
+            IsActive = true,
+            CreatedOn = @event.DateTime,
+        }).ToList();
+    }
+    
     public void Apply(RepresentativeFileUpdatedEvent @event)
     {
         Sequence = @event.Sequence;
@@ -73,6 +98,20 @@ public class Representative: Entity
         Sequence = @event.Sequence;
         UpdatedOn = @event.DateTime;
         Status = GeneralStatus.Active;
+    }
+    
+    public void Apply(RepresentativeApprovedEvent @event)
+    {
+        Sequence = @event.Sequence;
+        UpdatedOn = @event.DateTime;
+        Status = GeneralStatus.Active;
+    }
+    
+    public void Apply(RepresentativeRejectedEvent @event)
+    {
+        Sequence = @event.Sequence;
+        UpdatedOn = @event.DateTime;
+        Status = GeneralStatus.Rejected;
     }
     
     public void Apply(RepresentativeDeletedEvent @event)

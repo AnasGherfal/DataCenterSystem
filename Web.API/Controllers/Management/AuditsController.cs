@@ -2,9 +2,8 @@
 using Core.Wrappers;
 using Microsoft.AspNetCore.Mvc;
 using Web.API.Abstracts;
-using Web.API.Features.AnalyticsManagement.FetchDashboardStatistics;
-using Web.API.Features.AuditManagement.FetchAudits;
-using Web.API.Features.AuditManagement.FetchProjectionById;
+using Web.API.Features.Management.AuditManagement.FetchAudits;
+using Web.API.Features.Management.AuditManagement.FetchProjectionById;
 using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;

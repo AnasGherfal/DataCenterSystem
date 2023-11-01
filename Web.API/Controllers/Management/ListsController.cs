@@ -2,7 +2,7 @@
 using Core.Wrappers;
 using Microsoft.AspNetCore.Mvc;
 using Web.API.Abstracts;
-using Web.API.Features.AdminsManagement.FetchPermissions;
+using Web.API.Features.Management.AdminsManagement.FetchPermissions;
 using Web.API.Filters;
 
 namespace Web.API.Controllers.Management;

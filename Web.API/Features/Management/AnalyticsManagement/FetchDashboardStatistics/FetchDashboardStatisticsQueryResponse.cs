@@ -1,4 +1,4 @@
-namespace Web.API.Features.AnalyticsManagement.FetchDashboardStatistics
+namespace Web.API.Features.Management.AnalyticsManagement.FetchDashboardStatistics
 {
     public sealed record FetchDashboardStatisticsQueryResponse
     {

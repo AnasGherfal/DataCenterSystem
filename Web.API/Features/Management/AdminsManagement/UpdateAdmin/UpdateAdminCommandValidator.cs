@@ -1,7 +1,7 @@
 ﻿using Core.Validators;
 using FluentValidation;
 
-namespace Web.API.Features.AdminsManagement.UpdateAdmin;
+namespace Web.API.Features.Management.AdminsManagement.UpdateAdmin;
 
 public class UpdateAdminCommandValidator: AbstractValidator<UpdateAdminCommand>
 {

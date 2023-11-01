@@ -1,4 +1,5 @@
-﻿using Core.Entities;
+﻿using Core.Constants;
+using Core.Entities;
 using Core.Events.Admin;
 using Core.Exceptions;
 using Core.Interfaces.Services;
@@ -14,9 +15,9 @@ public sealed record DeleteAdminByIdCommandHandler : IRequestHandler<DeleteAdmin
 {
     private readonly IClientService _client;
     private readonly AppDbContext _dbContext;
-    private readonly UserManager<Admin> _userManager;
+    private readonly UserManager<Account> _userManager;
 
-    public DeleteAdminByIdCommandHandler(UserManager<Admin> userManager, AppDbContext dbContext, IClientService client)
+    public DeleteAdminByIdCommandHandler(UserManager<Account> userManager, AppDbContext dbContext, IClientService client)
     {
         _userManager = userManager;
         _dbContext = dbContext;
@@ -25,7 +26,9 @@ public sealed record DeleteAdminByIdCommandHandler : IRequestHandler<DeleteAdmin
 
     public async Task<MessageResponse> Handle(DeleteAdminByIdCommand request, CancellationToken cancellationToken)
     {
-        var admin = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == Guid.Parse(request.Id!), cancellationToken);
+        var admin = await _userManager.Users
+            .SingleOrDefaultAsync(u => u.Id == Guid.Parse(request.Id!)
+                && u.AccountType == AccountType.Admin, cancellationToken);
         if (admin == null) throw new NotFoundException("ADMIN_NOT_FOUND");
         var @event = new AdminDeletedEvent(_client.GetIdentifier(), admin.Id, admin.Sequence + 1, new AdminDeletedEventData());
         //TODO: Not Idempotent - Use Transaction Instead

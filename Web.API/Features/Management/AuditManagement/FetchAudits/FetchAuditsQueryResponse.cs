@@ -1,4 +1,4 @@
-namespace Web.API.Features.AuditManagement.FetchAudits
+namespace Web.API.Features.Management.AuditManagement.FetchAudits
 {
     public sealed record FetchAuditsQueryResponse
     {

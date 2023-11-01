@@ -1,3 +1,4 @@
+using Core.Constants;
 using Core.Entities;
 using Core.Wrappers;
 using MediatR;
@@ -8,9 +9,9 @@ namespace Web.API.Features.Management.AdminsManagement.FetchAdmins;
 
 public sealed record FetchAdminsQueryHandler : IRequestHandler<FetchAdminsQuery, PagedResponse<FetchAdminsQueryResponse>>
 {
-    private readonly UserManager<Admin> _userManager;
+    private readonly UserManager<Account> _userManager;
 
-    public FetchAdminsQueryHandler(UserManager<Admin> userManager)
+    public FetchAdminsQueryHandler(UserManager<Account> userManager)
     {
         _userManager = userManager;
     }
@@ -20,6 +21,7 @@ public sealed record FetchAdminsQueryHandler : IRequestHandler<FetchAdminsQuery,
         var pageNumber = request.PageNumber ?? 1;
         var pageSize = request.PageSize ?? 5;
         var data = await _userManager.Users
+            .Where(p => p.AccountType == AccountType.Admin)
             .OrderBy(p => p.CreatedOn)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -34,7 +36,7 @@ public sealed record FetchAdminsQueryHandler : IRequestHandler<FetchAdminsQuery,
                 CreatedOn = p.CreatedOn,
             })
             .ToListAsync(cancellationToken: cancellationToken);
-        var count = await _userManager.Users.CountAsync(cancellationToken: cancellationToken);
+        var count = await _userManager.Users.Where(p => p.AccountType == AccountType.Admin).CountAsync(cancellationToken: cancellationToken);
         return new PagedResponse<FetchAdminsQueryResponse>("", data, count, pageNumber, pageSize);
     }
 }

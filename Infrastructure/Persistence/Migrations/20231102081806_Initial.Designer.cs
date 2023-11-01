@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230827082420_Initial")]
+    [Migration("20231102081806_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Core.Entities.Admin", b =>
+            modelBuilder.Entity("Core.Entities.Account", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -34,12 +34,21 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<int>("AccountType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("AdminId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime");
+
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
@@ -51,9 +60,6 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
@@ -109,6 +115,10 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AdminId");
+
+                    b.HasIndex("CustomerId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -120,7 +130,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Core.Entities.AdminRole", b =>
+            modelBuilder.Entity("Core.Entities.AccountRole", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -148,6 +158,46 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
+            modelBuilder.Entity("Core.Entities.Admin", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 322, DateTimeKind.Utc).AddTicks(9710));
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<long>("Sequence")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(1L);
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(162));
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Admins", (string)null);
+                });
+
             modelBuilder.Entity("Core.Entities.Customer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -165,7 +215,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 221, DateTimeKind.Utc).AddTicks(5161));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(1729));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -205,7 +255,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 221, DateTimeKind.Utc).AddTicks(7483));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(2017));
 
                     b.HasKey("Id");
 
@@ -221,7 +271,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 226, DateTimeKind.Utc).AddTicks(7003));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(8950));
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
@@ -261,7 +311,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 227, DateTimeKind.Utc).AddTicks(70));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(9245));
 
                     b.HasKey("Id");
 
@@ -443,7 +493,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 222, DateTimeKind.Utc).AddTicks(5876));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(3447));
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
@@ -493,7 +543,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 222, DateTimeKind.Utc).AddTicks(8086));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(3852));
 
                     b.HasKey("Id");
 
@@ -519,7 +569,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 223, DateTimeKind.Utc).AddTicks(8653));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(5399));
 
                     b.Property<string>("Dns")
                         .IsRequired()
@@ -557,7 +607,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 224, DateTimeKind.Utc).AddTicks(799));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(5661));
 
                     b.HasKey("Id");
 
@@ -573,7 +623,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 225, DateTimeKind.Utc).AddTicks(2465));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(7074));
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
@@ -615,7 +665,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 225, DateTimeKind.Utc).AddTicks(5197));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(7393));
 
                     b.HasKey("Id");
 
@@ -635,7 +685,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 228, DateTimeKind.Utc).AddTicks(158));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 324, DateTimeKind.Utc).AddTicks(719));
 
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime");
@@ -674,7 +724,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 228, DateTimeKind.Utc).AddTicks(2339));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 324, DateTimeKind.Utc).AddTicks(1019));
 
                     b.HasKey("Id");
 
@@ -690,7 +740,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 229, DateTimeKind.Utc).AddTicks(2124));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 324, DateTimeKind.Utc).AddTicks(2246));
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
@@ -742,7 +792,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 8, 27, 8, 24, 19, 229, DateTimeKind.Utc).AddTicks(4668));
+                        .HasDefaultValue(new DateTime(2023, 11, 2, 8, 18, 6, 324, DateTimeKind.Utc).AddTicks(2588));
 
                     b.Property<decimal>("VisitPrice")
                         .HasColumnType("decimal(18,2)");
@@ -1080,6 +1130,18 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasDiscriminator().HasValue((short)7002);
                 });
 
+            modelBuilder.Entity("Core.Events.Representative.RepresentativeApprovedEvent", b =>
+                {
+                    b.HasBaseType("Core.Events.Abstracts.Event");
+
+                    b.Property<string>("Data")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Content");
+
+                    b.HasDiscriminator().HasValue((short)3008);
+                });
+
             modelBuilder.Entity("Core.Events.Representative.RepresentativeCreatedEvent", b =>
                 {
                     b.HasBaseType("Core.Events.Abstracts.Event");
@@ -1126,6 +1188,30 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnName("Content");
 
                     b.HasDiscriminator().HasValue((short)3003);
+                });
+
+            modelBuilder.Entity("Core.Events.Representative.RepresentativeRejectedEvent", b =>
+                {
+                    b.HasBaseType("Core.Events.Abstracts.Event");
+
+                    b.Property<string>("Data")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Content");
+
+                    b.HasDiscriminator().HasValue((short)3009);
+                });
+
+            modelBuilder.Entity("Core.Events.Representative.RepresentativeRequestedEvent", b =>
+                {
+                    b.HasBaseType("Core.Events.Abstracts.Event");
+
+                    b.Property<string>("Data")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Content");
+
+                    b.HasDiscriminator().HasValue((short)3007);
                 });
 
             modelBuilder.Entity("Core.Events.Representative.RepresentativeUnlockedEvent", b =>
@@ -1212,6 +1298,18 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasDiscriminator().HasValue((short)1002);
                 });
 
+            modelBuilder.Entity("Core.Events.Subscription.SubscriptionApprovedEvent", b =>
+                {
+                    b.HasBaseType("Core.Events.Abstracts.Event");
+
+                    b.Property<string>("Data")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Content");
+
+                    b.HasDiscriminator().HasValue((short)2008);
+                });
+
             modelBuilder.Entity("Core.Events.Subscription.SubscriptionCreatedEvent", b =>
                 {
                     b.HasBaseType("Core.Events.Abstracts.Event");
@@ -1260,6 +1358,18 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasDiscriminator().HasValue((short)2003);
                 });
 
+            modelBuilder.Entity("Core.Events.Subscription.SubscriptionRejectedEvent", b =>
+                {
+                    b.HasBaseType("Core.Events.Abstracts.Event");
+
+                    b.Property<string>("Data")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Content");
+
+                    b.HasDiscriminator().HasValue((short)2009);
+                });
+
             modelBuilder.Entity("Core.Events.Subscription.SubscriptionRenewedEvent", b =>
                 {
                     b.HasBaseType("Core.Events.Abstracts.Event");
@@ -1270,6 +1380,18 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnName("Content");
 
                     b.HasDiscriminator().HasValue((short)2002);
+                });
+
+            modelBuilder.Entity("Core.Events.Subscription.SubscriptionRequestedEvent", b =>
+                {
+                    b.HasBaseType("Core.Events.Abstracts.Event");
+
+                    b.Property<string>("Data")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Content");
+
+                    b.HasDiscriminator().HasValue((short)2007);
                 });
 
             modelBuilder.Entity("Core.Events.Subscription.SubscriptionUnlockedEvent", b =>
@@ -1320,6 +1442,18 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasDiscriminator().HasValue((short)5002);
                 });
 
+            modelBuilder.Entity("Core.Events.Visit.VisitCancelledEvent", b =>
+                {
+                    b.HasBaseType("Core.Events.Abstracts.Event");
+
+                    b.Property<string>("Data")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Content");
+
+                    b.HasDiscriminator().HasValue((short)6006);
+                });
+
             modelBuilder.Entity("Core.Events.Visit.VisitCreatedEvent", b =>
                 {
                     b.HasBaseType("Core.Events.Abstracts.Event");
@@ -1356,6 +1490,30 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasDiscriminator().HasValue((short)6003);
                 });
 
+            modelBuilder.Entity("Core.Events.Visit.VisitRequestedEvent", b =>
+                {
+                    b.HasBaseType("Core.Events.Abstracts.Event");
+
+                    b.Property<string>("Data")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Content");
+
+                    b.HasDiscriminator().HasValue((short)6005);
+                });
+
+            modelBuilder.Entity("Core.Events.Visit.VisitSignedEvent", b =>
+                {
+                    b.HasBaseType("Core.Events.Abstracts.Event");
+
+                    b.Property<string>("Data")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Content");
+
+                    b.HasDiscriminator().HasValue((short)6007);
+                });
+
             modelBuilder.Entity("Core.Events.Visit.VisitStartedEvent", b =>
                 {
                     b.HasBaseType("Core.Events.Abstracts.Event");
@@ -1366,6 +1524,21 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnName("Content");
 
                     b.HasDiscriminator().HasValue((short)6002);
+                });
+
+            modelBuilder.Entity("Core.Entities.Account", b =>
+                {
+                    b.HasOne("Core.Entities.Admin", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId");
+
+                    b.HasOne("Core.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId");
+
+                    b.Navigation("Admin");
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("Core.Entities.Invoice", b =>
@@ -1492,7 +1665,7 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Core.Entities.AdminRole", null)
+                    b.HasOne("Core.Entities.AccountRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1501,7 +1674,7 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Core.Entities.Admin", null)
+                    b.HasOne("Core.Entities.Account", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1510,7 +1683,7 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("Core.Entities.Admin", null)
+                    b.HasOne("Core.Entities.Account", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1519,13 +1692,13 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("Core.Entities.AdminRole", null)
+                    b.HasOne("Core.Entities.AccountRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.Entities.Admin", null)
+                    b.HasOne("Core.Entities.Account", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1534,7 +1707,7 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("Core.Entities.Admin", null)
+                    b.HasOne("Core.Entities.Account", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

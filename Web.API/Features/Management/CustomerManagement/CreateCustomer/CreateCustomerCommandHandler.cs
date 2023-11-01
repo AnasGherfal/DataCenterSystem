@@ -20,9 +20,9 @@ public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustom
     private readonly IClientService _client;
     private readonly IUploadFileService _uploadFile;
     private readonly AppDbContext _dbContext;
-    private readonly UserManager<Customer> _customerManager;
+    private readonly UserManager<Account> _customerManager;
 
-    public CreateCustomerCommandHandler(AppDbContext dbContext, IUploadFileService uploadFile, IClientService client, UserManager<Customer> customerManager, IMediator mediator)
+    public CreateCustomerCommandHandler(AppDbContext dbContext, IUploadFileService uploadFile, IClientService client, UserManager<Account> customerManager, IMediator mediator)
     {
         _uploadFile = uploadFile;
         _client = client;
@@ -33,7 +33,7 @@ public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustom
 
     public async Task<MessageResponse> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
     {
-        var customerExists = await _customerManager.Users
+        var customerExists = await _dbContext.Customers
             .AnyAsync(p => p.PrimaryPhone == request.PrimaryPhone!
                 || p.Email == request.Email!, cancellationToken: cancellationToken);
         if (customerExists) throw new BadRequestException("العميل موجود بالفعل");
@@ -59,7 +59,7 @@ public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustom
                 FileLink = uploadPath.First(q => q.Id == p.Id).Link,
             }).ToList()
         });
-        var data = new Customer();
+        var data = new Account();
         data.Apply(@event);
         var password = GeneratePassword();
         var result = await _customerManager.CreateAsync(data, password);
@@ -67,10 +67,10 @@ public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustom
         await _customerManager.AddClaimsAsync(data, new List<Claim>()
         {
             new(ClaimsKey.IdentityId.Key(), data.Id.ToString()),
-            new(ClaimsKey.DisplayName.Key(), data.Name),
+            new(ClaimsKey.DisplayName.Key(), data.Customer.Name),
             new(ClaimsKey.Email.Key(), data.Email ?? ""),
             new(ClaimsKey.EmailVerified.Key(), false.ToString()),
-            new(ClaimsKey.UserType.Key(), UserType.Admin.ToString("D")),
+            new(ClaimsKey.UserType.Key(), AccountType.Customer.ToString("D")),
         });
         await _dbContext.Events.AddAsync(@event, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);

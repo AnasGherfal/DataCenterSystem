@@ -12,17 +12,15 @@ namespace Web.API.Features.CustomerManagement.FetchCustomerById;
 public sealed record FetchCustomerByIdQueryHandler : IRequestHandler<FetchCustomerByIdQuery, ContentResponse<FetchCustomerByIdQueryResponse>>
 {
     private readonly AppDbContext _dbContext;
-    private readonly UserManager<Customer> _customerManager;
 
-    public FetchCustomerByIdQueryHandler(AppDbContext dbContext, UserManager<Customer> customerManager)
+    public FetchCustomerByIdQueryHandler(AppDbContext dbContext)
     {
         _dbContext = dbContext;
-        _customerManager = customerManager;
     }
 
     public async Task<ContentResponse<FetchCustomerByIdQueryResponse>> Handle(FetchCustomerByIdQuery request, CancellationToken cancellationToken)
     {
-        var data = await _customerManager.Users
+        var data = await _dbContext.Customers
             .Include(p => p.Documents)
             .FirstOrDefaultAsync(p => p.Id == Guid.Parse(request.Id!), cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("CUSTOMER_NOT_FOUND");

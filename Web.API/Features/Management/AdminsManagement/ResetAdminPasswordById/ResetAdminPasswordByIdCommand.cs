@@ -1,7 +1,7 @@
 ﻿using Core.Wrappers;
 using MediatR;
 
-namespace Web.API.Features.AdminsManagement.ResetAdminPasswordById;
+namespace Web.API.Features.Management.AdminsManagement.ResetAdminPasswordById;
 
 public sealed record ResetAdminPasswordByIdCommand: IRequest<ContentResponse<string>>
 {

@@ -1,7 +1,7 @@
 ﻿using Core.Wrappers;
 using MediatR;
 
-namespace Web.API.Features.AdminsManagement.LockAdminById;
+namespace Web.API.Features.Management.AdminsManagement.LockAdminById;
 
 public sealed record LockAdminByIdCommand: IRequest<MessageResponse>
 {

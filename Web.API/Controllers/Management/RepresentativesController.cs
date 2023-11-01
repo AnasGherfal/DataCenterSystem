@@ -2,6 +2,9 @@
 using Core.Wrappers;
 using Microsoft.AspNetCore.Mvc;
 using Web.API.Abstracts;
+using Web.API.Features.Management.RepresentativeManagement.ApproveRepresentative;
+using Web.API.Features.Management.RepresentativeManagement.FetchRepresentatives;
+using Web.API.Features.Management.RepresentativeManagement.RejectRepresentative;
 using Web.API.Features.RepresentativeManagement.CreateRepresentative;
 using Web.API.Features.RepresentativeManagement.DeleteRepresentative;
 using Web.API.Features.RepresentativeManagement.FetchRepresentativeById;
@@ -48,6 +51,20 @@ public class RepresentativesController : ManagementController
         request.SetId(id);
         return await Mediator.Send(request);
     }
+    
+    [HttpPut("{id}/Approve")]
+    public async Task<MessageResponse> Approve(string id)
+        => await Mediator.Send(new ApproveRepresentativeCommand()
+        {
+            Id = id,
+        });
+    
+    [HttpPut("{id}/Reject")]
+    public async Task<MessageResponse> Reject(string id)
+        => await Mediator.Send(new RejectRepresentativeCommand()
+        {
+            Id = id,
+        });
 
     [HttpPut("{id}/lock")]
     public async Task<MessageResponse> Lock(string id) 

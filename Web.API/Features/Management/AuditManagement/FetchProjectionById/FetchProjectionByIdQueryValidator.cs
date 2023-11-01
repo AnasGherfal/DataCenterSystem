@@ -1,7 +1,7 @@
 using Core.Validators;
 using FluentValidation;
 
-namespace Web.API.Features.AuditManagement.FetchProjectionById;
+namespace Web.API.Features.Management.AuditManagement.FetchProjectionById;
 
 public class FetchProjectionByIdQueryValidator: AbstractValidator<FetchProjectionByIdQuery>
 {

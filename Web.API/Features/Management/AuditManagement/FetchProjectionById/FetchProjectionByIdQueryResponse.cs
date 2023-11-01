@@ -1,6 +1,6 @@
 using Core.Constants;
 
-namespace Web.API.Features.AuditManagement.FetchProjectionById
+namespace Web.API.Features.Management.AuditManagement.FetchProjectionById
 {
     public sealed record FetchProjectionByIdQueryResponse
     {

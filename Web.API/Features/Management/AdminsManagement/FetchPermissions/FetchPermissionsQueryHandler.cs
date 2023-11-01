@@ -3,7 +3,7 @@ using Core.Interfaces.Services;
 using Core.Wrappers;
 using MediatR;
 
-namespace Web.API.Features.AdminsManagement.FetchPermissions
+namespace Web.API.Features.Management.AdminsManagement.FetchPermissions
 {
     public class FetchPermissionsQueryHandler: IRequestHandler<FetchPermissionsQuery, ListResponse<FetchPermissionsQueryResponse>>
     {

@@ -2,6 +2,8 @@
 using Core.Wrappers;
 using Microsoft.AspNetCore.Mvc;
 using Web.API.Abstracts;
+using Web.API.Features.Management.SubscriptionManagement.ApproveSubscription;
+using Web.API.Features.Management.SubscriptionManagement.RejectSubscription;
 using Web.API.Features.SubscriptionManagement.CreateSubscription;
 using Web.API.Features.SubscriptionManagement.DeleteSubscription;
 using Web.API.Features.SubscriptionManagement.FetchSubscriptionById;
@@ -48,6 +50,20 @@ public class SubscriptionsController : ManagementController
         request.SetId(id);
         return await Mediator.Send(request);
     }
+    
+    [HttpPut("{id}/Approve")]
+    public async Task<MessageResponse> Approve(string id)
+        => await Mediator.Send(new ApproveSubscriptionCommand()
+        {
+            Id = id,
+        });
+    
+    [HttpPut("{id}/Reject")]
+    public async Task<MessageResponse> Reject(string id)
+        => await Mediator.Send(new RejectSubscriptionCommand()
+        {
+            Id = id,
+        });
 
     [HttpPut("{id}/lock")]
     public async Task<MessageResponse> Lock(string id) 

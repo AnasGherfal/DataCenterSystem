@@ -44,12 +44,19 @@ public static class EventStoreBuilder
                 .HasValue<SubscriptionLockedEvent>(EventType.SubscriptionLocked)
                 .HasValue<SubscriptionUnlockedEvent>(EventType.SubscriptionUnlocked)
                 .HasValue<SubscriptionFileUpdatedEvent>(EventType.SubscriptionFileUpdated)
+                .HasValue<SubscriptionRequestedEvent>(EventType.SubscriptionRequested)
+                .HasValue<SubscriptionApprovedEvent>(EventType.SubscriptionApproved)
+                .HasValue<SubscriptionRejectedEvent>(EventType.SubscriptionRejected)
+                
                 .HasValue<RepresentativeCreatedEvent>(EventType.RepresentativeCreated)
                 .HasValue<RepresentativeUpdatedEvent>(EventType.RepresentativeUpdated)
                 .HasValue<RepresentativeDeletedEvent>(EventType.RepresentativeDeleted)
                 .HasValue<RepresentativeLockedEvent>(EventType.RepresentativeLocked)
                 .HasValue<RepresentativeUnlockedEvent>(EventType.RepresentativeUnlocked)
                 .HasValue<RepresentativeFileUpdatedEvent>(EventType.RepresentativeFileUpdated)
+                .HasValue<RepresentativeRequestedEvent>(EventType.RepresentativeRequested)
+                .HasValue<RepresentativeApprovedEvent>(EventType.RepresentativeApproved)
+                .HasValue<RepresentativeRejectedEvent>(EventType.RepresentativeRejected)
                 .HasValue<CustomerCreatedEvent>(EventType.CustomerCreated)
                 .HasValue<CustomerUpdatedEvent>(EventType.CustomerUpdated)
                 .HasValue<CustomerDeletedEvent>(EventType.CustomerDeleted)
@@ -65,9 +72,11 @@ public static class EventStoreBuilder
                 .HasValue<VisitStartedEvent>(EventType.VisitStarted)
                 .HasValue<VisitEndedEvent>(EventType.VisitEnded)
                 .HasValue<VisitDeletedEvent>(EventType.VisitDeleted)
+                .HasValue<VisitRequestedEvent>(EventType.VisitRequested)
+                .HasValue<VisitCancelledEvent>(EventType.VisitCancelled)
+                .HasValue<VisitSignedEvent>(EventType.VisitSigned)
                 .HasValue<InvoiceCreatedEvent>(EventType.InvoiceCreated)
-                .HasValue<InvoicePaidEvent>(EventType.InvoicePaid)
-                ;
+                .HasValue<InvoicePaidEvent>(EventType.InvoicePaid);
             b.ToTable("EventStore");
         });
         builder.ApplyConfiguration(new EventStoreConfiguration<AdminCreatedEvent, AdminCreatedEventData>());
@@ -90,6 +99,9 @@ public static class EventStoreBuilder
         builder.ApplyConfiguration(new EventStoreConfiguration<SubscriptionLockedEvent, SubscriptionLockedEventData>());
         builder.ApplyConfiguration(new EventStoreConfiguration<SubscriptionUnlockedEvent, SubscriptionUnlockedEventData>());
         builder.ApplyConfiguration(new EventStoreConfiguration<SubscriptionFileUpdatedEvent, SubscriptionFileUpdatedEventData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<SubscriptionRequestedEvent, SubscriptionRequestedEventData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<SubscriptionApprovedEvent, SubscriptionApprovedEventData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<SubscriptionRejectedEvent, SubscriptionRejectedEventData>());
         
         builder.ApplyConfiguration(new EventStoreConfiguration<RepresentativeCreatedEvent, RepresentativeCreatedEventData>());
         builder.ApplyConfiguration(new EventStoreConfiguration<RepresentativeUpdatedEvent, RepresentativeUpdatedEventData>());
@@ -97,7 +109,10 @@ public static class EventStoreBuilder
         builder.ApplyConfiguration(new EventStoreConfiguration<RepresentativeLockedEvent, RepresentativeLockedEventData>());
         builder.ApplyConfiguration(new EventStoreConfiguration<RepresentativeUnlockedEvent, RepresentativeUnlockedEventData>());
         builder.ApplyConfiguration(new EventStoreConfiguration<RepresentativeFileUpdatedEvent, RepresentativeFileUpdatedEventData>());
-    
+        builder.ApplyConfiguration(new EventStoreConfiguration<RepresentativeRequestedEvent, RepresentativeRequestedEventData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<RepresentativeApprovedEvent, RepresentativeApprovedEventData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<RepresentativeRejectedEvent, RepresentativeRejectedEventData>());
+        
         builder.ApplyConfiguration(new EventStoreConfiguration<CustomerCreatedEvent, CustomerCreatedEventData>());
         builder.ApplyConfiguration(new EventStoreConfiguration<CustomerUpdatedEvent, CustomerUpdatedEventData>());
         builder.ApplyConfiguration(new EventStoreConfiguration<CustomerDeletedEvent, CustomerDeletedEventData>());
@@ -115,6 +130,9 @@ public static class EventStoreBuilder
         builder.ApplyConfiguration(new EventStoreConfiguration<VisitStartedEvent, VisitStartedEventData>());
         builder.ApplyConfiguration(new EventStoreConfiguration<VisitEndedEvent, VisitEndedEventData>());
         builder.ApplyConfiguration(new EventStoreConfiguration<VisitDeletedEvent, VisitDeletedEventData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<VisitRequestedEvent, VisitRequestedEventData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<VisitCancelledEvent, VisitCancelledEventData>());
+        builder.ApplyConfiguration(new EventStoreConfiguration<VisitSignedEvent, VisitSignedEventData>());
         
         builder.ApplyConfiguration(new EventStoreConfiguration<InvoiceCreatedEvent, InvoiceCreatedEventData>());
         builder.ApplyConfiguration(new EventStoreConfiguration<InvoicePaidEvent, InvoicePaidEventData>());

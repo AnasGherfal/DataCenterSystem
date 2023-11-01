@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using Core.Constants;
 using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces.Services;
@@ -14,10 +15,10 @@ namespace Web.API.Features.Authentication.Login;
 public sealed record LoginCommandHandler : IRequestHandler<LoginCommand, ContentResponse<LoginCommandResponse>>
 {
     private readonly AuthenticationOption _option;
-    private readonly UserManager<Admin> _userManager;
+    private readonly UserManager<Account> _userManager;
     private readonly ITokenService _tokenService;
 
-    public LoginCommandHandler(UserManager<Admin> userManager,
+    public LoginCommandHandler(UserManager<Account> userManager,
         IOptions<AuthenticationOption> options, ITokenService tokenService)
     {
         _userManager = userManager;
@@ -27,7 +28,8 @@ public sealed record LoginCommandHandler : IRequestHandler<LoginCommand, Content
 
     public async Task<ContentResponse<LoginCommandResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
+        var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Email == request.Email
+            && u.AccountType == AccountType.Admin, cancellationToken);
         if (user == null)
             throw new NotFoundException("USER_NOT_EXIST");
         if (!user.Enabled)

@@ -1,0 +1,17 @@
+using Core.Constants;
+
+namespace Web.API.Features.Consumer.VisitsManagement.FetchMyVisits
+{
+    public sealed record FetchMyVisitsQueryResponse
+    {
+        public Guid Id { get; set; }
+        public DateTime ExpectedStartTime { get; set; }
+        public DateTime ExpectedEndTime { get; set; }
+        public TimeSpan? TotalMinutes { get; set; }
+        public decimal Price { get; set; }
+        public string Notes { get; set; } = string.Empty;
+        public VisitType VisitType { get; set; } = VisitType.Other;
+        public string VisitStatus { get; set; } = string.Empty;
+        public DateTime CreatedOn { get; set; }
+    }
+}

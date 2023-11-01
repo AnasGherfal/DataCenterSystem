@@ -16,9 +16,9 @@ public sealed record CreateAdminCommandHandler : IRequestHandler<CreateAdminComm
 {
     private readonly IClientService _client;
     private readonly AppDbContext _dbContext;
-    private readonly UserManager<Admin> _userManager;
+    private readonly UserManager<Account> _userManager;
 
-    public CreateAdminCommandHandler(UserManager<Admin> userManager, AppDbContext dbContext, IClientService client)
+    public CreateAdminCommandHandler(UserManager<Account> userManager, AppDbContext dbContext, IClientService client)
     {
         _userManager = userManager;
         _dbContext = dbContext;
@@ -40,7 +40,7 @@ public sealed record CreateAdminCommandHandler : IRequestHandler<CreateAdminComm
             EmpId = request.EmpId!.Value,
             Password = password,
         });
-        var data = new Admin();
+        var data = new Account();
         data.Apply(@event);
         //TODO: Not Idempotent - Use Transaction Instead
         var result = await _userManager.CreateAsync(data, password);
@@ -50,7 +50,7 @@ public sealed record CreateAdminCommandHandler : IRequestHandler<CreateAdminComm
             new(ClaimsKey.IdentityId.Key(), data.Id.ToString()),
             new(ClaimsKey.DisplayName.Key(), data.DisplayName),
             new(ClaimsKey.Email.Key(), data.Email ?? ""),
-            new(ClaimsKey.UserType.Key(), UserType.Admin.ToString("D")),
+            new(ClaimsKey.UserType.Key(), AccountType.Admin.ToString("D")),
             new(ClaimsKey.Permissions.Key(), data.Permissions.ToString("D")),
             new(ClaimsKey.EmailVerified.Key(), data.EmailConfirmed.ToString()),
         });

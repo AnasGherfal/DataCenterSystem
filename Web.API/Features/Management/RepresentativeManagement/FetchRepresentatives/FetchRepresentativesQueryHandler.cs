@@ -3,6 +3,7 @@ using Infrastructure;
 using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Web.API.Features.Management.RepresentativeManagement.FetchRepresentatives;
 
 namespace Web.API.Features.RepresentativeManagement.FetchRepresentatives;
 

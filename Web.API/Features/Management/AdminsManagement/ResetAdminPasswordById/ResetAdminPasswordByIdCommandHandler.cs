@@ -1,4 +1,5 @@
-﻿using Core.Entities;
+﻿using Core.Constants;
+using Core.Entities;
 using Core.Events.Admin;
 using Core.Exceptions;
 using Core.Interfaces.Services;
@@ -8,15 +9,15 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Web.API.Features.AdminsManagement.ResetAdminPasswordById;
+namespace Web.API.Features.Management.AdminsManagement.ResetAdminPasswordById;
 
 public sealed record ResetAdminPasswordByIdCommandHandler : IRequestHandler<ResetAdminPasswordByIdCommand, ContentResponse<string>>
 {
     private readonly IClientService _client;
     private readonly AppDbContext _dbContext;
-    private readonly UserManager<Admin> _userManager;
+    private readonly UserManager<Account> _userManager;
 
-    public ResetAdminPasswordByIdCommandHandler(UserManager<Admin> userManager, AppDbContext dbContext, IClientService client)
+    public ResetAdminPasswordByIdCommandHandler(UserManager<Account> userManager, AppDbContext dbContext, IClientService client)
     {
         _userManager = userManager;
         _dbContext = dbContext;
@@ -25,7 +26,10 @@ public sealed record ResetAdminPasswordByIdCommandHandler : IRequestHandler<Rese
 
     public async Task<ContentResponse<string>> Handle(ResetAdminPasswordByIdCommand request, CancellationToken cancellationToken)
     {
-        var admin = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == Guid.Parse(request.Id!), cancellationToken);
+        var admin = await _userManager.Users
+            .Include(p => p.Admin)
+            .SingleOrDefaultAsync(u => u.Id == Guid.Parse(request.Id!)
+                && u.AccountType == AccountType.Admin, cancellationToken);
         if (admin == null) throw new NotFoundException("ADMIN_NOT_FOUND");
         var newPassword = GeneratePassword();
         var @event = new AdminPasswordResetEvent(_client.GetIdentifier(), admin.Id, admin.Sequence + 1, new AdminPasswordResetEventData()

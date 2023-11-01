@@ -23,6 +23,9 @@ public enum EventType: short
     SubscriptionUnlocked = 2004,
     SubscriptionDeleted = 2005,
     SubscriptionFileUpdated = 2006,
+    SubscriptionRequested = 2007,
+    SubscriptionApproved = 2008,
+    SubscriptionRejected = 2009,
     
     
     RepresentativeCreated = 3001,
@@ -31,6 +34,9 @@ public enum EventType: short
     RepresentativeUnlocked = 3004,
     RepresentativeDeleted = 3005,
     RepresentativeFileUpdated = 3006,
+    RepresentativeRequested = 3007,
+    RepresentativeApproved = 3008,
+    RepresentativeRejected = 3009,
     
     CustomerCreated = 4001,
     CustomerUpdated = 4002,
@@ -47,6 +53,9 @@ public enum EventType: short
     VisitStarted = 6002,
     VisitEnded = 6003,
     VisitDeleted = 6004,
+    VisitRequested = 6005,
+    VisitCancelled = 6006,
+    VisitSigned = 6007,
     
     
     InvoiceCreated = 7001,

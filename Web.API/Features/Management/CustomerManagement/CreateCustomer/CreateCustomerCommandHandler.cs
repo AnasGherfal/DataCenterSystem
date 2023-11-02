@@ -81,7 +81,7 @@ public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustom
         // }, cancellationToken);
         return new MessageResponse()
         {
-            Msg = "تم اضافة مشترك بنجاح!",
+            Msg = password,
         };
     }
     

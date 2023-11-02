@@ -27,6 +27,7 @@ public sealed record DeleteAdminByIdCommandHandler : IRequestHandler<DeleteAdmin
     public async Task<MessageResponse> Handle(DeleteAdminByIdCommand request, CancellationToken cancellationToken)
     {
         var admin = await _userManager.Users
+            .Include(p => p.Admin)
             .SingleOrDefaultAsync(u => u.Id == Guid.Parse(request.Id!)
                 && u.AccountType == AccountType.Admin, cancellationToken);
         if (admin == null) throw new NotFoundException("ADMIN_NOT_FOUND");
@@ -34,6 +35,7 @@ public sealed record DeleteAdminByIdCommandHandler : IRequestHandler<DeleteAdmin
         //TODO: Not Idempotent - Use Transaction Instead
         var result = await _userManager.DeleteAsync(admin);
         if (!result.Succeeded) throw new BadRequestException(result.Errors.FirstOrDefault()!.Description);
+        
         await _dbContext.Events.AddAsync(@event, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return new MessageResponse() { Msg = "SUCCESS" };

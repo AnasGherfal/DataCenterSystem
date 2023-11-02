@@ -74,11 +74,11 @@ public sealed record CreateCustomerCommandHandler : IRequestHandler<CreateCustom
         });
         await _dbContext.Events.AddAsync(@event, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
-        await _mediator.Publish(new CreateCustomerCommandNotification()
-        {
-            Content = request,
-            Password = password,
-        }, cancellationToken);
+        // await _mediator.Publish(new CreateCustomerCommandNotification()
+        // {
+        //     Content = request,
+        //     Password = password,
+        // }, cancellationToken);
         return new MessageResponse()
         {
             Msg = "تم اضافة مشترك بنجاح!",

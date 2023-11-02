@@ -2,6 +2,7 @@
 using Core.Wrappers;
 using Microsoft.AspNetCore.Mvc;
 using Web.API.Abstracts;
+using Web.API.Features.Management.VisitsManagement.SignVisit;
 using Web.API.Features.VisitsManagement.CreateVisit;
 using Web.API.Features.VisitsManagement.DeleteVisit;
 using Web.API.Features.VisitsManagement.EndVisit;
@@ -30,16 +31,9 @@ public class VisitsController : ManagementController
         {
             Id = id,
         });
-
-    [HttpPut("{id}/start")]
-    public async Task<MessageResponse> Update(string id, [FromBody] StartVisitCommand request)
-    {
-        request.SetId(id);
-        return await Mediator.Send(request);
-    }
     
-    [HttpPut("{id}/stop")]
-    public async Task<MessageResponse> Update(string id, [FromBody] EndVisitCommand request)
+    [HttpPut("{id}/sign")]
+    public async Task<MessageResponse> Sign(string id, [FromBody] SignVisitCommand request)
     {
         request.SetId(id);
         return await Mediator.Send(request);

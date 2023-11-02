@@ -71,7 +71,13 @@ public class Account : IdentityUser<Guid>, IBaseEntity
         UpdatedOn = @event.DateTime;
         Id = @event.AggregateId;
         Email = @event.Data.Email;
+        DisplayName = @event.Data.Name;
         UserName = @event.Data.Email;
+        Permissions = SystemPermissions.None;
+        EmailConfirmed = true;
+        Enabled = true;
+        SecurityStamp = Guid.NewGuid().ToString();
+        AccountType = AccountType.Customer;
         Customer = new Customer();
         Customer.Apply(@event);
     }

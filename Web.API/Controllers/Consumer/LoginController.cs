@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.API.Abstracts;
-using Web.API.Features.Authentication.Login;
+using Web.API.Features.Consumer.Login;
 
 namespace Web.API.Controllers.Consumer;
 

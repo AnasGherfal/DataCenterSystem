@@ -32,7 +32,8 @@ public sealed record UpdateTimeShiftCommandHandler : IRequestHandler<UpdateTimeS
             if (data.Day != null && request.StartTime != null)
             {
                 var overlappingShiftExists = await _dbContext.TimeShifts
-                    .AnyAsync(p => (p.Day == data.Day)
+                    .AnyAsync(p => p.Id != data.Id
+                            && (p.Day == data.Day)
                                    && ((request.StartTime >= p.StartTime && request.StartTime <= p.EndTime)
                                        || (request.EndTime >= p.StartTime && request.EndTime <= p.EndTime)
                                    || (request.StartTime <= p.StartTime && request.EndTime >= p.EndTime))
@@ -40,7 +41,6 @@ public sealed record UpdateTimeShiftCommandHandler : IRequestHandler<UpdateTimeS
                 if (overlappingShiftExists) throw new BadRequestException("TIME_SHIFT_ALREADY_EXISTS_OR_OVERLAPS");
             }
         }
-        
         var @event = new TimeShiftUpdatedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new TimeShiftUpdatedEventData()
         {
             PriceForFirstHour = request.PriceForFirstHour!.Value,

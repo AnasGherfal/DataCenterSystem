@@ -6,8 +6,9 @@ using Core.Wrappers;
 using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Web.API.Features.TimeShiftManagement.CreateTimeShift;
 
-namespace Web.API.Features.TimeShiftManagement.CreateTimeShift;
+namespace Web.API.Features.Management.TimeShiftManagement.CreateTimeShift;
 
 public sealed record CreateTimeShiftCommandHandler : IRequestHandler<CreateTimeShiftCommand, MessageResponse>
 {

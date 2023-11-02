@@ -1,4 +1,5 @@
-﻿using Core.Entities;
+﻿using Core.Constants;
+using Core.Entities;
 using Core.Events.Customer;
 using Core.Exceptions;
 using Core.Interfaces.Services;
@@ -27,7 +28,8 @@ public sealed record DeleteCustomerCommandHandler : IRequestHandler<DeleteCustom
         var id = Guid.Parse(request.Id!);
         var data = await _dbContext.Users
             .Include(p => p.Customer)
-            .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
+            .SingleOrDefaultAsync(p => p.Id == id
+                && p.AccountType == AccountType.Customer, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("Customer not found");
         var hasSubscriptions = await _dbContext.Subscriptions.AnyAsync(p => p.CustomerId == id, cancellationToken: cancellationToken);
         if (hasSubscriptions) throw new BadRequestException("لا يمكن حدف العميل لوجود اشتراكات مرتبطة به");

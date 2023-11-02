@@ -28,7 +28,8 @@ public sealed record LockCustomerCommandHandler : IRequestHandler<LockCustomerCo
         var id = Guid.Parse(request.Id!);
         var data = await _dbContext.Users
             .Include(p => p.Customer)
-            .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
+            .SingleOrDefaultAsync(p => p.Id == id
+                && p.AccountType == AccountType.Customer, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("Customer not found");
         if (data.Customer.Status == GeneralStatus.Locked) throw new BadRequestException("Sorry, this Customer is already locked");
         if (data.Customer.Status != GeneralStatus.Active) throw new BadRequestException("Sorry, this cannot be locked");

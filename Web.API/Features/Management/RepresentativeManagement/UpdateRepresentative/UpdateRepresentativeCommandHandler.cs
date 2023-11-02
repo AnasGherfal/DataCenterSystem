@@ -1,4 +1,5 @@
-﻿using Core.Events.Representative;
+﻿using Core.Constants;
+using Core.Events.Representative;
 using Core.Exceptions;
 using Core.Interfaces.Services;
 using Core.Wrappers;
@@ -26,6 +27,11 @@ public sealed record UpdateRepresentativeCommandHandler : IRequestHandler<Update
         var data = await _dbContext.Representatives
             .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("representative not found");
+        if (data.Status != GeneralStatus.Active) throw new BadRequestException("Sorry, this representative is not active");
+        var customerIsActive = await _dbContext.Customers
+            .AnyAsync(p => p.Id == data.CustomerId
+                           && p.Status == GeneralStatus.Active, cancellationToken: cancellationToken);
+        if (!customerIsActive) throw new BadRequestException("العميل غير موجود");
         var @event = new RepresentativeUpdatedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new RepresentativeUpdatedEventData()
         {
             IdentityType = request.IdentityType!.Value,

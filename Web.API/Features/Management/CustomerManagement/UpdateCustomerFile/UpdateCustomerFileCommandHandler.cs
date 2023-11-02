@@ -47,9 +47,7 @@ public sealed record UpdateCustomerFileCommandHandler : IRequestHandler<UpdateCu
             FileIdentifier = uploadPath.First().Id,
             FileLink = uploadPath.First().Link,
             FileType = docType!,
-        })
-        {
-        };
+        });
         data.Apply(@event);
         _dbContext.Entry(data).State = EntityState.Modified;
         await _dbContext.Events.AddAsync(@event, cancellationToken);

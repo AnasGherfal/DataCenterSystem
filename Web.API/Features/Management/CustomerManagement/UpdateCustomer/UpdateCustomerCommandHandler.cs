@@ -31,18 +31,20 @@ public sealed record UpdateCustomerCommandHandler : IRequestHandler<UpdateCustom
     public async Task<MessageResponse> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
     {
         var id = Guid.Parse(request.Id!);
-        var data = await _dbContext.Users.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
+        var data = await _dbContext.Users
+            .Include(p => p.Customer)
+            .SingleOrDefaultAsync(p => p.Id == id
+            && p.AccountType == AccountType.Customer, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("customer not found");
-       
+        if (data.Customer.Status != GeneralStatus.Active) throw new BadRequestException("Sorry, this cannot be updated");
         var @event = new CustomerUpdatedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new CustomerUpdatedEventData()
         {
-            Name=request.Name!,
-            City=request.City!,
-            SecondaryPhone= request.SecondaryPhone!,
+            Name = request.Name!,
+            City = request.City!,
+            SecondaryPhone = request.SecondaryPhone!,
             Address = request.Address!,
             Email = request.Email!,
             PrimaryPhone = request.PrimaryPhone!,
-
         });
         data.Apply(@event);
         _dbContext.Entry(data).State = EntityState.Modified;

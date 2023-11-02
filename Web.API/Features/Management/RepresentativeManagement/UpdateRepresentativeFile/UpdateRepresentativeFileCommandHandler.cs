@@ -33,6 +33,10 @@ public sealed record UpdateRepresentativeFileCommandHandler : IRequestHandler<Up
             .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("Representative not found");
         if (data.Status != GeneralStatus.Active) throw new BadRequestException("Sorry, this representative is not active");
+        var customerIsActive = await _dbContext.Customers
+            .AnyAsync(p => p.Id == data.CustomerId
+                           && p.Status == GeneralStatus.Active, cancellationToken: cancellationToken);
+        if (!customerIsActive) throw new BadRequestException("العميل غير موجود");
         var uploadPath = await _uploadFile.UploadFiles(StorageType.RepresentativeFile, new List<FileStorageUploadRequest>()
         {
             new(Guid.NewGuid(), request.File!, (short) request.DocType!.Value)

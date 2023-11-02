@@ -28,7 +28,8 @@ public sealed record UnlockCustomerCommandHandler : IRequestHandler<UnlockCustom
         var id = Guid.Parse(request.Id!);
         var data = await _dbContext.Users
             .Include(p => p.Customer)
-            .SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
+            .SingleOrDefaultAsync(p => p.Id == id
+                && p.AccountType == AccountType.Customer, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("Customer not found");
         if (data.Customer.Status != GeneralStatus.Locked) throw new BadRequestException("Customer is not locked");
         var @event = new CustomerUnlockedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new CustomerUnlockedEventData());
@@ -38,7 +39,7 @@ public sealed record UnlockCustomerCommandHandler : IRequestHandler<UnlockCustom
         await _dbContext.SaveChangesAsync(cancellationToken);
         return new MessageResponse()
         {
-            Msg = "subscription unlocked successfully!"
+            Msg = "customer unlocked successfully!"
         };
     }
 }

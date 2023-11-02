@@ -28,6 +28,10 @@ public sealed record LockSubscriptionCommandHandler : IRequestHandler<LockSubscr
         if (data == null) throw new NotFoundException("Subscription not found");
         if (data.Status == GeneralStatus.Locked) throw new BadRequestException("Sorry, this subscription is already locked");
         if (data.Status != GeneralStatus.Active) throw new BadRequestException("Sorry, this cannot be locked");
+        var customerIsActive = await _dbContext.Customers
+            .AnyAsync(p => p.Id == data.CustomerId
+                           && p.Status == GeneralStatus.Active, cancellationToken: cancellationToken);
+        if (!customerIsActive) throw new BadRequestException("العميل غير موجود");
         var @event = new SubscriptionLockedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new SubscriptionLockedEventData());
         data.Apply(@event);
         _dbContext.Entry(data).State = EntityState.Modified;

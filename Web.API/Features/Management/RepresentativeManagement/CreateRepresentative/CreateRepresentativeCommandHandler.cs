@@ -30,7 +30,8 @@ public sealed record CreateRepresentativeCommandHandler : IRequestHandler<Create
     {
         var customerId = Guid.Parse(request.CustomerId!);
         var customerExists = await _dbContext.Customers
-            .AnyAsync(p => p.Id == customerId, cancellationToken: cancellationToken);
+            .AnyAsync(p => p.Id == customerId
+                && p.Status == GeneralStatus.Active, cancellationToken: cancellationToken);
         if (!customerExists) throw new BadRequestException("العميل غير موجود");
         var countRepresentatives = await _dbContext.Representatives
             .CountAsync(p => p.CustomerId == customerId, cancellationToken: cancellationToken);

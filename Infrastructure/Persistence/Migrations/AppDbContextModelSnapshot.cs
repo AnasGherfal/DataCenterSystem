@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Infrastructure.Persistence.Migrations
+namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -164,7 +164,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 197, DateTimeKind.Utc).AddTicks(2103));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 519, DateTimeKind.Utc).AddTicks(6111));
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
@@ -188,7 +188,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 197, DateTimeKind.Utc).AddTicks(2452));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 519, DateTimeKind.Utc).AddTicks(6939));
 
                     b.HasKey("Id");
 
@@ -212,7 +212,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 197, DateTimeKind.Utc).AddTicks(3723));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 519, DateTimeKind.Utc).AddTicks(9831));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -252,7 +252,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 197, DateTimeKind.Utc).AddTicks(3942));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 520, DateTimeKind.Utc).AddTicks(528));
 
                     b.HasKey("Id");
 
@@ -268,7 +268,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 197, DateTimeKind.Utc).AddTicks(8774));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 521, DateTimeKind.Utc).AddTicks(8152));
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
@@ -308,7 +308,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 197, DateTimeKind.Utc).AddTicks(9025));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 521, DateTimeKind.Utc).AddTicks(8980));
 
                     b.HasKey("Id");
 
@@ -496,7 +496,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 197, DateTimeKind.Utc).AddTicks(5013));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 520, DateTimeKind.Utc).AddTicks(4452));
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
@@ -549,7 +549,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 197, DateTimeKind.Utc).AddTicks(5303));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 520, DateTimeKind.Utc).AddTicks(5364));
 
                     b.HasKey("Id");
 
@@ -575,7 +575,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 197, DateTimeKind.Utc).AddTicks(6468));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 520, DateTimeKind.Utc).AddTicks(8946));
 
                     b.Property<string>("Dns")
                         .IsRequired()
@@ -613,7 +613,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 197, DateTimeKind.Utc).AddTicks(6657));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 520, DateTimeKind.Utc).AddTicks(9612));
 
                     b.HasKey("Id");
 
@@ -636,7 +636,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 197, DateTimeKind.Utc).AddTicks(7576));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 521, DateTimeKind.Utc).AddTicks(3314));
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
@@ -678,7 +678,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 197, DateTimeKind.Utc).AddTicks(7794));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 521, DateTimeKind.Utc).AddTicks(4222));
 
                     b.HasKey("Id");
 
@@ -698,7 +698,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 198, DateTimeKind.Utc).AddTicks(21));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 522, DateTimeKind.Utc).AddTicks(3456));
 
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime");
@@ -737,7 +737,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 198, DateTimeKind.Utc).AddTicks(231));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 522, DateTimeKind.Utc).AddTicks(4188));
 
                     b.HasKey("Id");
 
@@ -753,7 +753,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 198, DateTimeKind.Utc).AddTicks(1101));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 523, DateTimeKind.Utc).AddTicks(681));
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
@@ -805,7 +805,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 17, 27, 198, DateTimeKind.Utc).AddTicks(1339));
+                        .HasDefaultValue(new DateTime(2023, 11, 8, 13, 29, 27, 523, DateTimeKind.Utc).AddTicks(1651));
 
                     b.Property<decimal>("VisitPrice")
                         .HasColumnType("decimal(18,2)");

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Infrastructure.Persistence.Migrations
+namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -17,8 +17,8 @@ namespace Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 322, DateTimeKind.Utc).AddTicks(9710)),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(162)),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 519, DateTimeKind.Utc).AddTicks(6111)),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 519, DateTimeKind.Utc).AddTicks(6939)),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     Sequence = table.Column<long>(type: "bigint", nullable: false, defaultValue: 1L),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
@@ -54,8 +54,8 @@ namespace Infrastructure.Persistence.Migrations
                     PrimaryPhone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SecondaryPhone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<short>(type: "smallint", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(1729)),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(2017)),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 519, DateTimeKind.Utc).AddTicks(9831)),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 520, DateTimeKind.Utc).AddTicks(528)),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     Sequence = table.Column<long>(type: "bigint", nullable: false, defaultValue: 1L),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
@@ -96,8 +96,8 @@ namespace Infrastructure.Persistence.Migrations
                     MonthlyVisits = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<short>(type: "smallint", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(5399)),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(5661)),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 520, DateTimeKind.Utc).AddTicks(8946)),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 520, DateTimeKind.Utc).AddTicks(9612)),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     Sequence = table.Column<long>(type: "bigint", nullable: false, defaultValue: 1L),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
@@ -118,8 +118,8 @@ namespace Infrastructure.Persistence.Migrations
                     EndTime = table.Column<TimeSpan>(type: "time", nullable: false),
                     PriceForFirstHour = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PriceForRemainingHours = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 324, DateTimeKind.Utc).AddTicks(719)),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 324, DateTimeKind.Utc).AddTicks(1019)),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 522, DateTimeKind.Utc).AddTicks(3456)),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 522, DateTimeKind.Utc).AddTicks(4188)),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     Sequence = table.Column<long>(type: "bigint", nullable: false, defaultValue: 1L),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
@@ -229,8 +229,8 @@ namespace Infrastructure.Persistence.Migrations
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(8950)),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(9245)),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 521, DateTimeKind.Utc).AddTicks(8152)),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 521, DateTimeKind.Utc).AddTicks(8980)),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     Sequence = table.Column<long>(type: "bigint", nullable: false, defaultValue: 1L),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
@@ -252,6 +252,9 @@ namespace Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RepresentativeType = table.Column<int>(type: "int", nullable: false),
+                    ActiveFrom = table.Column<DateTime>(type: "datetime", nullable: true),
+                    ActiveTo = table.Column<DateTime>(type: "datetime", nullable: true),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IdentityNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -259,8 +262,8 @@ namespace Infrastructure.Persistence.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<short>(type: "smallint", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(3447)),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(3852)),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 520, DateTimeKind.Utc).AddTicks(4452)),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 520, DateTimeKind.Utc).AddTicks(5364)),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     Sequence = table.Column<long>(type: "bigint", nullable: false, defaultValue: 1L),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
@@ -283,13 +286,15 @@ namespace Infrastructure.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ServiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ContractNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ContractDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     MonthlyVisits = table.Column<TimeSpan>(type: "time", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<short>(type: "smallint", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(7074)),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 323, DateTimeKind.Utc).AddTicks(7393)),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 521, DateTimeKind.Utc).AddTicks(3314)),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 521, DateTimeKind.Utc).AddTicks(4222)),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     Sequence = table.Column<long>(type: "bigint", nullable: false, defaultValue: 1L),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
@@ -457,8 +462,8 @@ namespace Infrastructure.Persistence.Migrations
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     VisitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<short>(type: "smallint", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 324, DateTimeKind.Utc).AddTicks(2246)),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 2, 8, 18, 6, 324, DateTimeKind.Utc).AddTicks(2588)),
+                    CreatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 523, DateTimeKind.Utc).AddTicks(681)),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 11, 8, 13, 29, 27, 523, DateTimeKind.Utc).AddTicks(1651)),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     Sequence = table.Column<long>(type: "bigint", nullable: false, defaultValue: 1L),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)

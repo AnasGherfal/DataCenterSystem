@@ -34,7 +34,7 @@ public sealed record UpdateTimeShiftCommandHandler : IRequestHandler<UpdateTimeS
                 var overlappingShiftExists = await _dbContext.TimeShifts
                     .AnyAsync(p => p.Id != data.Id
                             && (p.Day == data.Day)
-                                   && ((request.StartTime >= p.StartTime && request.StartTime <= p.EndTime)
+                                   && ((request.StartTime >= p.StartTime && request.StartTime < p.EndTime)
                                        || (request.EndTime >= p.StartTime && request.EndTime <= p.EndTime)
                                    || (request.StartTime <= p.StartTime && request.EndTime >= p.EndTime))
                         , cancellationToken: cancellationToken);

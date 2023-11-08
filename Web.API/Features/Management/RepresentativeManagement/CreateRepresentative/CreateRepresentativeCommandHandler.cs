@@ -46,6 +46,9 @@ public sealed record CreateRepresentativeCommandHandler : IRequestHandler<Create
         var @event = new RepresentativeCreatedEvent(_client.GetIdentifier(), Guid.NewGuid(), new RepresentativeCreatedEventData()
         {
             CustomerId = customerId,
+            RepresentativeType = request.Type!.Value,
+            ActiveFrom = string.IsNullOrEmpty(request.From) ? null : DateTime.Parse(request.From!),
+            ActiveTo = string.IsNullOrEmpty(request.To) ? null : DateTime.Parse(request.To!),
             FirstName = request.FirstName!,
             LastName = request.LastName!,
             IdentityNo = request.IdentityNo!,

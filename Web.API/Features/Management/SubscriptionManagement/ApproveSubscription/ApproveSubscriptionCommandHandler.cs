@@ -26,7 +26,11 @@ public sealed record ApproveSubscriptionCommandHandler : IRequestHandler<Approve
         var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("Subscription not found");
         if (data.Status != GeneralStatus.Requested) throw new BadRequestException("Sorry, this cannot be approved.");
-        var @event = new SubscriptionApprovedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new SubscriptionApprovedEventData());
+        var @event = new SubscriptionApprovedEvent(_client.GetIdentifier(), data.Id, data.Sequence + 1, new SubscriptionApprovedEventData()
+        {
+            ContractNumber = request.ContractNumber!,
+            ContractDate = DateTime.Parse(request.ContractDate!),
+        });
         data.Apply(@event);
         _dbContext.Entry(data).State = EntityState.Modified;
         await _dbContext.Events.AddAsync(@event, cancellationToken);

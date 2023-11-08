@@ -7,6 +7,8 @@ namespace Web.API.Features.Consumer.SubscriptionsManagement.FetchMySubscriptionB
         public Guid Id { get; set; }
         public string ServiceName { get; set; } = default!;
         public string CustomerName { get; set; } = default!;
+        public string ContractNumber { get; set; } = default!;
+        public DateTime ContractDate { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public GeneralStatus Status { get; set; }

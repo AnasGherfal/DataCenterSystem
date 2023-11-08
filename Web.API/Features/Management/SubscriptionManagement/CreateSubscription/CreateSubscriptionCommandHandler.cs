@@ -44,6 +44,8 @@ public sealed record CreateSubscriptionCommandHandler : IRequestHandler<CreateSu
         {
             ServiceId = serviceId,
             CustomerId = customerId,
+            ContractNumber = request.ContractNumber!,
+            ContractDate = DateTime.Parse(request.ContractDate!),
             StartDate = DateTime.Parse(request.StartDate!),
             EndDate = DateTime.Parse(request.EndDate!),
             Documents = new() 

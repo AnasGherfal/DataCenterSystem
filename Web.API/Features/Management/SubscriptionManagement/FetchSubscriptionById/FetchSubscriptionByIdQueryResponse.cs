@@ -6,6 +6,8 @@ namespace Web.API.Features.SubscriptionManagement.FetchSubscriptionById
     {
         public Guid Id { get; set; }
         public string ServiceName { get; set; } = default!;
+        public string ContractNumber { get; set; } = default!;
+        public DateTime ContractDate { get; set; }
         public string CustomerName { get; set; } = default!;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

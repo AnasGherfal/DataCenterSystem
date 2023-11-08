@@ -32,6 +32,8 @@ public sealed record FetchMySubscriptionByIdQueryHandler : IRequestHandler<Fetch
             Id = data.Id,
             CustomerName = data.Customer!.Name,
             ServiceName = data.Service!.Name,
+            ContractNumber = data.ContractNumber,
+            ContractDate = data.ContractDate,
             StartDate = data.StartDate,
             EndDate = data.EndDate,
             TotalPrice = data.TotalPrice,

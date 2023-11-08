@@ -39,5 +39,19 @@ public class CreateRepresentativeCommandValidator: AbstractValidator<CreateRepre
         RuleFor(item => item.RepresentationDocument)
             .NotNull()
             .SetValidator(new DocumentFileValidator("Representative File must not be null."));
+
+        RuleFor(p => p.Type)
+            .NotNull()
+            .IsInEnum();
+        
+        When((command => command.Type == RepresentativeType.Period), () =>
+        {
+            RuleFor(a => a.From)
+                .NotEmpty()
+                .Must(p => DateTime.TryParse(p, out _));
+            RuleFor(a => a.To)
+                .NotEmpty()
+                .Must(p => DateTime.TryParse(p, out _));
+        });
     }
 }

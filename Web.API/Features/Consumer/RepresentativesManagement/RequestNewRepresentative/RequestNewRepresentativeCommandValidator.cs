@@ -1,4 +1,5 @@
-﻿using Core.Validators;
+﻿using Core.Constants;
+using Core.Validators;
 using FluentValidation;
 
 namespace Web.API.Features.Consumer.RepresentativesManagement.RequestNewRepresentative;
@@ -35,5 +36,15 @@ public class RequestNewRepresentativeCommandValidator: AbstractValidator<Request
         RuleFor(item => item.RepresentationDocument)
             .NotNull()
             .SetValidator(new DocumentFileValidator("Representative File must not be null."));
+        
+        When((command => command.Type == RepresentativeType.Period), () =>
+        {
+            RuleFor(a => a.From)
+                .NotEmpty()
+                .Must(p => DateTime.TryParse(p, out _));
+            RuleFor(a => a.To)
+                .NotEmpty()
+                .Must(p => DateTime.TryParse(p, out _));
+        });
     }
 }

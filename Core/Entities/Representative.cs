@@ -8,6 +8,9 @@ public class Representative: Entity
 {
     public Guid Id { get; set; }
     public Guid CustomerId { get; set; }
+    public RepresentativeType RepresentativeType { get; set; }
+    public DateTime? ActiveFrom { get; set; }
+    public DateTime? ActiveTo { get; set; }
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string IdentityNo { get; set; } = string.Empty;
@@ -26,6 +29,9 @@ public class Representative: Entity
         UpdatedOn = @event.DateTime;
         Id = @event.AggregateId;
         CustomerId = @event.Data.CustomerId;
+        RepresentativeType = @event.Data.RepresentativeType;
+        ActiveFrom = @event.Data.ActiveFrom;
+        ActiveTo = @event.Data.ActiveTo;
         FirstName = @event.Data.FirstName;
         LastName = @event.Data.LastName;
         IdentityNo = @event.Data.IdentityNo;

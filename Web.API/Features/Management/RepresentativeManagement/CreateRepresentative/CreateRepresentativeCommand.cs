@@ -15,4 +15,7 @@ public sealed record CreateRepresentativeCommand : IRequest<MessageResponse>
     public string? PhoneNo { get; set; }
     public IFormFile? IdentityDocument { get; set; }
     public IFormFile? RepresentationDocument { get; set; }
+    public RepresentativeType? Type { get; set; }
+    public string? From { get; set; }
+    public string? To { get; set; }
 }

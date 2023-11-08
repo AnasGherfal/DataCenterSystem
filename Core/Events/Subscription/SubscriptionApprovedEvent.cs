@@ -15,6 +15,8 @@ public class SubscriptionApprovedEvent: EventStore<SubscriptionApprovedEventData
 
 public class SubscriptionApprovedEventData : IEventData
 {
+    public DateTime ContractDate { get; set; }
+    public string ContractNumber { get; set; } = string.Empty;
     [JsonIgnore]
     public EventType Type => EventType.SubscriptionApproved;
 }

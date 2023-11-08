@@ -50,13 +50,13 @@ public class SubscriptionsController : ManagementController
         request.SetId(id);
         return await Mediator.Send(request);
     }
-    
+
     [HttpPut("{id}/Approve")]
-    public async Task<MessageResponse> Approve(string id)
-        => await Mediator.Send(new ApproveSubscriptionCommand()
-        {
-            Id = id,
-        });
+    public async Task<MessageResponse> Approve(string id, [FromQuery] ApproveSubscriptionCommand request)
+    {
+        request.SetId(id);
+        return await Mediator.Send(request);
+    }
     
     [HttpPut("{id}/Reject")]
     public async Task<MessageResponse> Reject(string id)

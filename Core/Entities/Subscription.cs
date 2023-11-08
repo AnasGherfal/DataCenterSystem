@@ -9,6 +9,8 @@ public class Subscription: Entity
     public Guid Id { get; set; }
     public Guid ServiceId { get; set; }
     public Guid CustomerId { get; set; }
+    public string ContractNumber { get; set; } = string.Empty;
+    public DateTime ContractDate { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public TimeSpan MonthlyVisits { get; set; }
@@ -27,6 +29,8 @@ public class Subscription: Entity
         Id = @event.AggregateId;
         ServiceId = @event.Data.ServiceId;
         CustomerId = @event.Data.CustomerId;
+        ContractNumber = @event.Data.ContractNumber;
+        ContractDate = @event.Data.ContractDate;
         StartDate = @event.Data.StartDate;
         EndDate = @event.Data.EndDate;
         Status = GeneralStatus.Active;

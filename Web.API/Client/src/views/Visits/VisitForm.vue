@@ -180,7 +180,6 @@ const submitForm = async () => {
           life: 3000,
         });
 
-        console.log(response);
         store.getVisits();
         router.go(-1);
       })

@@ -25,8 +25,7 @@ public class CreateSubscriptionCommandValidator: AbstractValidator<CreateSubscri
             .Must(p => DateTime.TryParse(p, out _));
         
         RuleFor(a => a.ContractNumber)
-            .NotEmpty()
-            .Must(p => DateTime.TryParse(p, out _));
+            .NotEmpty();
         
         RuleFor(x => x.File)
             .SetValidator(new DocumentFileValidator("Document File Invalid"));

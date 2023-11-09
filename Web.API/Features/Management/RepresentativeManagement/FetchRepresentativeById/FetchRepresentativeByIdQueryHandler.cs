@@ -28,6 +28,9 @@ public sealed record FetchRepresentativeByIdQueryHandler : IRequestHandler<Fetch
         {
             Id = data.Id,
             CustomerName = data.Customer!.Name,
+            Type = data.RepresentativeType,
+            ActiveFrom = data.ActiveFrom,
+            ActiveTo = data.ActiveTo,
             FirstName = data.FirstName,
             LastName = data.LastName,
             IdentityNo = data.IdentityNo,

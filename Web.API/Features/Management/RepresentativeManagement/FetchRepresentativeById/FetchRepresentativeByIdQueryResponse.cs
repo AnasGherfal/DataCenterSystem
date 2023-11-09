@@ -6,6 +6,9 @@ namespace Web.API.Features.RepresentativeManagement.FetchRepresentativeById
     {
         public Guid Id { get; set; }
         public string CustomerName { get; set; } = string.Empty;
+        public RepresentativeType? Type { get; set; }
+        public DateTime? ActiveFrom { get; set; }
+        public DateTime? ActiveTo { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = default!;
         public string IdentityNo { get; set; } = string.Empty;

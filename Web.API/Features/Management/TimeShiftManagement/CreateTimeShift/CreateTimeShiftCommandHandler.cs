@@ -37,13 +37,13 @@ public sealed record CreateTimeShiftCommandHandler : IRequestHandler<CreateTimeS
         else
         {
             var specialDateExist = await _dbContext.TimeShifts
-                .AnyAsync(p => p.Date == request.Date!.Value.Date, cancellationToken: cancellationToken);
+                .AnyAsync(p => p.Date == DateTime.Parse(request.Date!).Date, cancellationToken: cancellationToken);
             if (specialDateExist) throw new BadRequestException("TIME_SHIFT_ALREADY_EXISTS");
         }
         var @event = new TimeShiftCreatedEvent(_client.GetIdentifier(), Guid.NewGuid(), new TimeShiftCreatedEventData()
         {
             Day = isDaySchedule ? request.Day : null,
-            Date = isDaySchedule ? null : request.Date!.Value.Date,
+            Date = isDaySchedule ? null : DateTime.Parse(request.Date!).Date,
             StartTime = request.StartTime!.Value,
             EndTime = request.EndTime!.Value,
             PriceForFirstHour = request.PriceForFirstHour!.Value,

@@ -2,7 +2,7 @@
 
 public enum RepresentativeType: int
 {
-    OneTime,
-    Period,
-    Lifetime,
+    OneTime = 1,
+    Period = 2 ,
+    Lifetime = 3,
 }

@@ -7,8 +7,8 @@ const authorized = useAuthStore();
 </script>
 
 <template>
-       <LoginPage v-if="!authorized.userData" />
-  <Dashboard v-else />
+       <!-- <LoginPage v-if="!authorized.userData" /> -->
+  <Dashboard  />
   
   <!-- <RouterView /> -->
 </template>

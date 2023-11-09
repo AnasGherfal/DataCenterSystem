@@ -17,7 +17,14 @@ public class ClientService: IClientService
     {
         try
         {
-            return Guid.Parse(IdentityId);
+            if (string.IsNullOrEmpty(IdentityId))
+            {
+                return Guid.Empty;
+            }
+            else
+            {
+                return Guid.Parse(IdentityId);
+            }
         }
         catch
         {

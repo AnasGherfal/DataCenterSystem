@@ -53,12 +53,8 @@ const visit = reactive({
   companions: [],
 });
 
-interface visitReason {
-  id: number; // Change the type to string to accept GUIDs as strings
-  name: string;
-}
 
-const visitReasons = ref<visitReason[]>([]);
+
 
 const startDate = ref(new Date());
 const endDate = ref(new Date());

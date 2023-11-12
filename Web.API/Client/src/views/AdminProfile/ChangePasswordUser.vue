@@ -144,7 +144,7 @@ const resetForm = () => {
   <Toast position="bottom-left" />
 </template>
 
-<style>
+<style scoped>
 
 .p-icon{
   margin-left:10px

@@ -44,7 +44,7 @@ public sealed record RequestNewRepresentativeCommandHandler : IRequestHandler<Re
         };
         var uploadPath = await _uploadFile.UploadFiles(StorageType.RepresentativeFile, fileRequests);
         if (uploadPath == null) throw new BadRequestException("حدث خطأ أثناء رفع الملف");
-        var @event = new RepresentativeCreatedEvent(_client.GetIdentifier(), Guid.NewGuid(), new RepresentativeCreatedEventData()
+        var @event = new RepresentativeRequestedEvent(_client.GetIdentifier(), Guid.NewGuid(), new RepresentativeRequestedEventData()
         {
             CustomerId = customerId,
             RepresentativeType = request.Type!.Value,

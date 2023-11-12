@@ -42,7 +42,7 @@ public sealed record RequestNewSubscriptionCommandHandler : IRequestHandler<Requ
             new(Guid.NewGuid(), request.File!,(short)DocumentType.SubscriptionFile)
         });
         if (uploadPath == null) throw new BadRequestException("حدث خطأ أثناء رفع الملف");
-        var @event = new SubscriptionCreatedEvent(_client.GetIdentifier(), Guid.NewGuid(), new SubscriptionCreatedEventData()
+        var @event = new SubscriptionRequestedEvent(_client.GetIdentifier(), Guid.NewGuid(), new SubscriptionRequestedEventData()
         {
             ServiceId = serviceId,
             CustomerId = customerId,

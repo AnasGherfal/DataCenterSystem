@@ -16,6 +16,9 @@ public class RepresentativeRequestedEvent : EventStore<RepresentativeRequestedEv
 public class RepresentativeRequestedEventData : IEventData
 {
     public Guid CustomerId { get; set; } = Guid.Empty;
+    public RepresentativeType RepresentativeType { get; set; }
+    public DateTime? ActiveFrom { get; set; }
+    public DateTime? ActiveTo { get; set; }
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string IdentityNo { get; set; } = string.Empty;

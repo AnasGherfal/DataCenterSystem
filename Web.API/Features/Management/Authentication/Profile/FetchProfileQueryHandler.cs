@@ -32,7 +32,7 @@ public sealed record FetchProfileQueryHandler : IRequestHandler<FetchProfileQuer
             DisplayName = profile.DisplayName,
             Email = profile.Email ?? "",
             CreatedOn = profile.CreatedOn,
-            Permissions = 0,
+            Permissions = profile.Permissions,
         });
     }
 }

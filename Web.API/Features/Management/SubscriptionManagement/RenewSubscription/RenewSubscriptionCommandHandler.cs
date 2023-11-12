@@ -27,7 +27,7 @@ public sealed record RenewSubscriptionCommandHandler : IRequestHandler<RenewSubs
         var data = await _dbContext.Subscriptions.SingleOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken);
         if (data == null) throw new NotFoundException("Subscription not found");
         if (data.Status != GeneralStatus.Active) throw new BadRequestException("Sorry, this subscription is not active");
-        if (data.EndDate > DateTime.UtcNow.AddDays(-30)) throw new BadRequestException("Sorry, this subscription can be renewed only within 30days");
+        if (data.EndDate > DateTime.UtcNow.AddDays(30)) throw new BadRequestException("Sorry, this subscription can be renewed only within 30days");
         var customerIsActive = await _dbContext.Customers
             .AnyAsync(p => p.Id == data.CustomerId
                            && p.Status == GeneralStatus.Active, cancellationToken: cancellationToken);

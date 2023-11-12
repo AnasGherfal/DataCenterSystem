@@ -20,8 +20,14 @@ public sealed record FetchVisitsQueryHandler : IRequestHandler<FetchVisitsQuery,
         var pageNumber = request.PageNumber ?? 1;
         var pageSize = request.PageSize ?? 5;
         var query = _dbContext.Visits
-            .Where(p => string.IsNullOrWhiteSpace(request.SubscriptionId) || p.SubscriptionId == Guid.Parse(request.SubscriptionId!))
-            .Where(p => string.IsNullOrWhiteSpace(request.CustomerId) || p.CustomerId == Guid.Parse(request.CustomerId!));
+            .Where(p => string.IsNullOrWhiteSpace(request.SubscriptionId) ||
+                        p.SubscriptionId == Guid.Parse(request.SubscriptionId!))
+            .Where(p => string.IsNullOrWhiteSpace(request.CustomerId) ||
+                        p.CustomerId == Guid.Parse(request.CustomerId!))
+            .Where(p => request.From == null ||
+                        p.StartTime >= request.From)
+            .Where(p => request.To == null ||
+                        p.EndTime <= request.To);
         var data = await query
             .Include(p => p.Customer)
             .OrderBy(p => p.CreatedOn)

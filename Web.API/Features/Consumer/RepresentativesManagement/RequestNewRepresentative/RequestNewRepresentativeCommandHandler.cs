@@ -36,7 +36,7 @@ public sealed record RequestNewRepresentativeCommandHandler : IRequestHandler<Re
         if (!customerExists) throw new BadRequestException("العميل غير موجود");
         var countRepresentatives = await _dbContext.Representatives
             .CountAsync(p => p.CustomerId == customerId, cancellationToken: cancellationToken);
-        if (countRepresentatives >= 2) throw new BadRequestException("العميل لديه الحد الأقصى من المخولين");
+        if (countRepresentatives >= 25) throw new BadRequestException("العميل لديه الحد الأقصى من المخولين");
         var fileRequests = new List<FileStorageUploadRequest>()
         {
             new(Guid.NewGuid(), request.IdentityDocument!, (short) DocumentType.IdentityDocument),
@@ -44,7 +44,7 @@ public sealed record RequestNewRepresentativeCommandHandler : IRequestHandler<Re
         };
         var uploadPath = await _uploadFile.UploadFiles(StorageType.RepresentativeFile, fileRequests);
         if (uploadPath == null) throw new BadRequestException("حدث خطأ أثناء رفع الملف");
-        var @event = new RepresentativeCreatedEvent(_client.GetIdentifier(), Guid.NewGuid(), new RepresentativeCreatedEventData()
+        var @event = new RepresentativeRequestedEvent(_client.GetIdentifier(), Guid.NewGuid(), new RepresentativeRequestedEventData()
         {
             CustomerId = customerId,
             RepresentativeType = request.Type!.Value,

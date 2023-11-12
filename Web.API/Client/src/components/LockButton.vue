@@ -74,7 +74,7 @@ function unlockButton() {
       toast.add({
         severity: "error",
         summary: "رسالة خطأ",
-        detail: e.data,
+        detail: e.data.msg,
         life: 3000,
       });
     })

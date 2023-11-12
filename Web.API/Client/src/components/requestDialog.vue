@@ -1,16 +1,76 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { representativesApi } from '@/api/representatives';
+import { useToast } from 'primevue/usetoast';
+import { reactive, ref } from 'vue';
 
 
 const dialog = ref(false);
 const loading = ref(false);
+const prop = defineProps<{
+  id: string;
+  status: number
+
+}>();
+const status = reactive({ value: prop.status });
+
+const emit = defineEmits(["getdata"]);
+
+const toast = useToast();
+
+function onApprove (){
+  representativesApi
+  .approve(prop.id)
+  .then((response) =>{
+    toast.add({
+        severity: "success",
+        summary: "رسالة تأكيد",
+        detail: response.data.msg,
+        life: 3000,
+      });
+      status.value=1;
+      emit("getdata");
+
+    
+  }).catch((e)=>{
+    toast.add({
+        severity: "error",
+        summary: "رسالة خطأ",
+        detail: e.data.msg,
+        life: 3000,
+      });
+  })
+}
+
+function onReject (){
+  representativesApi
+  .reject(prop.id)
+  .then((response) =>{
+    toast.add({
+        severity: "success",
+        summary: "رسالة تأكيد",
+        detail: response.data.msg,
+        life: 3000,
+      });
+      status.value=1;
+      emit("getdata");
+
+    
+  }).catch((e)=>{
+    toast.add({
+        severity: "error",
+        summary: "رسالة خطأ",
+        detail: e.data.msg,
+        life: 3000,
+      });
+  })
+}
 
 </script>
 
 <template>
 
 <Button
-          icon="fa-solid fa-hand-point-up"
+          icon="fa-solid fa-bell"
           severity="info"
           text
           rounded
@@ -30,18 +90,24 @@ const loading = ref(false);
         style="font-size: 2rem; color: red"
       />
       <span 
-        >رفض او قبول ؟</span
+        >هل تريد قبول هذا المخول ؟</span
       >
     </div>
     <template #footer>
       <Button
-        label="نعم"
+        label="قبول"
         icon="pi pi-check"
         text
-        @click="$emit('submit'); dialog = false"
-        :loading="loading"
+        @click="onApprove"
+  
       />
-      <Button label="لا" icon="pi pi-times" text @click="dialog = false" />
+      <Button
+        label="رفض"
+        icon="pi pi-times"
+        text
+        @click="onReject"
+  
+      />
     </template>
   </Dialog>
 </template>

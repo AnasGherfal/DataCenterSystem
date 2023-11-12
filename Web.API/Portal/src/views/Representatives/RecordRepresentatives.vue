@@ -152,7 +152,7 @@ onMounted(async() => {
             <template #body="{data}">
               <Tag
               :value="store.getSelectedStatusLabel(data.status)"
-              :severity="store.getSeverity(data.severity)">
+              :severity="store.getSeverity(data.status)">
 
               </Tag>
             

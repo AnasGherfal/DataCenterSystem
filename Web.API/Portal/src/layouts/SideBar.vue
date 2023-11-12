@@ -39,11 +39,11 @@ const items = ref([
         icon: "fa-solid fa-calculator",
         to: "/subscriptionsRecord",
       },
-      {
-        label: "  فواتيري",
-        icon: "fa-solid fa-receipt",
-        to: "/invoices",
-      },
+      // {
+      //   label: "  فواتيري",
+      //   icon: "fa-solid fa-receipt",
+      //   to: "/invoices",
+      // },
     ],
   },
 ]);

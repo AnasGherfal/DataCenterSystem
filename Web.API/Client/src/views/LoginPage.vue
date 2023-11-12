@@ -28,7 +28,7 @@ const submitForm = async () => {
 
         router.push({ name: "home" });
         toast.add({
-          severity: "error",
+          severity: "success",
           summary: "رسالة نجاح",
           detail: response.data.msg,
           life: 3000,

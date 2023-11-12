@@ -186,25 +186,28 @@ function unlockButton(id: string) {
           :pageLinkSize="store.totalPages"
           :currentPage="store.currentPage - 1"
         >
-          <template #paginatorstart>
+        <template #footer>
+          
+          <span class="p-paginator-pages" style=" display: flex; justify-content: space-evenly; align-items: center;">
             <Button
+            style=""
               icon="pi pi-angle-right"
               class="p-button-rounded p-button-primary p-paginator-element"
               :disabled="store.currentPage === 1"
               @click="goToPreviousPage"
             />
-            <span class="p-paginator-pages">
               الصفحة {{ store.currentPage }} من {{ store.totalPages }}
-            </span>
-          </template>
-          <template #paginatorend>
+
             <Button
               icon="pi pi-angle-left"
               class="p-button-rounded p-button-primary p-paginator-element"
               :disabled="store.currentPage === store.totalPages"
               @click="goToNextPage"
             />
-          </template>
+            </span>
+
+        </template>
+
           <template #empty>
             <div
               class="no-data-message"
@@ -326,4 +329,6 @@ function unlockButton(id: string) {
   </div>
 </template>
 
-<style></style>
+<style>
+
+</style>

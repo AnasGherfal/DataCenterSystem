@@ -351,7 +351,7 @@ const types = ref([
           />
         </label>
         <div
-          v-if="firstFileError"
+          v-if="secondFileError"
           style="color: red; font-weight: bold; font-size: small"
         >
           {{ secondFileError }}

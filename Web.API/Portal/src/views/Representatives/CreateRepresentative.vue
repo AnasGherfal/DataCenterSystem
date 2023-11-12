@@ -1,18 +1,28 @@
 <script setup lang="ts">
 import type { RepresentativeRequest } from "@/Modules/Representatives/RepresentativeRequest";
 import useVuelidate from "@vuelidate/core";
-import { helpers, required, email, minLength } from "@vuelidate/validators";
-import { computed, ref, getCurrentInstance, reactive } from "vue";
+import {
+  helpers,
+  required,
+  email,
+  minLength,
+  requiredIf,
+} from "@vuelidate/validators";
+import { computed, ref, reactive } from "vue";
 import { isLibyanPhoneNumber, validateText } from "@/tools/validations";
 import { useToast } from "primevue/usetoast";
 import { representativesApi } from "@/api/representatives";
-import BackButton from '@/components/BackButton.vue'
+import BackButton from "@/components/BackButton.vue";
 import moment from "moment";
+import { useStatusStore } from "@/stores/status";
+import router from "@/router";
 
 const toast = useToast();
 const loading = ref(false);
 const firstFileError = ref<string | null>(null);
 const secondFileError = ref<string | null>(null);
+
+const store = useStatusStore();
 const representatives = reactive<RepresentativeRequest>({
   id: "",
   firstName: "",
@@ -62,14 +72,15 @@ const onSubmitForm = async () => {
     formData.append("phoneNo", representatives.phoneNo);
     const typeAsInteger = parseInt(representatives.type.value, 10);
 
-if (!isNaN(typeAsInteger)) {
-  // Only append if the conversion was successful
-  formData.append("type", typeAsInteger.toString());
+    if (!isNaN(typeAsInteger)) {
+      // Only append if the conversion was successful
+      formData.append("type", typeAsInteger.toString());
+    }
+
+    if (representatives.type.value === '1') {
+    formData.append("from", moment(representatives.from).format("YYYY/MM/DD"));
+    formData.append("to", moment(representatives.to).format("YYYY/MM/DD"));
 }
-
-
-    formData.append("from", moment(representatives.from).format("YYYY/MM/DD") || "");
-    formData.append("to", moment(representatives.to).format("YYYY/MM/DD")|| "");
 
     formData.append(
       "identityType",
@@ -93,6 +104,10 @@ if (!isNaN(typeAsInteger)) {
             detail: response.data.msg,
             life: 3000,
           });
+          setTimeout(() => {
+        router.go(-1);
+      }, 1);
+    
         });
       } else {
         toast.add({
@@ -105,7 +120,6 @@ if (!isNaN(typeAsInteger)) {
     } catch (error) {
       console.log(error);
       loading.value = false;
-
     }
   }
 };
@@ -155,6 +169,26 @@ const rules = computed(() => {
     type: {
       required: helpers.withMessage("الحقل مطلوب", required),
     },
+    to: {
+      requiredIf: helpers.withMessage(
+        "الحقل مطلوب",
+        requiredIf(() => {
+          // Check the condition based on the type value
+          return representatives.type?.value === "1";
+        })
+      ),
+    },
+
+    from: {
+        requiredIf: helpers.withMessage(
+          "الحقل مطلوب",
+          requiredIf(() => {
+            // Check the condition based on the type value
+            return representatives.type?.value === "1";
+          })
+        ),
+      
+    },
   };
 });
 
@@ -164,7 +198,6 @@ const v$ = useVuelidate(rules, representatives);
 // const openModal = () => {
 //     displayModal.value = true;
 // };
-
 
 const types = ref([
   { label: "مره", value: "0" },
@@ -264,7 +297,7 @@ const types = ref([
             <span class="p-float-label">
               <Dropdown
                 v-model="representatives.identityType"
-                :options="identityTypeOptions"
+                :options="store.identityTypeOptions"
                 optionValue="value"
                 optionLabel="text"
                 placeholder=" نوع الاثبات"
@@ -306,6 +339,15 @@ const types = ref([
                 placeholder="Select Period Option"
               />
               <label for="periodOption">مدة الصلاحية</label>
+              <div style="height: 2px; margin-bottom: 1rem">
+                <span
+                  v-for="error in v$.type.$errors"
+                  :key="error.$uid"
+                  style="color: red; font-weight: bold; font-size: small"
+                >
+                  {{ error.$message }}
+                </span>
+              </div>
             </span>
           </div>
           <!-- Conditionally render the date range input when "From To" is selected -->
@@ -321,6 +363,15 @@ const types = ref([
                 v-model="representatives.from"
               />
               <label for="fromDate">من </label>
+              <div style="height: 2px; margin-bottom: 1rem">
+                <span
+                  v-for="error in v$.from.$errors"
+                  :key="error.$uid"
+                  style="color: red; font-weight: bold; font-size: small"
+                >
+                  {{ error.$message }}
+                </span>
+              </div>
             </span>
           </div>
           <div
@@ -334,6 +385,15 @@ const types = ref([
                 v-model="representatives.to"
               />
               <label for="fromDate"> الى</label>
+              <div style="height: 2px; margin-bottom: 1rem">
+                <span
+                  v-for="error in v$.to.$errors"
+                  :key="error.$uid"
+                  style="color: red; font-weight: bold; font-size: small"
+                >
+                  {{ error.$message }}
+                </span>
+              </div>
             </span>
           </div>
           <!-- First File Input and DocType MultiSelect -->
@@ -396,7 +456,7 @@ const types = ref([
               />
             </label>
             <div
-              v-if="firstFileError"
+              v-if="secondFileError"
               style="color: red; font-weight: bold; font-size: small"
             >
               {{ secondFileError }}

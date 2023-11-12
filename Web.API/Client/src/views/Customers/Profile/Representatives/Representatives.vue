@@ -13,8 +13,9 @@ import DeleteButton from "@/components/DeleteButton.vue";
 import LockButton from "@/components/LockButton.vue";
 import EditRepresentatives from "./EditRepresentatives.vue";
 import requestDialog from "@/components/requestDialog.vue";
-
 import moment from "moment";
+import { useStatusStore } from "@/stores/shared";
+
 const route = useRoute();
 const prop = defineProps<{
   customerStatus: number;
@@ -36,6 +37,7 @@ const pageSize = ref(10);
 const currentPage = ref(0);
 const representativesById = ref();
 const reqDialog = ref();
+const store = useStatusStore();
 
 const emit = defineEmits(["getRepresentatives"]);
 const representatives = ref<Representatives>({
@@ -71,9 +73,10 @@ const onFormSubmit = async (representative: Representatives) => {
     // Only append if the conversion was successful
     formData.append("type", typeAsInteger.toString());
   }
-  formData.append("from", moment(representative.from).format("YYYY/MM/DD"));
-  formData.append("to", moment(representative.to).format("YYYY/MM/DD"));
-
+  if (representative.type.value === '1') {
+    formData.append("from", moment(representative.from).format("YYYY/MM/DD"));
+    formData.append("to", moment(representative.to).format("YYYY/MM/DD"));
+}
   formData.append(
     "identityType",
     representative.identityType?.toString() || ""
@@ -152,30 +155,8 @@ const displayModal = ref(false);
 const openModal = () => {
   displayModal.value = true;
 };
-const statuses = ref([
-  { value: 1, label: "نشط" },
-  { value: 2, label: "مقيد" },
-]);
 
-const getSeverity = (status: any) => {
-  switch (trans(status)) {
-    case "نشط":
-      return "success";
 
-    case "مقيد":
-      return "danger";
-  }
-};
-
-const trans = (value: string) => {
-  if (value == "1") return "نشط";
-  else if (value == "2") return "مقيد";
-};
-
-const getSelectedStatusLabel = (value: any) => {
-  const status = statuses.value.find((s) => s.value === value);
-  return status ? status.label : "";
-};
 
 const goToNextPage = () => {
   if (currentPage < totalPages) {
@@ -313,8 +294,8 @@ const goToPreviousPage = () => {
     >
       <template #body="{ data }">
         <Tag
-          :value="getSelectedStatusLabel(data.status)"
-          :severity="getSeverity(data.status)"
+          :value="store.getSelectedStatusLabel(data.status)"
+          :severity="store.getSeverity(data.status)"
         />
       </template>
     </Column>
@@ -344,7 +325,12 @@ const goToPreviousPage = () => {
           @getdata="emit('getRepresentatives')"
         />
 
-        <requestDialog v-if="slotProps.data.status == 3"/>
+        <requestDialog
+        :id="slotProps.data.id"
+        :status="slotProps.data.status"
+        @getdata="emit('getRepresentatives')"
+
+         v-if="slotProps.data.status == 3"/>
       </template>
     </Column>
   </DataTable>

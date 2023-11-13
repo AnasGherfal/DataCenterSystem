@@ -12,7 +12,7 @@ const data = ref();
 const loading = ref();
 const totalPages = ref(1);
 const pageNumber = ref(1);
-const pageSize = ref(10);
+const pageSize = ref(5);
 const currentPage = ref(0);
 
 interface Filters {
@@ -105,25 +105,30 @@ const goToPreviousPage = () => {
             :currentPage="currentPage - 1"
             paginatorTemplate="  "
           >
-          <template #paginatorstart>
-              <Button
-                icon="pi pi-angle-right"
-                class="p-button-rounded p-button-primary p-paginator-element"
-                :disabled="currentPage === 1"
-                @click="goToPreviousPage"
-              />
-              <span class="p-paginator-pages">
-                الصفحة {{ currentPage }} من {{ totalPages }}
-              </span>
-            </template>
-            <template #paginatorend>
-              <Button
-                icon="pi pi-angle-left"
-                class="p-button-rounded p-button-primary p-paginator-element"
-                :disabled="currentPage === totalPages"
-                @click="goToNextPage"
-              />
-            </template>
+          <template #paginatorstart >
+          
+          <span class="p-paginator-pages" style=" display: flex; justify-content: center; align-items: center; margin-top: 1rem;">
+            <Button
+
+            style="margin-left: 1rem; height: 2rem; width: 2rem;"
+              icon="pi pi-angle-right"
+              class="p-button-rounded p-button-primary p-paginator-element"
+              :disabled="currentPage === 1"
+              @click="goToPreviousPage"
+            />
+              الصفحة {{ currentPage }} من {{ totalPages }}
+
+            <Button
+            style="margin-right: 1rem; height: 2rem; width: 2rem;"
+
+              icon="pi pi-angle-left"
+              class="p-button-rounded p-button-primary p-paginator-element"
+              :disabled="currentPage === totalPages"
+              @click="goToNextPage"
+            />
+            </span>
+
+        </template>
           <template #empty>
               <div class="no-data-message"
                    style="

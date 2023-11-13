@@ -4,6 +4,7 @@ import { FilterMatchMode } from "primevue/api";
 import {representativesApi} from "@/api/representatives"
 import AddButton from "@/components/AddButton.vue"
 import { useStatusStore } from "@/stores/status";
+import { onBeforeRouteUpdate } from "vue-router";
 const loading = ref();
 
 const name = ref();
@@ -42,6 +43,12 @@ async function getRepresentatives() {
     representatives.value= response.data.content;
   })
 }
+
+onBeforeRouteUpdate((to, from, next) => {
+  console.log("Route update");
+  getRepresentatives();
+  next();
+});
 onMounted(async() => {
  await getRepresentatives();
 

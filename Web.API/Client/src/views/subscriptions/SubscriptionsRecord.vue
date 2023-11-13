@@ -3,17 +3,22 @@ import { onMounted, ref, watch } from "vue";
 import { FilterMatchMode } from "primevue/api";
 import AddButton from "@/components/AddButton.vue";
 import LockButton from "@/components/LockButton.vue";
-import { useSubscriptionsStore } from "@/stores/subscriptions";
 import moment from "moment";
 import DeleteSubscription from "../../components/DeleteButton.vue";
 import { Subscription } from "@/Modules/SubscriptionModule/SubscriptionsRequestModule";
 import { subscriptionApi } from "../../api/subscriptions";
 import { useToast } from "primevue/usetoast";
+import { onBeforeRouteUpdate } from "vue-router";
 
 // optional
 
-const store = useSubscriptionsStore();
 const toast = useToast();
+const loading = ref(true);
+const subscriptions = ref<any[]>([]);
+  const totalPages = ref(1);
+  const pageNumber = ref(1);
+  const pageSize = ref(10);
+  const currentPage = ref(0);
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -21,9 +26,35 @@ const filters = ref({
 const columns = ref([{ field: "serviceName", header: "الباقه" }]);
 const selectedColumns = ref(columns.value);
 
-onMounted(() => {
-  store.getSubs();
+
+onBeforeRouteUpdate((to, from, next) => {
+  console.log("Route update");
+  getSubs();
+  next();
 });
+onMounted(() => {
+  getSubs();
+});
+
+
+function getSubs() {
+    // if (status.value === undefined || status.value === null) {
+    //   status.value = 0;
+    // }
+    subscriptionApi
+      .getPages(pageNumber.value, pageSize.value)
+      .then(function (response) {
+        subscriptions.value = response.data.content;
+        totalPages.value = response.data.totalPages;
+        currentPage.value = response.data.currentPage;
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  }
 
 const formatDate = (value: Date) => {
   return moment(value).format("yy/M/D  hh:mm a");
@@ -68,26 +99,26 @@ const getDaysRemainingData = (endDate: Date) => {
 };
 
 watch(filters, (newFilters) => {
-  store.currentPage = 1; // Reset currentPage to the first page
-  store.pageNumber = 1; // Reset pageNumber to 1
-  store.getSubs();
+  currentPage.value = 1; // Reset currentPage to the first page
+  pageNumber.value = 1; // Reset pageNumber to 1
+  getSubs();
 });
 const goToNextPage = () => {
-  if (store.currentPage < store.totalPages) {
-    store.currentPage += 1;
-    store.pageNumber += 1; // Increment the pageNumber value
-    store.loading = true;
-    store.getSubs();
+  if (currentPage.value < totalPages.value) {
+    currentPage.value += 1;
+    pageNumber.value += 1; // Increment the pageNumber value
+    loading.value = true;
+    getSubs();
   }
 };
 
 const goToPreviousPage = () => {
-  if (store.currentPage > 1) {
-    store.currentPage -= 1;
-    store.pageNumber -= 1; // Decrement the pageNumber value
-    store.loading = true;
+  if (currentPage.value > 1) {
+    currentPage.value -= 1;
+    pageNumber.value -= 1; // Decrement the pageNumber value
+    loading.value = true;
 
-    store.getSubs();
+    getSubs();
   }
 };
 
@@ -103,7 +134,7 @@ const toggleLock = async (subs: any) => {
       detail: response?.data.msg,
       life: 3000,
     });
-    store.getSubs();
+    getSubs();
   } catch (error: any) {
     toast.add({
       severity: "error",
@@ -124,7 +155,7 @@ const deleteSubs = (id: string) => {
         detail: response.data.msg,
         life: 3000,
       });
-      store.getSubs();
+      getSubs();
     })
     .catch((e) => {
       toast.add({
@@ -147,7 +178,7 @@ const deleteSubs = (id: string) => {
       </template>
       <template #content>
         <div
-          v-if="store.loading"
+          v-if="loading"
           class="border-round border-1 surface-border p-4 surface-card"
         >
           <div class="grid p-fluid">
@@ -166,15 +197,15 @@ const deleteSubs = (id: string) => {
         <DataTable
           v-else
           ref="dt"
-          :value="store.subscriptions"
+          :value="subscriptions"
           dataKey="id"
           :paginator="true"
           :rows="10"
           v-model:filters="filters"
           :globalFilterFields="['serviceName', 'customerName']"
           :rowsPerPageOptions="[5, 10, 25]"
-          :pageLinkSize="store.totalPages"
-          :currentPage="store.currentPage - 1"
+          :pageLinkSize="totalPages"
+          :currentPage="currentPage - 1"
           paginatorTemplate="  "
         >
         <template #paginatorstart >
@@ -185,17 +216,17 @@ const deleteSubs = (id: string) => {
             style="margin-left: 1rem; height: 2rem; width: 2rem;"
               icon="pi pi-angle-right"
               class="p-button-rounded p-button-primary p-paginator-element"
-              :disabled="store.currentPage === 1"
+              :disabled="currentPage === 1"
               @click="goToPreviousPage"
             />
-              الصفحة {{ store.currentPage }} من {{ store.totalPages }}
+              الصفحة {{ currentPage }} من {{ totalPages }}
 
             <Button
             style="margin-right: 1rem; height: 2rem; width: 2rem;"
 
               icon="pi pi-angle-left"
               class="p-button-rounded p-button-primary p-paginator-element"
-              :disabled="store.currentPage ===store.totalPages"
+              :disabled="currentPage ===totalPages"
               @click="goToNextPage"
             />
             </span>
@@ -321,7 +352,7 @@ const deleteSubs = (id: string) => {
                 :name="slotProps.data.id"
                 :status="slotProps.data.status"
                 @submit="() => toggleLock(slotProps.data)"
-                @getdata="store.getSubs"
+                @getdata="getSubs"
               />
 
               <RouterLink

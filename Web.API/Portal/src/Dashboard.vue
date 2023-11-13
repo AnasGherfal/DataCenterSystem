@@ -29,7 +29,7 @@ const token = localStorage.getItem("token");
         transition: all 0.5s ease;
         width: 78%;
         margin-right: 22%;
-        padding: 30px;
+        padding: 45px 20px 0px;
       "
     >
       <RouterView />

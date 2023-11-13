@@ -69,6 +69,7 @@ const router = createRouter({
           path: "addCustomer",
           props: true,
           component: () => import("../views/Customers/AddCustomer.vue"),
+          
         },
         {
           path: "CustomerProfile/:id",
@@ -168,6 +169,8 @@ router.beforeEach(async (to, from, next) => {
     document.getElementById("InitScreenDOM")?.remove();
     return next();
   }
+  const res = await authorized.getProfile();
+
 
   if (!authorized.userData) {
     const res = await authorized.getProfile();
@@ -192,7 +195,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // If the user is logged in and trying to access the login page, redirect to the home page
-  if (to.name == 'loginPage') {
+  if ( authorized.userData && to.name == 'loginPage') {
     return next("/");
   }
 

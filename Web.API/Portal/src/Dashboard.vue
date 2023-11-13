@@ -6,32 +6,33 @@ import TopBar from "./layouts/TopBar.vue";
 // import LoginPage from "./views/LoginPage.vue";
 // import { useAuthStore } from "./stores/auth";
 // const authorized = useAuthStore();
+const token = localStorage.getItem("token");
+
 </script>
 
 <template>
- 
-
   <main>
-    <TopBar />
+    <div v-if="token" >
+      <TopBar />
 
-    <div style="width: 100%; margin-top: 20px" class="absolute">
-      <div
-        style="height: 28%; margin-right: 1%; position: absolute"
-      >
-        <SideBar />
+      <div style="width: 100%; margin-top: 20px" class="absolute">
+        <div style="height: 28%; margin-right: 1%; position: absolute">
+          <SideBar />
+        </div>
       </div>
+    </div>
+    <RouterView v-if="!token" />
 
-      <div 
-        class="content"
-        style="
-          transition: all 0.5s ease;
-          width: 78%;
-          margin-right: 22%;
-          padding: 30px;
-        "
-      >
-        <RouterView />
-      </div>
+    <div v-else
+      class="content"
+      style="
+        transition: all 0.5s ease;
+        width: 78%;
+        margin-right: 22%;
+        padding: 30px;
+      "
+    >
+      <RouterView />
     </div>
   </main>
 </template>

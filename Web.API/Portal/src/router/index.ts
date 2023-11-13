@@ -4,10 +4,8 @@ import LoginPage from "../views/LoginPage.vue";
 // import { useAuthStore } from "../stores/auth";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
-import { ref } from "vue";
 
 NProgress.configure({ showSpinner: false });
-const loading = ref(false);
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -96,63 +94,21 @@ const router = createRouter({
   ],
 });
 
-//beforeeach route login //-----------------------
+router.beforeEach(async (to, from, next) => {
+  const token = localStorage.getItem("token");
 
-// router.beforeEach(async (to, from, next) => {
-//   // Check if the user is authorized/logged in (you can use your own logic here)
-//   const authorized = useAuthStore();
+  // If there is no token and the route is not the login page, redirect to the login page
+  if (!token && to.name !== "loginPage") {
+    return next("/Login");
+  }
 
-//   // if the route is guest only then let the user continue
-//   if (to.meta.guest) {
-//     document.getElementById("InitScreenDOM")?.remove();
-//     return next();
-//   }
+  // If there is a token and the route is the login page, redirect to the home page
+  if (token && to.name === "loginPage") {
+    return next("/");
+  }
 
-//   if (!authorized.userData) {
-//     const res = await authorized.getProfile();
-//     document.getElementById("InitScreenDOM")?.remove();
-
-//     if (res) {
-//       // the user is logged in and trying to access the login page then redirect to dashboard
-//       if (to.meta.guest) {
-//         return next("/dashboard");
-//       }
-
-//       // continue to the route
-//       return next();
-//     }
-
-//     // if the user is not logged in and the route is not guest only then redirect to login
-//     if (to.meta.guest) {
-//       return next();
-//     }
-
-//     return next("/Login");
-//   }
-
-//   // otherwise continue to the route
-//   document.getElementById("InitScreenDOM")?.remove();
-//   next();
-
-//   // Scroll page to top on every route change
-//   setTimeout(() => {
-//     window.scrollTo(0, 0);
-//   }, 100);
-// });
-// router.beforeResolve((to, from, next) => {
-//   // If this isn't an initial page load.
-//   NProgress.start();
-//   if (to.name) {
-//     loading.value = true;
-//     // Start the route progress bar.
-//   }
-//   next();
-// });
-
-// router.afterEach(() => {
-//   loading.value = false;
-//   // Complete the animation of the route progress bar.
-//   NProgress.done();
-// });
+  // Continue to the requested route
+  return next();
+});
 
 export default router;

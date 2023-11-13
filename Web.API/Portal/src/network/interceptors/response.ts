@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { authApi } from '../../api/auth';
+// import { authApi } from '../../api/auth';
 
 export function onResponse(response: AxiosResponse) {
   return response;

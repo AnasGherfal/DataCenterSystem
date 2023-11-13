@@ -177,30 +177,30 @@ const deleteSubs = (id: string) => {
           :currentPage="store.currentPage - 1"
           paginatorTemplate="  "
         >
-          <template #paginatorstart>
+        <template #paginatorstart >
+          
+          <span class="p-paginator-pages" style=" display: flex; justify-content: center; align-items: center; margin-top: 1rem;">
             <Button
+
+            style="margin-left: 1rem; height: 2rem; width: 2rem;"
               icon="pi pi-angle-right"
               class="p-button-rounded p-button-primary p-paginator-element"
               :disabled="store.currentPage === 1"
               @click="goToPreviousPage"
             />
-            <span class="p-paginator-pages">
               الصفحة {{ store.currentPage }} من {{ store.totalPages }}
-            </span>
-          </template>
-          <template #paginatorend>
+
             <Button
+            style="margin-right: 1rem; height: 2rem; width: 2rem;"
+
               icon="pi pi-angle-left"
               class="p-button-rounded p-button-primary p-paginator-element"
-              :disabled="store.currentPage === store.totalPages"
+              :disabled="store.currentPage ===store.totalPages"
               @click="goToNextPage"
             />
-          </template>
-          <template #header>
-            <div class="grid p-fluid">
-              <div class="field col-12 md:col-6 lg:col-4"></div>
-            </div>
-          </template>
+            </span>
+
+        </template>
 
           <template #empty>
             <div

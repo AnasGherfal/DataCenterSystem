@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import Password from "primevue/password";
 import { authApi } from "../api/auth";
 import { useRouter } from "vue-router";
@@ -192,7 +192,7 @@ const v$ = useVuelidate(rules, credentials);
 .vertical-line {
   width: 5px;
   background-color: rgb(255, 255, 255); /* Adjust opacity (0.5) as needed */
-  height: 400px;
+  height: 550px;
   border-radius: 10px;
 }
 

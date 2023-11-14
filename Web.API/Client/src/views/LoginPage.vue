@@ -118,7 +118,6 @@ const v$ = useVuelidate(rules, credentials);
       class="p-button-primry mt-3"
       style="width: 100%"
       label="تسجيل دخول"
-      type="submit"
       :loading="loading"
     />
   </form>

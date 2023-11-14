@@ -40,6 +40,10 @@ const reqDialog = ref();
 const store = useStatusStore();
 
 const emit = defineEmits(["getRepresentatives"]);
+interface RepresentativeType {
+  label: string;
+  value: string;
+}
 const representatives = ref<Representatives>({
   id: "",
   firstName: "",
@@ -51,10 +55,11 @@ const representatives = ref<Representatives>({
   customerId: toNumber(userId.value),
   RepresentationDocument: null,
   IdentityDocuments: null,
-  type: null,
+  type: { value: '0', label: '' },
   from: "",
   to: "",
 });
+
 
 const toast = useToast();
 
@@ -67,16 +72,19 @@ const onFormSubmit = async (representative: Representatives) => {
   formData.append("identityNo", representative.identityNo);
   formData.append("email", representative.email);
   formData.append("phoneNo", representative.phoneNo);
-  const typeAsInteger = parseInt(representative.type.value, 10);
+  const typeAsInteger = (representative.type && typeof representative.type === 'object') 
+  ? parseInt(representative.type.value, 10) 
+  : NaN;
 
-  if (!isNaN(typeAsInteger)) {
-    // Only append if the conversion was successful
-    formData.append("type", typeAsInteger.toString());
-  }
-  if (representative.type.value === '1') {
-    formData.append("from", moment(representative.from).format("YYYY/MM/DD"));
-    formData.append("to", moment(representative.to).format("YYYY/MM/DD"));
+if (!isNaN(typeAsInteger)) {
+  formData.append("type", typeAsInteger.toString());
 }
+
+if (representative.type && typeof representative.type === 'object' && representative.type.value === '1') {
+  formData.append("from", moment(representative.from).format("YYYY/MM/DD"));
+  formData.append("to", moment(representative.to).format("YYYY/MM/DD"));
+}
+
   formData.append(
     "identityType",
     representative.identityType?.toString() || ""

@@ -67,7 +67,6 @@ const getSelectedStatusLabel = (value: any) => {
 };
 
 onBeforeRouteUpdate((to, from, next) => {
-  console.log("Route update");
   getCustomers();
   next();
 });

@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import router from "@/router";
 import Button from "primevue/button";
 import { ref } from "vue";
-
 const menu = ref();
 const items = ref([
   { separator: true },
-  { label: "حساب تعريفي", icon: "fa-solid fa-user", to: "/adminProfile" },
+  { label: "حساب تعريفي", icon: "fa-solid fa-user",
+       command: () => {
+          router.push("/adminProfile");
+        },       },
+
   { separator: true },
 ]);
 

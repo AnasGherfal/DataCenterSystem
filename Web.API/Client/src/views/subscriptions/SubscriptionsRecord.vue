@@ -9,6 +9,7 @@ import { Subscription } from "@/Modules/SubscriptionModule/SubscriptionsRequestM
 import { subscriptionApi } from "../../api/subscriptions";
 import { useToast } from "primevue/usetoast";
 import { onBeforeRouteUpdate } from "vue-router";
+import { useStatusStore } from "@/stores/shared";
 
 // optional
 
@@ -19,6 +20,7 @@ const subscriptions = ref<any[]>([]);
   const pageNumber = ref(1);
   const pageSize = ref(10);
   const currentPage = ref(0);
+  const store = useStatusStore()
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -28,7 +30,6 @@ const selectedColumns = ref(columns.value);
 
 
 onBeforeRouteUpdate((to, from, next) => {
-  console.log("Route update");
   getSubs();
   next();
 });
@@ -270,8 +271,8 @@ const deleteSubs = (id: string) => {
           >
             <template #body="{ data }">
               <Tag
-                :value="status(data.status)"
-                :severity="getSeverity(data.status)"
+                :value="store.getSelectedStatusLabel(data.status)"
+                :severity="store.getSeverity(data.status)"
               />
             </template>
             <template #filter="{ filterModel, filterCallback }">

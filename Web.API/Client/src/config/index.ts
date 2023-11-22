@@ -1,3 +1,3 @@
 export default {
-    base_url: "http://172.19.19.177:5027/v1.0/management",
+    base_url: "http://localhost:5025/v1.0/management",
 }

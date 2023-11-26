@@ -186,18 +186,26 @@ router.beforeEach(async (to, from, next) => {
       return next();
     }
 
+        // Continue to the requested route
+        document.getElementById("InitScreenDOM")?.remove();
+        return next();
+      
+
     // if the user is not logged in and the route is not guest only then redirect to login
     if (to.meta.guest) {
       return next();
     }
 
     return next("/Login");
+    
   }
 
   // If the user is logged in and trying to access the login page, redirect to the home page
   if ( authorized.userData && to.name == 'loginPage') {
     return next("/");
   }
+
+  
 
   // otherwise continue to the route
   document.getElementById("InitScreenDOM")?.remove();
@@ -220,6 +228,12 @@ router.beforeResolve((to, from, next) => {
 });
 
 router.afterEach(() => {
+  window.addEventListener('popstate', () => {
+    // Your logic to handle the back button press
+
+    // For example, you might want to redirect the user to a specific route:
+    router.push('/'); // Replace '/specific-route' with your desired route
+  });
   loading.value = false;
   // Complete the animation of the route progress bar.
   NProgress.done();

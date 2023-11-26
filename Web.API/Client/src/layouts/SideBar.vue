@@ -68,12 +68,6 @@ const items = ref([
         },      },
     ],
   },
-
-  {
-    label: "اعدادات النظام",
-    icon: "fa-solid fa-gear",
-    to: "/SettingsView",
-  },
 ]);
 
 const permissions = ref([

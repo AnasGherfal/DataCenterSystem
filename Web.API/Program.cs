@@ -35,7 +35,7 @@ services.Configure<ApiBehaviorOptions>(o =>
 });
 services.AddControllers();
 
-// Configure the HTTP request pipeline.
+//Configure the HTTP request pipeline.
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseStatusCodePagesWithReExecute("/errorStatusCodes/{0}");
@@ -43,10 +43,16 @@ app.UseCors(o => o.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UsePersistence();
 app.UseSwagger(true);
 app.UseHttpsRedirection();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+        endpoints.MapFallbackToFile("/index.html");
+    });
 app.Run();
 }
 catch (Exception ex)

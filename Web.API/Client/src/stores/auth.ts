@@ -14,7 +14,7 @@ export const useAuthStore = defineStore("user", () => {
       loading.value = true;
       const response = await authApi.profile();
       userData.value = response.data.content;
-      prem.value = response.data;
+      prem.value = response.data.content.permissions;
       return response.data.content;
     } catch (error) {
       console.log(error);
